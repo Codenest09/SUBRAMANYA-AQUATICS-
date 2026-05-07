@@ -310,7 +310,7 @@ function closeCheckout() {
 }
 
 // ========== PAYMENT ==========
-let selectedPayment = 'cod';
+let selectedPayment = 'upi';
 
 function selectPayment(el) {
   document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
