@@ -287,14 +287,30 @@ function buyNow(name, price, img) {
 // ========== CHECKOUT FLOW ==========
 function openCheckout() {
   closeCartSheet();
-  // Populate order summary
+  // Populate detailed bill
   const itemsDiv = document.getElementById('checkoutOrderItems');
   if (itemsDiv) {
     const t = getCartTotals();
-    itemsDiv.innerHTML = cart.map(item =>
-      `<div class="order-mini-item"><span class="omi-name">${item.name}</span><span class="omi-qty">×${item.qty}</span><span>₹${item.price * item.qty}</span></div>`
-    ).join('') +
-      `<div class="order-mini-item" style="border-top:1px solid rgba(0,212,255,0.15);margin-top:8px;padding-top:8px;"><span><b>Total</b></span><span></span><span><b>₹${t.total}</b></span></div>`;
+    let billHtml = '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(0,212,255,0.1);border-radius:12px;padding:14px;font-size:0.82rem;">';
+    // Item rows
+    cart.forEach(item => {
+      billHtml += `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+        <span style="flex:1;color:rgba(255,255,255,0.7);">${item.name} <span style="color:rgba(255,255,255,0.35);">×${item.qty}</span></span>
+        <span style="color:var(--white-glow);font-weight:600;">₹${item.price * item.qty}</span>
+      </div>`;
+    });
+    // Bill breakdown
+    billHtml += `
+      <div style="margin-top:10px;padding-top:10px;border-top:1px dashed rgba(0,212,255,0.15);">
+        <div style="display:flex;justify-content:space-between;padding:4px 0;color:rgba(255,255,255,0.5);"><span>Subtotal</span><span>₹${t.subtotal}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:4px 0;color:rgba(255,255,255,0.5);"><span>Delivery Charge</span><span>₹${t.delivery}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:4px 0;color:rgba(255,255,255,0.5);"><span>GST (5%)</span><span>₹${t.gst}</span></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:10px 0 4px;margin-top:8px;border-top:2px solid rgba(0,212,255,0.2);font-size:1rem;font-weight:700;color:var(--neon-teal);">
+        <span>Total Amount</span><span>₹${t.total}</span>
+      </div>`;
+    billHtml += '</div>';
+    itemsDiv.innerHTML = billHtml;
   }
   // Pre-fill phone if available
   const savedPhone = localStorage.getItem('sa_user_phone');
