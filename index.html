@@ -816,14 +816,127 @@
     </div>
   </div>
 
-  <!-- Floating Action Buttons -->
+  <!-- Floating Action Buttons (desktop only) -->
   <div class="floating-actions">
-    <button class="fab-btn auth-fab" id="floatingAuthBtn" title="Account Dashboard">
-      👤
+    <button class="fab-btn auth-fab" id="floatingAuthBtn" title="Account Dashboard">👤</button>
+    <button class="fab-btn wishlist-fab" id="floatingWishlistBtn" title="Wishlist">🤍 <span class="fab-badge" id="wishlistBadge">0</span></button>
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="bottom-nav-item active" data-tab="home" id="navHome">
+      <span class="nav-icon">🏠</span><span>Home</span>
     </button>
-    <button class="fab-btn wishlist-fab" id="floatingWishlistBtn" title="Wishlist">
-      🤍 <span class="fab-badge" id="wishlistBadge">0</span>
+    <button class="bottom-nav-item" data-tab="categories" id="navCategories">
+      <span class="nav-icon">🐠</span><span>Categories</span>
     </button>
+    <button class="bottom-nav-item" data-tab="cart" id="navCart">
+      <span class="nav-icon">🛒</span><span>Cart</span>
+      <span class="nav-cart-badge" id="cartBadge" data-count="0"></span>
+    </button>
+    <button class="bottom-nav-item" data-tab="orders" id="navOrders">
+      <span class="nav-icon">📦</span><span>Orders</span>
+    </button>
+    <button class="bottom-nav-item" data-tab="profile" id="navProfile">
+      <span class="nav-icon">👤</span><span>Profile</span>
+    </button>
+  </nav>
+
+  <!-- Cart Bottom-Sheet -->
+  <div class="cart-sheet-overlay" id="cartSheetOverlay"></div>
+  <div class="cart-sheet" id="cartSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h3>🛒 Your Cart</h3>
+      <button class="sheet-close" id="closeCartSheet">&times;</button>
+    </div>
+    <div class="sheet-items" id="cartSheetItems">
+      <div class="sheet-empty"><span class="empty-icon">🛒</span>Your cart is empty<br>Start adding some amazing fish!</div>
+    </div>
+    <div class="coupon-row" id="couponRow" style="display:none;">
+      <input type="text" id="couponInput" placeholder="Enter coupon code">
+      <button id="applyCouponBtn">Apply</button>
+    </div>
+    <div class="sheet-summary" id="cartSummary" style="display:none;">
+      <div class="sum-row"><span>Subtotal</span><span id="sumSubtotal">₹0</span></div>
+      <div class="sum-row"><span>Delivery</span><span id="sumDelivery">₹49</span></div>
+      <div class="sum-row"><span>GST (5%)</span><span id="sumGst">₹0</span></div>
+      <div class="sum-total"><span>Total</span><span id="sumTotal">₹0</span></div>
+      <button class="btn-proceed-checkout" id="proceedCheckoutBtn">Proceed to Checkout →</button>
+    </div>
+  </div>
+
+  <!-- Checkout Overlay -->
+  <div class="checkout-overlay" id="checkoutOverlay">
+    <div class="checkout-top">
+      <button class="checkout-back" id="checkoutBackBtn">←</button>
+      <h2>Checkout</h2>
+    </div>
+    <div class="checkout-body">
+      <div class="checkout-section">
+        <h3>📍 Delivery Address</h3>
+        <input class="checkout-input" id="coName" placeholder="Full Name" autocomplete="name">
+        <input class="checkout-input" id="coAddress" placeholder="Address (House, Street)" autocomplete="street-address">
+        <div class="checkout-row">
+          <input class="checkout-input" id="coCity" placeholder="City" autocomplete="address-level2">
+          <input class="checkout-input" id="coPincode" placeholder="Pincode" autocomplete="postal-code" maxlength="6">
+        </div>
+        <input class="checkout-input" id="coState" placeholder="State" autocomplete="address-level1">
+      </div>
+      <div class="checkout-section">
+        <h3>📱 Contact</h3>
+        <input class="checkout-input" id="coPhone" type="tel" placeholder="Mobile Number" autocomplete="tel" maxlength="10">
+      </div>
+      <div class="checkout-section">
+        <h3>📋 Order Summary</h3>
+        <div id="checkoutOrderItems"></div>
+      </div>
+      <div class="checkout-section">
+        <h3>💳 Payment Method</h3>
+        <div class="payment-grid" id="paymentGrid">
+          <div class="payment-option" data-method="upi" onclick="selectPayment(this)"><span class="pay-icon">📱</span><span class="pay-label">UPI</span></div>
+          <div class="payment-option" data-method="gpay" onclick="selectPayment(this)"><span class="pay-icon">🅖</span><span class="pay-label">Google Pay</span></div>
+          <div class="payment-option" data-method="phonepe" onclick="selectPayment(this)"><span class="pay-icon">📲</span><span class="pay-label">PhonePe</span></div>
+          <div class="payment-option" data-method="paytm" onclick="selectPayment(this)"><span class="pay-icon">💰</span><span class="pay-label">Paytm</span></div>
+          <div class="payment-option" data-method="card" onclick="selectPayment(this)"><span class="pay-icon">💳</span><span class="pay-label">Card</span></div>
+          <div class="payment-option" data-method="netbanking" onclick="selectPayment(this)"><span class="pay-icon">🏦</span><span class="pay-label">Net Banking</span></div>
+          <div class="payment-option selected" data-method="cod" onclick="selectPayment(this)"><span class="pay-icon">💵</span><span class="pay-label">Cash on Delivery</span></div>
+        </div>
+        <div class="secure-badge">🔒 100% Secure Payment</div>
+      </div>
+      <button class="btn-place-order" id="placeOrderBtn" onclick="placeOrder()">Place Order</button>
+    </div>
+  </div>
+
+  <!-- Order Success -->
+  <div class="order-success-overlay" id="orderSuccessOverlay">
+    <div class="success-card">
+      <div class="success-check">✓</div>
+      <h2>Order Placed!</h2>
+      <p class="order-id" id="successOrderId">Order #SA-00000</p>
+      <p class="delivery-est">📦 Estimated delivery: 3-5 business days</p>
+      <button class="btn-continue-shop" onclick="continueShopping()">Continue Shopping</button>
+    </div>
+  </div>
+
+  <!-- Orders Panel -->
+  <div class="panel-overlay" id="ordersPanel">
+    <div class="panel-header">
+      <button class="panel-back" onclick="closePanel('ordersPanel')">←</button>
+      <h2>📦 My Orders</h2>
+    </div>
+    <div class="panel-body" id="ordersPanelBody">
+      <div class="panel-empty"><span class="empty-icon">📦</span>No orders yet<br>Start shopping to see your orders here!</div>
+    </div>
+  </div>
+
+  <!-- Profile Panel -->
+  <div class="panel-overlay" id="profilePanel">
+    <div class="panel-header">
+      <button class="panel-back" onclick="closePanel('profilePanel')">←</button>
+      <h2>👤 Profile</h2>
+    </div>
+    <div class="panel-body" id="profilePanelBody"></div>
   </div>
 
   <!-- Footer -->
