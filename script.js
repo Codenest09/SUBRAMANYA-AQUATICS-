@@ -219,9 +219,9 @@ function updateQty(index, delta) {
 function getCartTotals() {
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
   const delivery = cart.length > 0 ? 49 : 0;
-  const gst = Math.round(subtotal * 0.05);
-  const total = subtotal + delivery + gst;
-  return { subtotal, delivery, gst, total };
+  const packing = cart.length > 0 ? 10 : 0;
+  const total = subtotal + delivery + packing;
+  return { subtotal, delivery, packing, total };
 }
 
 function renderCartSheet() {
@@ -259,7 +259,7 @@ function renderCartSheet() {
     const t = getCartTotals();
     document.getElementById('sumSubtotal').textContent = `₹${t.subtotal}`;
     document.getElementById('sumDelivery').textContent = `₹${t.delivery}`;
-    document.getElementById('sumGst').textContent = `₹${t.gst}`;
+    document.getElementById('sumPacking').textContent = `₹${t.packing}`;
     document.getElementById('sumTotal').textContent = `₹${t.total}`;
   }
 }
@@ -304,7 +304,7 @@ function openCheckout() {
       <div style="margin-top:10px;padding-top:10px;border-top:1px dashed rgba(0,212,255,0.15);">
         <div style="display:flex;justify-content:space-between;padding:4px 0;color:rgba(255,255,255,0.5);"><span>Subtotal</span><span>₹${t.subtotal}</span></div>
         <div style="display:flex;justify-content:space-between;padding:4px 0;color:rgba(255,255,255,0.5);"><span>Delivery Charge</span><span>₹${t.delivery}</span></div>
-        <div style="display:flex;justify-content:space-between;padding:4px 0;color:rgba(255,255,255,0.5);"><span>GST (5%)</span><span>₹${t.gst}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:4px 0;color:rgba(255,255,255,0.5);"><span>Packing Charges</span><span>₹${t.packing}</span></div>
       </div>
       <div style="display:flex;justify-content:space-between;padding:10px 0 4px;margin-top:8px;border-top:2px solid rgba(0,212,255,0.2);font-size:1rem;font-weight:700;color:var(--neon-teal);">
         <span>Total Amount</span><span>₹${t.total}</span>
