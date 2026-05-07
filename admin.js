@@ -46,7 +46,7 @@ function initAuthSession() {
       const email = document.getElementById('loginEmail').value;
       const pass = document.getElementById('loginPassword').value;
 
-      if (email === 'admin@subramanya.com' && pass === 'password') {
+      if (email === 'admin@subramanya.com' && pass === 'Aquatics@2025') {
         localStorage.setItem('adminToken', 'true');
         showToast('success', 'Access granted! Welcome back Admin.');
         setTimeout(() => {
