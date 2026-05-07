@@ -130,51 +130,7 @@ if (contactForm) {
   });
 }
 
-// Sound Toggle
-const soundToggle = document.querySelector('.sound-toggle');
-let audioCtx, isPlaying = false;
-if (soundToggle) {
-  soundToggle.addEventListener('click', () => {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    isPlaying = !isPlaying;
-    soundToggle.textContent = isPlaying ? '🔊' : '🔇';
-    if (isPlaying) {
-      playOceanSound();
-    }
-  });
-}
 
-function playOceanSound() {
-  if (!audioCtx || !isPlaying) return;
-  const bufferSize = 2 * audioCtx.sampleRate;
-  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) {
-    data[i] = (Math.random() * 2 - 1) * 0.015;
-  }
-  const source = audioCtx.createBufferSource();
-  source.buffer = buffer;
-  const filter = audioCtx.createBiquadFilter();
-  filter.type = 'lowpass';
-  filter.frequency.value = 400;
-  const gain = audioCtx.createGain();
-  gain.gain.value = 0.3;
-  source.connect(filter);
-  filter.connect(gain);
-  gain.connect(audioCtx.destination);
-  source.loop = true;
-  source.start();
-  soundToggle._source = source;
-  soundToggle.addEventListener('click', function stopSound() {
-    if (!isPlaying && soundToggle._source) {
-      soundToggle._source.stop();
-      soundToggle._source = null;
-      soundToggle.removeEventListener('click', stopSound);
-    }
-  });
-}
 
 // Parallax Fish Silhouettes
 function createFishSilhouettes() {
