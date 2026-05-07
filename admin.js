@@ -1,4 +1,5 @@
 // Subramanya Aquatics Admin Portal State Logic
+const ADMIN_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbx7eW-GfbJhcqsRR-JTWgi19gymekudxYniN7PLmltybN02psrnkTlDPkjTSotz2CLX/exec';
 document.addEventListener('DOMContentLoaded', () => {
   initBubbleGenerator();
   initAuthSession();
@@ -303,6 +304,41 @@ window.changeOrderStatus = function(id, val) {
     initPortalState();
     showToast('success', `Order ${id} status updated to ${val.toUpperCase()}!`);
   }
+};
+
+// Sync real orders from Google Sheets
+window.syncOrdersFromSheets = function() {
+  showToast('info', 'Syncing orders from Google Sheets...');
+  fetch(ADMIN_SHEETS_URL)
+    .then(res => res.json())
+    .then(data => {
+      if (!Array.isArray(data) || data.length === 0) {
+        showToast('info', 'No orders found in Google Sheets yet.');
+        return;
+      }
+      // Map sheet columns to order objects
+      const sheetOrders = data.map((row, i) => ({
+        id: row['Order ID'] || ('SA-' + (9000 + i)),
+        customer: row['Customer Name'] || 'Unknown',
+        product: row['Items'] || '-',
+        amount: row['Total'] || '-',
+        status: (row['Status'] || 'pending').toLowerCase(),
+        date: row['Date'] || '-',
+        phone: row['Phone'] || '-',
+        address: row['Address'] || '-',
+        payment: row['Payment'] || '-'
+      }));
+      // Merge with existing, sheet orders take priority by ID
+      const existingIds = new Set(orders.map(o => o.id));
+      sheetOrders.forEach(so => {
+        if (!existingIds.has(so.id)) orders.unshift(so);
+      });
+      saveAllState();
+      renderOrders();
+      const count = sheetOrders.length;
+      showToast('success', `Synced ${count} order(s) from Google Sheets!`);
+    })
+    .catch(() => showToast('error', 'Failed to connect to Google Sheets. Check script permissions.'));
 };
 
 // Render Customers List Table

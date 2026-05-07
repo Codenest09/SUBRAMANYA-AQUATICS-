@@ -174,6 +174,9 @@ function initFlashSale() {
 }
 initFlashSale();
 
+// ========== GOOGLE SHEETS BACKEND ==========
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbx7eW-GfbJhcqsRR-JTWgi19gymekudxYniN7PLmltybN02psrnkTlDPkjTSotz2CLX/exec';
+
 // ========== CART SYSTEM ==========
 let cart = JSON.parse(localStorage.getItem('sa_cart') || '[]');
 
@@ -370,6 +373,24 @@ function placeOrder() {
 
   // Save phone
   localStorage.setItem('sa_user_phone', phone);
+
+  // Send order to Google Sheets
+  const itemsSummary = cart.map(i => `${i.name} x${i.qty}`).join(', ');
+  fetch(SHEETS_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      orderId,
+      date: new Date().toLocaleDateString('en-IN'),
+      name,
+      phone,
+      address,
+      items: itemsSummary,
+      total: '\u20b9' + t.total,
+      payment: selectedPayment
+    })
+  }).catch(() => {});
 
   // Clear cart
   cart = [];

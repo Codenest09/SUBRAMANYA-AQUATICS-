@@ -280,7 +280,10 @@
       <section class="app-section" id="sec-orders">
         <div class="card-header">
           <h3>Active Customer Orders</h3>
-          <button class="btn-secondary" onclick="showToast('success', 'Invoices compiled!')">Export PDF Invoice</button>
+          <div style="display:flex;gap:10px;">
+            <button class="btn-primary" style="width:auto;padding:10px 18px;" onclick="syncOrdersFromSheets()">🔄 Sync from Google Sheets</button>
+            <button class="btn-secondary" onclick="showToast('success', 'Invoices compiled!')">Export PDF Invoice</button>
+          </div>
         </div>
         <div class="data-card">
           <div class="table-responsive">
