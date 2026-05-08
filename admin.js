@@ -144,7 +144,17 @@ function initPortalState() {
     { id: 10, name: 'Guppy Babies', category: 'Guppys', price: 'Contact Us', image: 'fishes/Guppy babys.png', tag: 'Babies' },
     { id: 11, name: 'Guppy Semi Adults', category: 'Guppys', price: 'Contact Us', image: 'fishes/Guppys semi adults.webp', tag: 'Semi Adult' },
     { id: 12, name: 'Mollys', category: 'Mollies', price: '₹49', image: 'fishes/mollies.webp', tag: 'Popular' },
+    { id: 22, name: 'Moon Tail Mollies', category: 'Mollies', price: '₹99', image: 'fishes/moon tail mollies.jpg', tag: 'Moon Tail' },
+    { id: 23, name: 'Balloon Mollies', category: 'Mollies', price: '₹79', image: 'fishes/ballon mollies.jpeg', tag: 'Balloon' },
+    { id: 24, name: 'Molly Babies', category: 'Mollies', price: '₹5 / pc', image: 'fishes/Molly babyes.jpeg', tag: 'Babies' },
     { id: 13, name: 'Gourami', category: 'Oxy-less Fishes', price: '₹79', image: 'fishes/Gourami.jpg', tag: 'Healthy' },
+    { id: 25, name: 'Platys', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/Platy fish.webp', tag: 'Colorful' },
+    { id: 26, name: 'Sword Tail Platys', category: 'Oxy-less Fishes', price: '₹99', image: 'fishes/Sward tail platy.jpeg', tag: 'Sword Tail' },
+    { id: 27, name: 'Zebra', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/Zebra fish.webp', tag: 'Striped' },
+    { id: 28, name: 'Shark (Small)', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/Shark small.webp', tag: 'Small' },
+    { id: 29, name: 'Shark (Medium)', category: 'Oxy-less Fishes', price: '₹99', image: 'fishes/Shark medium.avif', tag: 'Medium' },
+    { id: 30, name: 'Shark (Large)', category: 'Oxy-less Fishes', price: 'Contact Us', image: 'fishes/Shark large.jpeg', tag: 'Large' },
+    { id: 31, name: 'Veil Tail Zebra', category: 'Oxy-less Fishes', price: '₹150', image: 'fishes/Vail tail zebra green.jpg', tag: 'Veil Tail' },
     { id: 14, name: 'OHM (Males)', category: "Betta's", price: '₹149', image: 'fishes/Beta ohm male.webp', tag: 'Exotic' },
     { id: 15, name: 'Albino Oscar', category: 'Wild Oscars', price: '₹499', image: 'fishes/Albino oscar fish.webp', tag: 'Giant' },
     { id: 16, name: 'SRD', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/Srd flowerhorn.jpg', tag: 'Show Grade' },
@@ -155,11 +165,14 @@ function initPortalState() {
     { id: 21, name: 'Black Moor Gold Fish', category: 'Gold Fish', price: '₹99', image: 'fishes/Black more gold fish.jpg', tag: 'Dark Accent' }
   ];
 
-  // Guppy variety names that must always exist (to inject into existing localStorage data)
+  // Fish variety names that must always exist (to inject into existing localStorage data)
   const requiredGuppyNames = [
     'Premium Mixed Guppys', 'Mixed Guppys', 'HB Blue Guppys', 'Koi Guppys',
     'Platinum Guppys', 'Platinum Dumbo Ear Guppys', 'Dragon Tail Guppys',
-    'Guppy Babies', 'Guppy Semi Adults'
+    'Guppy Babies', 'Guppy Semi Adults',
+    'Moon Tail Mollies', 'Balloon Mollies', 'Molly Babies',
+    'Platys', 'Sword Tail Platys', 'Zebra',
+    'Shark (Small)', 'Shark (Medium)', 'Shark (Large)', 'Veil Tail Zebra'
   ];
 
   const defaultCategories = [
