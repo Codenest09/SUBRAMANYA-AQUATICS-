@@ -7,6 +7,18 @@ const destDir = path.join(__dirname, 'images');
 
 if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
 
+// Copy QR scan image if exists in parent directory
+const parentQr = path.join(__dirname, '..', '..', 'QR scan.jpeg');
+if (fs.existsSync(parentQr)) {
+  try {
+    fs.copyFileSync(parentQr, path.join(__dirname, 'QR scan.jpeg'));
+    fs.copyFileSync(parentQr, path.join(destDir, 'QR scan.jpeg'));
+    console.log('Copied QR scan.jpeg to root and images folder');
+  } catch (e) {
+    console.error(`Failed to copy QR scan.jpeg: ${e.message}`);
+  }
+}
+
 const files = {
   'arowana_fish_1778055591173.png': 'arowana.png',
   'flowerhorn_fish_1778055607274.png': 'flowerhorn.png',

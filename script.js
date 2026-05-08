@@ -359,14 +359,124 @@ function placeOrder() {
   const orderId = 'SA-' + Math.floor(10000 + Math.random() * 90000);
   const t = getCartTotals();
 
+  // If it's a QR-applicable payment method (UPI, GPay, PhonePe, Paytm, Net Banking)
+  if (['upi', 'gpay', 'phonepe', 'paytm', 'netbanking'].includes(selectedPayment)) {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    const upiId = '7995549922@ybl'; // Default UPI ID for Subramanya Aquatics
+    const payeeName = encodeURIComponent('Subramanya Aquatics');
+    const amount = t.total;
+    const note = encodeURIComponent(`Order ${orderId}`);
+    const baseUpiUrl = `upi://pay?pa=${upiId}&pn=${payeeName}&am=${amount}&cu=INR&tn=${note}`;
+
+    const upiPaymentModal = document.getElementById('upiPaymentModal');
+    const upiModalAmount = document.getElementById('upiModalAmount');
+    const upiQrCode = document.getElementById('upiQrCode');
+
+    if (upiPaymentModal && upiModalAmount && upiQrCode) {
+      upiModalAmount.textContent = `₹${t.total}`;
+      
+      // Set QR code src to static QR scan image with robust fallbacks
+      upiQrCode.src = 'QR scan.jpeg';
+      upiQrCode.onerror = function() {
+        if (upiQrCode.src.includes('subramanya-aquatics/QR%20scan.jpeg') || (upiQrCode.src.endsWith('QR%20scan.jpeg') && !upiQrCode.src.includes('images/'))) {
+          upiQrCode.src = 'images/QR scan.jpeg';
+        } else if (upiQrCode.src.includes('images/QR%20scan.jpeg')) {
+          upiQrCode.src = '../QR scan.jpeg';
+        }
+      };
+
+      // Set custom title based on payment method
+      const headerTitle = upiPaymentModal.querySelector('.checkout-header h3');
+      if (headerTitle) {
+        if (selectedPayment === 'gpay') headerTitle.innerHTML = '🅖 Pay with Google Pay';
+        else if (selectedPayment === 'phonepe') headerTitle.innerHTML = '📲 Pay with PhonePe';
+        else if (selectedPayment === 'paytm') headerTitle.innerHTML = '💰 Pay with Paytm';
+        else if (selectedPayment === 'netbanking') headerTitle.innerHTML = '🏦 Pay with Net Banking / QR';
+        else headerTitle.innerHTML = '📱 Pay Securely via UPI';
+      }
+
+      // If mobile, add an "Open Payment App" deep link button for convenience (excluding netbanking)
+      let mobilePayBtn = document.getElementById('mobilePayBtn');
+      if (isMobile && selectedPayment !== 'netbanking') {
+        let deepLink = baseUpiUrl;
+        let appName = 'UPI App';
+        if (selectedPayment === 'gpay') {
+          deepLink = `gpay://upi/pay?pa=${upiId}&pn=${payeeName}&am=${amount}&cu=INR&tn=${note}`;
+          appName = 'Google Pay';
+        } else if (selectedPayment === 'phonepe') {
+          deepLink = `phonepe://pay?pa=${upiId}&pn=${payeeName}&am=${amount}&cu=INR&tn=${note}`;
+          appName = 'PhonePe';
+        } else if (selectedPayment === 'paytm') {
+          deepLink = `paytmmp://pay?pa=${upiId}&pn=${payeeName}&am=${amount}&cu=INR&tn=${note}`;
+          appName = 'Paytm';
+        }
+
+        if (!mobilePayBtn) {
+          mobilePayBtn = document.createElement('button');
+          mobilePayBtn.id = 'mobilePayBtn';
+          mobilePayBtn.className = 'btn-place-order neon-pulse';
+          mobilePayBtn.style.width = '100%';
+          mobilePayBtn.style.padding = '12px';
+          mobilePayBtn.style.borderRadius = '12px';
+          mobilePayBtn.style.background = 'linear-gradient(135deg, #00d4ff, #00ffc8)';
+          mobilePayBtn.style.color = '#020c1b';
+          mobilePayBtn.style.fontWeight = '700';
+          mobilePayBtn.style.border = 'none';
+          mobilePayBtn.style.cursor = 'pointer';
+          mobilePayBtn.style.marginBottom = '12px';
+          mobilePayBtn.style.display = 'block';
+          
+          const confirmBtn = upiPaymentModal.querySelector('button[onclick="confirmUpiPayment()"]');
+          if (confirmBtn) {
+            confirmBtn.parentNode.insertBefore(mobilePayBtn, confirmBtn);
+          }
+        }
+        mobilePayBtn.innerHTML = `⚡ Open ${appName}`;
+        mobilePayBtn.style.display = 'block';
+        mobilePayBtn.onclick = function() {
+          showClientToast(`Opening ${appName}...`);
+          window.location.href = deepLink;
+        };
+      } else if (mobilePayBtn) {
+        mobilePayBtn.style.display = 'none';
+      }
+
+      upiPaymentModal.style.display = 'flex';
+      
+      // Save pending order details
+      window.pendingOrderData = { orderId, name, address, phone, t, selectedPayment, cartItems: [...cart] };
+    } else {
+      // Fallback if elements not found
+      submitOrderData(orderId, name, address, phone, t, selectedPayment, [...cart]);
+      cart = [];
+      saveCart();
+      closeCheckout();
+      document.getElementById('successOrderId').textContent = `Order #${orderId}`;
+      document.getElementById('orderSuccessOverlay')?.classList.add('active');
+    }
+  } else {
+    // Card or other direct payment methods
+    submitOrderData(orderId, name, address, phone, t, selectedPayment, [...cart]);
+    cart = [];
+    saveCart();
+    closeCheckout();
+    document.getElementById('successOrderId').textContent = `Order #${orderId}`;
+    document.getElementById('orderSuccessOverlay')?.classList.add('active');
+  }
+}
+
+// Helper function to submit order details
+function submitOrderData(orderId, name, address, phone, t, paymentMethod, cartItems) {
+  const itemsToSave = cartItems || [...cart];
   // Save to order history
   const orders = JSON.parse(localStorage.getItem('sa_orders') || '[]');
   orders.unshift({
     id: orderId,
     date: new Date().toLocaleDateString('en-IN'),
-    items: [...cart],
+    items: itemsToSave,
     total: t.total,
-    payment: selectedPayment,
+    payment: paymentMethod,
     status: 'Confirmed'
   });
   localStorage.setItem('sa_orders', JSON.stringify(orders));
@@ -375,7 +485,7 @@ function placeOrder() {
   localStorage.setItem('sa_user_phone', phone);
 
   // Send order to Google Sheets
-  const itemsSummary = cart.map(i => `${i.name} x${i.qty}`).join(', ');
+  const itemsSummary = itemsToSave.map(i => `${i.name} x${i.qty}`).join(', ');
   fetch(SHEETS_URL, {
     method: 'POST',
     mode: 'no-cors',
@@ -388,18 +498,39 @@ function placeOrder() {
       address,
       items: itemsSummary,
       total: '\u20b9' + t.total,
-      payment: selectedPayment
+      payment: paymentMethod
     })
   }).catch(() => {});
+}
 
-  // Clear cart
-  cart = [];
-  saveCart();
+// UPI Modal actions for desktop
+function closeUpiModal() {
+  const upiPaymentModal = document.getElementById('upiPaymentModal');
+  if (upiPaymentModal) upiPaymentModal.style.display = 'none';
+  showClientToast('Payment cancelled.');
+}
 
-  // Show success
-  closeCheckout();
-  document.getElementById('successOrderId').textContent = `Order #${orderId}`;
-  document.getElementById('orderSuccessOverlay')?.classList.add('active');
+function confirmUpiPayment() {
+  if (window.pendingOrderData) {
+    const { orderId, name, address, phone, t, selectedPayment, cartItems } = window.pendingOrderData;
+    submitOrderData(orderId, name, address, phone, t, selectedPayment, cartItems);
+    
+    // Clear cart
+    cart = [];
+    saveCart();
+
+    // Hide modal and close checkout
+    const upiPaymentModal = document.getElementById('upiPaymentModal');
+    if (upiPaymentModal) upiPaymentModal.style.display = 'none';
+    closeCheckout();
+
+    // Show success
+    document.getElementById('successOrderId').textContent = `Order #${orderId}`;
+    document.getElementById('orderSuccessOverlay')?.classList.add('active');
+    showClientToast('Payment confirmed & order placed!');
+    
+    window.pendingOrderData = null;
+  }
 }
 
 function continueShopping() {

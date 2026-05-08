@@ -907,6 +907,31 @@
     </div>
   </div>
 
+  <!-- UPI Payment Modal (Desktop / Scan & Pay) -->
+  <div class="checkout-modal-overlay" id="upiPaymentModal" style="display: none; justify-content: center; align-items: center; z-index: 1400; position: fixed; inset: 0; background: rgba(5, 12, 25, 0.95); backdrop-filter: blur(10px);">
+    <div class="checkout-card" style="max-width: 400px; width: 90%; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 24px; text-align: center; box-shadow: 0 0 40px rgba(0, 212, 255, 0.25); position: relative;">
+      <div class="checkout-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(0, 212, 255, 0.1); padding-bottom: 10px;">
+        <h3 style="font-family: 'Orbitron', sans-serif; color: var(--aqua-cyan); margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">📱 Pay Securely via UPI</h3>
+        <button class="close-checkout" onclick="closeUpiModal()" style="background: none; border: none; color: rgba(255, 255, 255, 0.5); font-size: 1.5rem; cursor: pointer; padding: 0; line-height: 1;">&times;</button>
+      </div>
+      <div style="margin-bottom: 15px;">
+        <p style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.6); margin-bottom: 4px;">Amount to Pay</p>
+        <h2 id="upiModalAmount" style="font-family: 'Orbitron', sans-serif; color: var(--neon-teal); font-size: 1.8rem; font-weight: 700; text-shadow: 0 0 15px rgba(0, 255, 200, 0.4); margin: 0;">₹0</h2>
+      </div>
+      <div style="background: white; padding: 15px; border-radius: 12px; display: inline-block; box-shadow: 0 0 20px rgba(0, 212, 255, 0.15); margin-bottom: 15px;">
+        <img id="upiQrCode" src="" alt="UPI QR Code" style="width: 200px; height: 200px; display: block;">
+      </div>
+      <p style="font-size: 0.82rem; color: rgba(255,255,255,0.7); margin-bottom: 15px;">Scan this QR code using <strong>GPay, PhonePe, Paytm, or BHIM</strong> to pay</p>
+      <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; font-size: 1.2rem;">
+        <span title="Google Pay" style="text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);">🅖</span>
+        <span title="PhonePe" style="text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);">📲</span>
+        <span title="Paytm" style="text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);">💰</span>
+        <span title="BHIM" style="text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);">📱</span>
+      </div>
+      <button class="btn-place-order neon-pulse" onclick="confirmUpiPayment()" style="width: 100%; padding: 14px; border-radius: 12px; background: linear-gradient(135deg, var(--aqua-cyan), var(--neon-teal)); color: var(--deep-ocean); font-weight: 700; border: none; cursor: pointer; transition: 0.3s; box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);">Confirm Payment ✓</button>
+    </div>
+  </div>
+
   <!-- Order Success -->
   <div class="order-success-overlay" id="orderSuccessOverlay">
     <div class="success-card">
