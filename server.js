@@ -2,10 +2,29 @@ const fs = require('fs');
 const path = require('path');
 
 // First copy images
+const generatedQr = 'C:\\Users\\siris\\.gemini\\antigravity\\brain\\f25292fb-0708-4f33-8f93-49f3ffb70f38\\qr_scan_1778252816977.png';
+if (fs.existsSync(generatedQr)) {
+  try {
+    fs.copyFileSync(generatedQr, path.join(__dirname, 'QR scan.jpeg'));
+    console.log('Successfully copied generated premium QR code to root workspace!');
+  } catch (e) {
+    console.error('Failed to copy generated QR image:', e.message);
+  }
+}
+
 const srcDir = 'C:\\Users\\siris\\.gemini\\antigravity\\brain\\0fab624b-c31e-4b50-bcf7-1b6d5370541c';
 const destDir = path.join(__dirname, 'images');
 
 if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+
+if (fs.existsSync(generatedQr)) {
+  try {
+    fs.copyFileSync(generatedQr, path.join(destDir, 'QR scan.jpeg'));
+    console.log('Successfully copied generated premium QR code to images folder!');
+  } catch (e) {
+    console.error('Failed to copy generated QR image to images folder:', e.message);
+  }
+}
 
 // Copy QR scan image if exists in parent directory
 const parentQr = path.join(__dirname, '..', 'QR scan.jpeg');

@@ -500,6 +500,14 @@ function placeOrder() {
   // Open the redesigned premium payment screen
   const upiPaymentModal = document.getElementById('upiPaymentModal');
   if (upiPaymentModal) {
+    // Set QR code image fallback if not loaded locally
+    const upiQrCode = document.getElementById('upiQrCode');
+    if (upiQrCode) {
+      upiQrCode.onerror = function() {
+        upiQrCode.src = 'C:/Users/siris/.gemini/antigravity/brain/f25292fb-0708-4f33-8f93-49f3ffb70f38/qr_scan_1778252816977.png';
+        upiQrCode.onerror = null; // Prevent infinite loop
+      };
+    }
     // Prefill Name and Phone in the payment form
     const payNameInput = document.getElementById('payName');
     const payPhoneInput = document.getElementById('payPhone');
