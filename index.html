@@ -894,49 +894,120 @@
       <div class="checkout-section">
         <h3>💳 Payment Method</h3>
         <div class="payment-grid" id="paymentGrid">
-          <div class="payment-option selected" data-method="upi" onclick="selectPayment(this)"><span class="pay-icon">📱</span><span class="pay-label">UPI</span></div>
-          <div class="payment-option" data-method="gpay" onclick="selectPayment(this)"><span class="pay-icon">🅖</span><span class="pay-label">Google Pay</span></div>
-          <div class="payment-option" data-method="phonepe" onclick="selectPayment(this)"><span class="pay-icon">📲</span><span class="pay-label">PhonePe</span></div>
-          <div class="payment-option" data-method="paytm" onclick="selectPayment(this)"><span class="pay-icon">💰</span><span class="pay-label">Paytm</span></div>
-          <div class="payment-option" data-method="card" onclick="selectPayment(this)"><span class="pay-icon">💳</span><span class="pay-label">Card</span></div>
-          <div class="payment-option" data-method="netbanking" onclick="selectPayment(this)"><span class="pay-icon">🏦</span><span class="pay-label">Net Banking</span></div>
+          <div class="payment-option selected" data-method="qr" onclick="selectPayment(this)"><span class="pay-icon">🔳</span><span class="pay-label">QR Code Payment</span></div>
+          <div class="payment-option" data-method="upi" onclick="selectPayment(this)"><span class="pay-icon">⚡</span><span class="pay-label">UPI Payment</span></div>
         </div>
         <div class="secure-badge">🔒 100% Secure Payment</div>
       </div>
-      <button class="btn-place-order" id="placeOrderBtn" onclick="placeOrder()">Place Order</button>
+      <button class="btn-place-order" id="placeOrderBtn" onclick="placeOrder()">Proceed to Payment →</button>
     </div>
   </div>
 
-  <!-- UPI Payment Modal (Desktop / Scan & Pay) -->
-  <div class="checkout-modal-overlay" id="upiPaymentModal" style="display: none; justify-content: center; align-items: center; z-index: 1400; position: fixed; inset: 0; background: rgba(5, 12, 25, 0.95); backdrop-filter: blur(10px);">
-    <div class="checkout-card" style="max-width: 400px; width: 90%; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 24px; text-align: center; box-shadow: 0 0 40px rgba(0, 212, 255, 0.25); position: relative;">
-      <div class="checkout-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(0, 212, 255, 0.1); padding-bottom: 10px;">
-        <h3 style="font-family: 'Orbitron', sans-serif; color: var(--aqua-cyan); margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">📱 Pay Securely via UPI</h3>
-        <button class="close-checkout" onclick="closeUpiModal()" style="background: none; border: none; color: rgba(255, 255, 255, 0.5); font-size: 1.5rem; cursor: pointer; padding: 0; line-height: 1;">&times;</button>
+  <!-- Redesigned Premium Payment & UTR Verification Screen -->
+  <div class="checkout-modal-overlay" id="upiPaymentModal" style="display: none; justify-content: center; align-items: center; z-index: 1400; position: fixed; inset: 0; background: rgba(5, 12, 25, 0.96); backdrop-filter: blur(12px);">
+    <div class="payment-modal-card">
+      <!-- Animated Bubbles Background -->
+      <div class="payment-bubbles-container" id="paymentBubblesContainer"></div>
+      
+      <!-- Modal Header -->
+      <div class="checkout-header" style="display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1px solid rgba(0, 212, 255, 0.15); margin: 0; z-index: 5; position: relative;">
+        <h3 style="font-family: 'Orbitron', sans-serif; color: var(--aqua-cyan); margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">💳 Secure QR Payment & Verification</h3>
+        <button class="close-checkout" onclick="closeUpiModal()" style="background: none; border: none; color: rgba(255, 255, 255, 0.5); font-size: 1.8rem; cursor: pointer; padding: 0; line-height: 1; transition: 0.2s;">&times;</button>
       </div>
-      <div style="margin-bottom: 15px;">
-        <p style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.6); margin-bottom: 4px;">Amount to Pay</p>
-        <h2 id="upiModalAmount" style="font-family: 'Orbitron', sans-serif; color: var(--neon-teal); font-size: 1.8rem; font-weight: 700; text-shadow: 0 0 15px rgba(0, 255, 200, 0.4); margin: 0;">₹0</h2>
+
+      <!-- Main Dual Column Layout -->
+      <div class="payment-grid-layout">
+        
+        <!-- Left Column: Order Summary -->
+        <div class="payment-summary-left">
+          <h4 style="font-family: 'Orbitron', sans-serif; color: var(--aqua-cyan); border-bottom: 1px solid rgba(0,212,255,0.1); padding-bottom: 8px; margin: 0; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">📋 Purchase Details</h4>
+          <div id="paymentSummaryItems" style="flex: 1; display: flex; flex-direction: column; gap: 10px; margin-top: 5px;">
+            <!-- Items populated dynamically by script -->
+          </div>
+          <div style="border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 10px; display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; color: rgba(255,255,255,0.65);">
+            <div style="display: flex; justify-content: space-between;"><span>Items Subtotal</span><span id="paySubtotal">₹0</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>Delivery Fee</span><span id="payDelivery">₹49</span></div>
+            <div style="display: flex; justify-content: space-between;"><span>Packing Charges</span><span id="payPacking">₹10</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: bold; color: white; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; margin-top: 4px;">
+              <span>Total Amount</span>
+              <span class="glowing-text" id="payTotal">₹0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: QR Payment & UTR Submission Form -->
+        <div class="payment-details-right">
+          
+          <!-- Countdown Timer Indicator -->
+          <div class="payment-timer-glow" id="paymentTimer">
+            <span>⏳</span>
+            <span id="timerMinutes">05</span>:<span id="timerSeconds">00</span>
+          </div>
+
+          <!-- QR Code Image with Sliding Scanning Line -->
+          <div class="qr-container">
+            <div class="qr-scan-wrapper">
+              <div class="qr-scan-line"></div>
+              <img id="upiQrCode" src="QR scan.jpeg" alt="UPI QR Code" style="width: 100%; height: 100%; display: block; object-fit: contain;">
+            </div>
+          </div>
+
+          <!-- Easy Copy UPI ID Field -->
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 2px;">
+            <span style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">UPI ID: <strong>7995549922@ybl</strong></span>
+            <button class="btn-copy-id" id="copyUpiIdBtn" onclick="copyUpiId()">📋 Copy</button>
+          </div>
+
+          <!-- Instruction Text -->
+          <p style="font-size: 0.72rem; color: rgba(224,247,255,0.5); margin: 0; line-height: 1.35;">Scan QR or pay via UPI, then submit your payment verification details below to place order.</p>
+
+          <!-- Verification Inputs Form -->
+          <div style="width: 100%; display: flex; flex-direction: column; gap: 8px; text-align: left; margin-top: 5px;">
+            <div>
+              <label style="font-size: 0.72rem; color: var(--aqua-cyan); margin-bottom: 2px; display: block; font-weight: 500;">Customer Name *</label>
+              <input class="checkout-input" id="payName" placeholder="Full Name" style="margin: 0; padding: 8px 12px; font-size: 0.85rem;" autocomplete="name">
+            </div>
+            <div>
+              <label style="font-size: 0.72rem; color: var(--aqua-cyan); margin-bottom: 2px; display: block; font-weight: 500;">Phone Number *</label>
+              <input class="checkout-input" id="payPhone" type="tel" placeholder="10-Digit Mobile Number" style="margin: 0; padding: 8px 12px; font-size: 0.85rem;" autocomplete="tel" maxlength="10">
+            </div>
+            <div>
+              <label style="font-size: 0.72rem; color: var(--aqua-cyan); margin-bottom: 2px; display: block; font-weight: 500;">UTR / Transaction ID *</label>
+              <input class="checkout-input" id="payUtr" placeholder="Enter 12-Digit UTR/Transaction ID" style="margin: 0; padding: 8px 12px; font-size: 0.85rem;" maxlength="16">
+            </div>
+
+            <!-- Optional Drag & Drop Screenshot upload -->
+            <div class="screenshot-upload-box" id="dragDropBox" onclick="triggerScreenshotInput()">
+              <span style="font-size: 1.1rem; margin: 0;">📸</span>
+              <span id="uploadLabel" style="font-size: 0.72rem; color: rgba(255,255,255,0.65); line-height: 1.2;">Upload Payment Screenshot (Optional)</span>
+              <input type="file" id="screenshotFileInput" accept="image/*" style="display: none;" onchange="handleScreenshotSelect(this)">
+              <div id="screenshotPreviewContainer" style="display: none; width: 100%;">
+                <img id="screenshotPreview" class="screenshot-preview" src="">
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Action Button -->
+          <button class="btn-place-order" id="submitUpiPaymentBtn" onclick="confirmUpiPayment()" disabled style="width: 100%; padding: 12px; font-size: 0.9rem; margin-top: 8px;">
+            <span id="submitSpinner" class="submit-spinner" style="display: none;"></span>
+            <span id="submitBtnText">Place Order & Submit Verification ✓</span>
+          </button>
+        </div>
       </div>
-      <div style="background: white; padding: 15px; border-radius: 12px; display: inline-block; box-shadow: 0 0 20px rgba(0, 212, 255, 0.15); margin-bottom: 15px;">
-        <img id="upiQrCode" src="" alt="UPI QR Code" style="width: 200px; height: 200px; display: block;">
-      </div>
-      <p style="font-size: 0.82rem; color: rgba(255,255,255,0.7); margin-bottom: 15px;">Scan this QR code using <strong>GPay, PhonePe, Paytm, or BHIM</strong> to pay</p>
-      <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; font-size: 1.2rem;">
-        <span title="Google Pay" style="text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);">🅖</span>
-        <span title="PhonePe" style="text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);">📲</span>
-        <span title="Paytm" style="text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);">💰</span>
-        <span title="BHIM" style="text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);">📱</span>
-      </div>
-      <button class="btn-place-order neon-pulse" onclick="confirmUpiPayment()" style="width: 100%; padding: 14px; border-radius: 12px; background: linear-gradient(135deg, var(--aqua-cyan), var(--neon-teal)); color: var(--deep-ocean); font-weight: 700; border: none; cursor: pointer; transition: 0.3s; box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);">Confirm Payment ✓</button>
     </div>
   </div>
 
   <!-- Order Success -->
   <div class="order-success-overlay" id="orderSuccessOverlay">
     <div class="success-card">
-      <div class="success-check">✓</div>
-      <h2>Order Placed!</h2>
+      <div class="success-check-svg-wrapper">
+        <svg class="success-tick-svg" viewBox="0 0 52 52">
+          <circle cx="26" cy="26" r="25" fill="none" stroke="rgba(0, 255, 200, 0.2)" stroke-width="3"/>
+          <path fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+        </svg>
+      </div>
+      <h2>Payment Submitted Successfully!</h2>
+      <p style="font-size: 0.82rem; color: rgba(224, 247, 255, 0.7); margin-bottom: 15px; line-height: 1.4;">Thank you for your order. Our Admin team will verify your UTR/Transaction ID shortly and confirm your shipment.</p>
       <p class="order-id" id="successOrderId">Order #SA-00000</p>
       <p class="delivery-est">📦 Estimated delivery: 3-5 business days</p>
       <button class="btn-continue-shop" onclick="continueShopping()">Continue Shopping</button>

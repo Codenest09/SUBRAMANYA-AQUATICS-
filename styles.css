@@ -1579,3 +1579,281 @@ body { padding-bottom: 72px; }
   .live-purchase-popup.active { bottom: 72px; }
 }
 
+/* === PREMIUM QR CODE CHECKOUT & UTR VERIFICATION STYLES === */
+.payment-modal-card {
+  max-width: 850px !important;
+  width: 95% !important;
+  background: rgba(4, 12, 28, 0.96) !important;
+  backdrop-filter: blur(25px) !important;
+  border: 1px solid rgba(0, 212, 255, 0.25) !important;
+  box-shadow: 0 0 50px rgba(0, 212, 255, 0.35) !important;
+  border-radius: 24px !important;
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.payment-grid-layout {
+  display: grid;
+  grid-template-columns: 1.10fr 1fr;
+  gap: 24px;
+  padding: 24px;
+  z-index: 2;
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .payment-grid-layout {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 20px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+}
+
+.payment-summary-left {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(0, 212, 255, 0.1);
+  border-radius: 18px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.payment-details-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 18px;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(0, 212, 255, 0.05);
+  border-radius: 18px;
+  padding: 20px;
+}
+
+/* QR Code Container with Glowing Scan Sweep */
+.qr-container {
+  position: relative;
+  background: white;
+  padding: 12px;
+  border-radius: 16px;
+  display: inline-block;
+  box-shadow: 0 0 25px rgba(0, 212, 255, 0.25);
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+.qr-scan-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  display: block;
+  width: 180px;
+  height: 180px;
+}
+
+.qr-scan-line {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--neon-teal);
+  box-shadow: 0 0 10px var(--neon-teal), 0 0 20px var(--aqua-cyan);
+  animation: qrScanSweep 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes qrScanSweep {
+  0% { top: 0%; }
+  50% { top: 100%; }
+  100% { top: 0%; }
+}
+
+/* Copy Button Styling */
+.btn-copy-id {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: var(--aqua-cyan);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+  font-family: 'Poppins', sans-serif;
+}
+.btn-copy-id:hover {
+  background: rgba(0, 212, 255, 0.2);
+  border-color: var(--aqua-cyan);
+}
+
+/* Countdown Timer */
+.payment-timer-glow {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1rem;
+  color: var(--coral-orange);
+  border: 1px solid rgba(255, 107, 53, 0.3);
+  background: rgba(255, 107, 53, 0.08);
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: bold;
+  animation: pulseTimer 1s ease-in-out infinite alternate;
+}
+@keyframes pulseTimer {
+  from { box-shadow: 0 0 5px rgba(255, 107, 53, 0.1); }
+  to { box-shadow: 0 0 15px rgba(255, 107, 53, 0.4); }
+}
+
+/* Floating Bubbles inside checkout overlay */
+.payment-bubbles-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+  border-radius: 24px;
+}
+
+.payment-bubble {
+  position: absolute;
+  bottom: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(0, 212, 255, 0.12), rgba(0, 255, 200, 0.04));
+  border: 1px solid rgba(0, 212, 255, 0.08);
+  animation: payBubbleRise linear infinite;
+}
+
+@keyframes payBubbleRise {
+  0% { transform: translateY(0) scale(1); opacity: 0.5; }
+  100% { transform: translateY(-500px) scale(0.8); opacity: 0; }
+}
+
+/* Drag-and-drop Screenshot proof uploader */
+.screenshot-upload-box {
+  border: 1.5px dashed rgba(0, 212, 255, 0.3);
+  background: rgba(0, 212, 255, 0.02);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.3s;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.screenshot-upload-box:hover {
+  border-color: var(--neon-teal);
+  background: rgba(0, 255, 200, 0.04);
+  box-shadow: 0 0 15px rgba(0, 255, 200, 0.15);
+}
+.screenshot-preview {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-top: 4px;
+  border: 1.5px solid var(--aqua-cyan);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
+}
+
+/* Success Confirmation Screen Styles */
+.success-check-svg-wrapper {
+  margin: 0 auto 20px;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 255, 200, 0.1);
+  border-radius: 50%;
+  box-shadow: 0 0 30px rgba(0, 255, 200, 0.25);
+}
+
+.success-tick-svg {
+  width: 50px;
+  height: 50px;
+  stroke: var(--neon-teal);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: drawCheck 0.8s ease-out forwards;
+}
+
+@keyframes drawCheck {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Glowing Neon Badges for Admin statuses */
+.badge-pending-verification {
+  background: rgba(255, 167, 38, 0.12) !important;
+  color: #ffa726 !important;
+  border: 1px solid rgba(255, 167, 38, 0.3) !important;
+  box-shadow: 0 0 10px rgba(255, 167, 38, 0.15);
+}
+.badge-payment-verified {
+  background: rgba(0, 212, 255, 0.12) !important;
+  color: var(--aqua-cyan) !important;
+  border: 1px solid rgba(0, 212, 255, 0.3) !important;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.15);
+}
+.badge-rejected {
+  background: rgba(239, 83, 80, 0.12) !important;
+  color: #ef5350 !important;
+  border: 1px solid rgba(239, 83, 80, 0.3) !important;
+  box-shadow: 0 0 10px rgba(239, 83, 80, 0.15);
+}
+.badge-order-confirmed {
+  background: rgba(0, 255, 200, 0.12) !important;
+  color: var(--neon-teal) !important;
+  border: 1px solid rgba(0, 255, 200, 0.3) !important;
+  box-shadow: 0 0 10px rgba(0, 255, 200, 0.15);
+}
+.badge-shipped {
+  background: rgba(186, 104, 200, 0.12) !important;
+  color: #ba68c8 !important;
+  border: 1px solid rgba(186, 104, 200, 0.3) !important;
+  box-shadow: 0 0 10px rgba(186, 104, 200, 0.15);
+}
+.badge-delivered {
+  background: rgba(129, 199, 132, 0.12) !important;
+  color: #81c784 !important;
+  border: 1px solid rgba(129, 199, 132, 0.3) !important;
+  box-shadow: 0 0 10px rgba(129, 199, 132, 0.15);
+}
+
+/* Spinner logic */
+.submit-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(2, 12, 27, 0.3);
+  border-top-color: var(--deep-ocean);
+  border-radius: 50%;
+  animation: spinSubmit 0.8s linear infinite;
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+@keyframes spinSubmit {
+  to { transform: rotate(360deg); }
+}
+

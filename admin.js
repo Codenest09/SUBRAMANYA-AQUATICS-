@@ -565,6 +565,28 @@ window.deleteItem = function(id) {
   }
 };
 
+// Helper to return badge class for different transaction and fulfillment statuses
+function getStatusBadgeClass(status) {
+  const s = (status || '').toLowerCase().trim();
+  if (s === 'pending' || s === 'pending verification') return 'badge-pending-verification';
+  if (s === 'payment verified') return 'badge-payment-verified';
+  if (s === 'rejected') return 'badge-rejected';
+  if (s === 'order confirmed' || s === 'confirmed') return 'badge-order-confirmed';
+  if (s === 'shipped') return 'badge-shipped';
+  if (s === 'delivered') return 'badge-delivered';
+  return 'badge-pending';
+}
+
+// Window level helper to open the payment screenshot modal
+window.openScreenshotModal = function(base64Data) {
+  const modal = document.getElementById('screenshotModal');
+  const img = document.getElementById('screenshotViewerImg');
+  if (modal && img) {
+    img.src = base64Data;
+    modal.classList.add('active');
+  }
+};
+
 // Render Orders Table
 function renderOrders() {
   const tbody = document.getElementById('ordersTableBody');
@@ -572,22 +594,41 @@ function renderOrders() {
   tbody.innerHTML = '';
   orders.forEach(o => {
     const tr = document.createElement('tr');
+    
+    // Support either o.product or o.items array
+    const itemsStr = Array.isArray(o.items) ? o.items.map(i => `${i.name} x${i.qty}`).join(', ') : (o.product || '-');
+    const totalStr = o.amount || (o.total ? `₹${o.total}` : '-');
+    const utrStr = o.utr || '-';
+    
+    const screenshotHtml = o.screenshot 
+      ? `<img src="${o.screenshot}" alt="Proof" style="width: 44px; height: 44px; border-radius: 6px; border: 1.5px solid var(--color-primary); object-fit: cover; cursor: pointer; display: block; margin: 0 auto; box-shadow: 0 0 10px rgba(0, 212, 255, 0.15);" onclick="openScreenshotModal('${o.screenshot}')">`
+      : `<span style="font-size: 0.8rem; color: rgba(255,255,255,0.35);">No proof</span>`;
+      
+    const badgeClass = getStatusBadgeClass(o.status);
+    const friendlyStatus = (o.status || 'pending').toUpperCase();
+
     tr.innerHTML = `
       <td><strong>${o.id}</strong></td>
-      <td>${o.customer}</td>
-      <td>${o.product}</td>
-      <td><strong style="color: var(--color-secondary);">${o.amount}</strong></td>
-      <td><span class="badge badge-${o.status}">${o.status.toUpperCase()}</span></td>
+      <td>${o.customer || 'Guest'}</td>
+      <td>${o.phone || '-'}</td>
+      <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${itemsStr}">${itemsStr}</td>
+      <td><strong style="color: var(--color-secondary);">${totalStr}</strong></td>
+      <td><code style="font-family: monospace; color: #00ffc8; font-size: 0.85rem; padding: 2px 6px; background: rgba(0,255,200,0.05); border-radius: 4px;">${utrStr}</code></td>
+      <td style="text-align: center;">${screenshotHtml}</td>
+      <td><span class="badge ${badgeClass}">${friendlyStatus}</span></td>
       <td>${o.date}</td>
       <td>
-        <button class="btn-secondary" style="padding: 4px 10px; margin-right: 6px;" onclick="openInvoice('${o.id}')">🖨️ Invoice</button>
-        <select class="select-filter" style="padding: 4px 8px; font-size: 0.8rem; height: auto;" onchange="changeOrderStatus('${o.id}', this.value)">
-          <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
-          <option value="confirmed" ${o.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
-          <option value="shipped" ${o.status === 'shipped' ? 'selected' : ''}>Shipped</option>
-          <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option>
-          <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
-        </select>
+        <div style="display: flex; gap: 6px; align-items: center; justify-content: flex-start;">
+          <button class="btn-secondary" style="padding: 4px 8px; font-size: 0.75rem; height: auto;" onclick="openInvoice('${o.id}')">🖨️ Invoice</button>
+          <select class="select-filter" style="padding: 4px 6px; font-size: 0.75rem; height: auto; width: 125px;" onchange="changeOrderStatus('${o.id}', this.value)">
+            <option value="Pending Verification" ${o.status === 'Pending Verification' || o.status === 'pending' ? 'selected' : ''}>Pending Verification</option>
+            <option value="Payment Verified" ${o.status === 'Payment Verified' ? 'selected' : ''}>Payment Verified</option>
+            <option value="Rejected" ${o.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
+            <option value="Order Confirmed" ${o.status === 'Order Confirmed' || o.status === 'confirmed' ? 'selected' : ''}>Order Confirmed</option>
+            <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+            <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+          </select>
+        </div>
       </td>
     `;
     tbody.appendChild(tr);
@@ -601,7 +642,7 @@ window.changeOrderStatus = function(id, val) {
     o.status = val;
     saveAllState();
     initPortalState();
-    showToast('success', `Order ${id} status updated to ${val.toUpperCase()}!`);
+    showToast('success', `Order ${id} status updated to ${val}!`);
   }
 };
 

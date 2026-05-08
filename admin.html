@@ -400,8 +400,11 @@
                 <tr>
                   <th>OrderID</th>
                   <th>Customer Name</th>
-                  <th>Product Purchased</th>
-                  <th>Amount</th>
+                  <th>Phone</th>
+                  <th>Products Purchased</th>
+                  <th>Total Amount</th>
+                  <th>UTR Number</th>
+                  <th>Screenshot</th>
                   <th>Status</th>
                   <th>Date</th>
                   <th>Actions</th>
@@ -747,6 +750,20 @@
         <!-- Compiled invoice loads here -->
       </div>
       <button class="btn-primary" onclick="window.print(); showToast('success', 'Sending invoice to printer!')">🖨️ Print Invoice</button>
+    </div>
+  </div>
+
+  <!-- PAYMENT SCREENSHOT VIEWER MODAL OVERLAY -->
+  <div class="modal-overlay" id="screenshotModal">
+    <div class="modal-card" style="max-width: 500px; background: #0c1b33; color: #fff; text-align: center;">
+      <div class="modal-header">
+        <h3 id="screenshotModalTitle">🔍 Payment Screenshot Proof</h3>
+        <button class="btn-close" onclick="closeModal('screenshotModal')">&times;</button>
+      </div>
+      <div style="padding: 10px;">
+        <img id="screenshotViewerImg" src="" alt="Payment Screenshot" style="max-width: 100%; max-height: 400px; border-radius: 8px; border: 2px solid var(--color-primary); box-shadow: 0 0 20px rgba(0,212,255,0.4); object-fit: contain;">
+      </div>
+      <button class="btn-secondary" style="margin-top: 10px; padding: 8px 18px;" onclick="closeModal('screenshotModal')">Close View</button>
     </div>
   </div>
 
