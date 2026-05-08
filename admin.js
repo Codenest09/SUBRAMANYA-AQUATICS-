@@ -259,15 +259,26 @@ function initPortalState() {
 
   const defaultItems = [
     { id: 1, name: 'Aquarium Heater (50W)', price: '₹300', stock: 'In Stock', image: 'items/50w aquarium heater.webp' },
-    { id: 2, name: 'Aquarium Heater (100W)', price: '₹400', stock: 'In Stock', image: 'items/100w aquarium heater.webp' },
-    { id: 3, name: 'Aquarium Light Large', price: '₹500', stock: 'In Stock', image: 'items/aquarium light large.webp' },
-    { id: 4, name: 'Aquarium Light Small', price: '₹300', stock: 'In Stock', image: 'items/aquarium light small.webp' },
-    { id: 5, name: 'Bubble Oxygen', price: '₹150', stock: 'In Stock', image: 'items/buble oxygen.jpeg' },
-    { id: 6, name: 'Double Oxygen', price: '₹250', stock: 'In Stock', image: 'items/double oxygen.jpg' },
-    { id: 7, name: 'Internal Oxygen (Small)', price: '₹200', stock: 'In Stock', image: 'items/internal oxygen (small).webp' },
-    { id: 8, name: 'Internal Oxygen (Large)', price: '₹350', stock: 'In Stock', image: 'items/internal oxygen (large).jpg' }
+    { id: 2, name: 'Aquarium Heater (100W)', price: '₹350', stock: 'In Stock', image: 'items/100 w aquarium heater.webp' },
+    { id: 3, name: 'Aquarium Light Large', price: '₹400', stock: 'In Stock', image: 'items/Aquarium light (large ).jpg' },
+    { id: 4, name: 'Aquarium Light Small', price: '₹300', stock: 'In Stock', image: 'items/Aquarium light (small).jpg' },
+    { id: 5, name: 'Bubble Oxygen', price: '₹200', stock: 'In Stock', image: 'items/buble oxygen.webp' },
+    { id: 6, name: 'Double Oxygen', price: '₹300', stock: 'In Stock', image: 'items/double oxygen.webp' },
+    { id: 7, name: 'Internal Oxygen (Small)', price: '₹300', stock: 'In Stock', image: 'items/internal oxgyen (small).webp' },
+    { id: 8, name: 'Internal Oxygen (Large)', price: '₹400', stock: 'In Stock', image: 'items/internal oxgyen (big).jpg' }
   ];
   items = JSON.parse(localStorage.getItem('sa_items')) || defaultItems;
+
+  // Clean up old items with wrong photo filenames and prices, and inject actual ones
+  items = items.filter(it => !['Aquarium Heater (50W)', 'Aquarium Heater (100W)', 'Aquarium Light Large', 'Aquarium Light Small', 'Bubble Oxygen', 'Double Oxygen', 'Internal Oxygen (Small)', 'Internal Oxygen (Large)'].includes(it.name));
+
+  const existingItemNames = new Set(items.map(it => it.name));
+  const nextItemId = items.length ? Math.max(...items.map(it => it.id)) + 1 : 100;
+  let itemIdCounter = nextItemId;
+  defaultItems.filter(di => !existingItemNames.has(di.name))
+    .forEach(di => {
+      items.push({ ...di, id: itemIdCounter++ });
+    });
 
   // Inject any missing required guppy varieties into existing data
   const existingNames = new Set(products.map(p => p.name));
