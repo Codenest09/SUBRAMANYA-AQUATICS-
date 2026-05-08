@@ -51,7 +51,8 @@
       </div>
       <ul class="sidebar-menu">
         <li class="sidebar-item"><a href="#" class="sidebar-link active" data-target="overview">📊 Dashboard Overview</a></li>
-        <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="products">🐠 Fish & Products</a></li>
+        <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="products">🐠 Fish Items</a></li>
+        <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="foods">🍖 Foods & Nutrition</a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="categories">📂 Categories</a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="orders">🛒 Orders Inbox <span class="badge badge-cancelled" style="padding: 1px 6px; font-size: 0.7rem;" id="ordersCounter">5</span></a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="customers">👥 Customers List</a></li>
@@ -77,9 +78,9 @@
     <nav class="mobile-nav">
       <a href="#" class="mobile-nav-item active" data-target="overview"><span class="mobile-nav-icon">📊</span>Overview</a>
       <a href="#" class="mobile-nav-item" data-target="products"><span class="mobile-nav-icon">🐠</span>Fishes</a>
+      <a href="#" class="mobile-nav-item" data-target="foods"><span class="mobile-nav-icon">🍖</span>Foods</a>
       <a href="#" class="mobile-nav-item" data-target="orders"><span class="mobile-nav-icon">🛒</span>Orders</a>
       <a href="#" class="mobile-nav-item" data-target="messages"><span class="mobile-nav-icon">💬</span>Inbox</a>
-      <a href="#" class="mobile-nav-item" data-target="settings"><span class="mobile-nav-icon">⚙️</span>Settings</a>
     </nav>
 
     <!-- Main Content Area -->
@@ -254,7 +255,7 @@
       <section class="app-section" id="sec-categories">
         <div class="card-header">
           <h3>Manage Store Categories</h3>
-          <button class="btn-primary" onclick="showToast('info', 'Custom categories added in dynamic JSON!')" style="width: auto; padding: 10px 20px;">➕ Create Category</button>
+          <button class="btn-primary" id="btnAddCategory" style="width: auto; padding: 10px 20px;">➕ Create Category</button>
         </div>
         <div class="data-card">
           <div class="table-responsive">
@@ -270,6 +271,76 @@
               </thead>
               <tbody id="categoriesTableBody">
                 <!-- Categories dynamically loaded -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Category Items Inline View -->
+        <div id="categoryItemsPanel" style="display:none; margin-top: 20px;">
+          <div class="card-header">
+            <h3 id="categoryItemsTitle">🐠 Items in Category</h3>
+            <button class="btn-secondary" onclick="closeCategoryItems()">✕ Close</button>
+          </div>
+          <div class="data-card">
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Image</th>
+                    <th>Fish Name</th>
+                    <th>Price</th>
+                    <th>Tag</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="categoryItemsTableBody">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3b. FOODS & NUTRITION MANAGEMENT -->
+      <section class="app-section" id="sec-foods">
+        <div class="card-header">
+          <h3>🍖 Fish Foods &amp; Nutrition</h3>
+          <button class="btn-primary" id="btnAddFood" style="width: auto; padding: 10px 20px;">➕ Add Food Item</button>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+          <div class="search-input-wrapper">
+            <span class="search-icon-inside">🔍</span>
+            <input type="text" class="form-input search-input" id="searchFoods" placeholder="Search foods by name or type...">
+          </div>
+          <select class="select-filter" id="filterFoodType">
+            <option value="all">All Types</option>
+            <option value="Pellets">Pellets</option>
+            <option value="Flakes">Flakes</option>
+            <option value="Live Food">Live Food</option>
+            <option value="Frozen Food">Frozen Food</option>
+            <option value="Supplements">Supplements</option>
+          </select>
+        </div>
+
+        <div class="data-card">
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Food Name</th>
+                  <th>Type</th>
+                  <th>Suitable For</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="foodsTableBody">
+                <!-- Foods dynamically load here -->
               </tbody>
             </table>
           </div>
@@ -448,6 +519,95 @@
       </section>
 
     </main>
+  </div>
+
+  <!-- ADD / EDIT FOOD MODAL OVERLAY -->
+  <div class="modal-overlay" id="foodModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="foodModalTitle">Add Food Item</h3>
+        <button class="btn-close" id="btnCloseFoodModal">&times;</button>
+      </div>
+      <form id="foodForm">
+        <input type="hidden" id="editFoodId">
+        <div class="form-grid">
+          <div class="form-group form-full">
+            <label class="form-label">Food / Product Name</label>
+            <input type="text" class="form-input" id="foodName" required placeholder="e.g. Hikari Cichlid Gold Pellets">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Food Type</label>
+            <select class="select-filter" style="width: 100%;" id="foodType" required>
+              <option value="Pellets">Pellets</option>
+              <option value="Flakes">Flakes</option>
+              <option value="Live Food">Live Food</option>
+              <option value="Frozen Food">Frozen Food</option>
+              <option value="Supplements">Supplements</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Suitable For</label>
+            <input type="text" class="form-input" id="foodSuitable" required placeholder="e.g. All Fishes, Guppys, Bettas">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Price (₹)</label>
+            <input type="text" class="form-input" id="foodPrice" required placeholder="e.g. 150 or Contact Us">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Stock Status</label>
+            <select class="select-filter" style="width: 100%;" id="foodStock">
+              <option value="In Stock">In Stock</option>
+              <option value="Low Stock">Low Stock</option>
+              <option value="Out of Stock">Out of Stock</option>
+            </select>
+          </div>
+          <div class="form-group form-full">
+            <label class="form-label">Image Filename Path</label>
+            <input type="text" class="form-input" id="foodImage" placeholder="e.g. foods/hikari-pellets.jpg">
+          </div>
+          <div class="form-group form-full">
+            <label class="form-label">Description / Notes</label>
+            <textarea class="form-input" id="foodDesc" style="height: 80px; resize: none;" placeholder="Brand, weight, feeding instructions..."></textarea>
+          </div>
+          <div class="form-group form-full">
+            <button type="submit" class="btn-primary" id="btnSubmitFood">Save Food Item</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADD CATEGORY MODAL -->
+  <div class="modal-overlay" id="categoryModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="categoryModalTitle">Create New Category</h3>
+        <button class="btn-close" id="btnCloseCategoryModal">&times;</button>
+      </div>
+      <form id="categoryForm">
+        <input type="hidden" id="editCategoryName">
+        <div class="form-grid">
+          <div class="form-group form-full">
+            <label class="form-label">Category Name</label>
+            <input type="text" class="form-input" id="catName" required placeholder="e.g. Discus Fish">
+          </div>
+          <div class="form-group form-full">
+            <label class="form-label">Banner Image Path</label>
+            <input type="text" class="form-input" id="catImage" placeholder="e.g. fishes/discus.jpg">
+          </div>
+          <div class="form-group form-full">
+            <label class="form-label">Status</label>
+            <select class="select-filter" style="width: 100%;" id="catStatus">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="form-group form-full">
+            <button type="submit" class="btn-primary">Save Category</button>
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
 
   <!-- TOAST NOTIFICATION CONTAINER -->

@@ -84,7 +84,8 @@ function initNavigation() {
 
   const headersMap = {
     overview: { title: 'Dashboard Overview', desc: 'Real-time business performance analytics' },
-    products: { title: 'Fish & Products', desc: 'Manage aquatic catalog items, rates, and badges' },
+    products: { title: 'Fish Items', desc: 'Manage aquatic fish catalog — add, edit, or remove fish items' },
+    foods: { title: 'Foods & Nutrition', desc: 'Manage fish food products — pellets, flakes, live food and supplements' },
     categories: { title: 'Store Categories', desc: 'Manage freshwater, saltwater, and gear catalog classes' },
     orders: { title: 'Orders Management', desc: 'Process customer purchase requests, track deliveries and invoices' },
     customers: { title: 'Customers List', desc: 'View, search, filter, or ban registered customers' },
@@ -126,26 +127,43 @@ let customers = [];
 let categories = [];
 let testimonials = [];
 let inquiries = [];
+let foods = [];
 
 function initPortalState() {
   // Mock/Initial Data
   const defaultProducts = [
     { id: 1, name: 'Moon Tail Guppys', category: 'Guppys', price: '₹99', image: 'fishes/Sward tail guppy.jpeg', tag: 'Best Seller' },
     { id: 2, name: 'Golden Guppys (24K)', category: 'Guppys', price: '₹249', image: 'fishes/Golden guppy.jpg', tag: 'Premium' },
-    { id: 3, name: 'Mollys', category: 'Mollies', price: '₹49', image: 'fishes/mollies.webp', tag: 'Popular' },
-    { id: 4, name: 'Gourami', category: 'Oxy-less Fishes', price: '₹79', image: 'fishes/Gourami.jpg', tag: 'Healthy' },
-    { id: 5, name: 'OHM (Males)', category: "Betta's", price: '₹149', image: 'fishes/Beta ohm male.webp', tag: 'Exotic' },
-    { id: 6, name: 'Albino Oscar', category: 'Wild Oscars', price: '₹499', image: 'fishes/Albino oscar fish.webp', tag: 'Giant' },
-    { id: 7, name: 'SRD', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/Srd flowerhorn.jpg', tag: 'Show Grade' },
-    { id: 8, name: 'Polar Parrot Breeding Pair', category: 'Flowerhorns', price: '₹500', image: 'fishes/Polar parrots( zebra).jpg', tag: 'Breeding Pair' },
-    { id: 9, name: 'Polar Parrot Pair', category: 'Flowerhorns', price: '₹250', image: 'fishes/Polar parrots( zebra).jpg', tag: 'Pair' },
-    { id: 10, name: 'Silver Arowana', category: 'Arowana', price: 'Contact Us', image: 'fishes/Silver arwana.webp', tag: 'Luxury' },
-    { id: 11, name: 'Gold Fish', category: 'Gold Fish', price: '₹250', image: 'fishes/Gold fish.jpeg', tag: 'Classic' },
-    { id: 12, name: 'Black Moor Gold Fish', category: 'Gold Fish', price: '₹99', image: 'fishes/Black more gold fish.jpg', tag: 'Dark Accent' }
+    { id: 3, name: 'Premium Mixed Guppys', category: 'Guppys', price: '₹99', image: 'fishes/Premium mixed guppys.jpeg', tag: 'Premium Mix' },
+    { id: 4, name: 'Mixed Guppys', category: 'Guppys', price: '₹69', image: 'fishes/Mixed guppys.jpg', tag: 'Mixed Variety' },
+    { id: 5, name: 'HB Blue Guppys', category: 'Guppys', price: '₹149', image: 'fishes/Hb blue guppys.jpg', tag: 'Half Black' },
+    { id: 6, name: 'Koi Guppys', category: 'Guppys', price: '₹249', image: 'fishes/Albino Red eye guppy.jpg', tag: 'Koi Pattern' },
+    { id: 7, name: 'Platinum Guppys', category: 'Guppys', price: '₹99', image: 'fishes/Platinum guppys.webp', tag: 'Platinum' },
+    { id: 8, name: 'Platinum Dumbo Ear Guppys', category: 'Guppys', price: '₹149', image: 'fishes/Platinum dumbo ear guppys.jpeg', tag: 'Dumbo Ear' },
+    { id: 9, name: 'Dragon Tail Guppys', category: 'Guppys', price: '₹149', image: 'fishes/Dragon tail guppys.jpg', tag: 'Dragon Tail' },
+    { id: 10, name: 'Guppy Babies', category: 'Guppys', price: 'Contact Us', image: 'fishes/Guppy babys.png', tag: 'Babies' },
+    { id: 11, name: 'Guppy Semi Adults', category: 'Guppys', price: 'Contact Us', image: 'fishes/Guppys semi adults.webp', tag: 'Semi Adult' },
+    { id: 12, name: 'Mollys', category: 'Mollies', price: '₹49', image: 'fishes/mollies.webp', tag: 'Popular' },
+    { id: 13, name: 'Gourami', category: 'Oxy-less Fishes', price: '₹79', image: 'fishes/Gourami.jpg', tag: 'Healthy' },
+    { id: 14, name: 'OHM (Males)', category: "Betta's", price: '₹149', image: 'fishes/Beta ohm male.webp', tag: 'Exotic' },
+    { id: 15, name: 'Albino Oscar', category: 'Wild Oscars', price: '₹499', image: 'fishes/Albino oscar fish.webp', tag: 'Giant' },
+    { id: 16, name: 'SRD', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/Srd flowerhorn.jpg', tag: 'Show Grade' },
+    { id: 17, name: 'Polar Parrot Breeding Pair', category: 'Flowerhorns', price: '₹500', image: 'fishes/Polar parrots( zebra).jpg', tag: 'Breeding Pair' },
+    { id: 18, name: 'Polar Parrot Pair', category: 'Flowerhorns', price: '₹250', image: 'fishes/Polar parrots( zebra).jpg', tag: 'Pair' },
+    { id: 19, name: 'Silver Arowana', category: 'Arowana', price: 'Contact Us', image: 'fishes/Silver arwana.webp', tag: 'Luxury' },
+    { id: 20, name: 'Gold Fish', category: 'Gold Fish', price: '₹250', image: 'fishes/Gold fish.jpeg', tag: 'Classic' },
+    { id: 21, name: 'Black Moor Gold Fish', category: 'Gold Fish', price: '₹99', image: 'fishes/Black more gold fish.jpg', tag: 'Dark Accent' }
+  ];
+
+  // Guppy variety names that must always exist (to inject into existing localStorage data)
+  const requiredGuppyNames = [
+    'Premium Mixed Guppys', 'Mixed Guppys', 'HB Blue Guppys', 'Koi Guppys',
+    'Platinum Guppys', 'Platinum Dumbo Ear Guppys', 'Dragon Tail Guppys',
+    'Guppy Babies', 'Guppy Semi Adults'
   ];
 
   const defaultCategories = [
-    { name: 'Guppys', count: 9, image: 'fishes/Sward tail guppy.jpeg', status: 'Active' },
+    { name: 'Guppys', count: 11, image: 'fishes/Sward tail guppy.jpeg', status: 'Active' },
     { name: 'Mollies', count: 4, image: 'fishes/mollies.webp', status: 'Active' },
     { name: 'Oxy-less Fishes', count: 8, image: 'fishes/Gourami.jpg', status: 'Active' },
     { name: "Betta's", count: 6, image: 'fishes/Beta ohm male.webp', status: 'Active' },
@@ -153,6 +171,15 @@ function initPortalState() {
     { name: 'Flowerhorns', count: 5, image: 'fishes/Srd flowerhorn.jpg', status: 'Active' },
     { name: 'Arowana', count: 3, image: 'fishes/Silver arwana.webp', status: 'Active' },
     { name: 'Gold Fish', count: 2, image: 'fishes/Gold fish.jpeg', status: 'Active' }
+  ];
+
+  const defaultFoods = [
+    { id: 1, name: 'Hikari Cichlid Gold Pellets', type: 'Pellets', suitable: 'Flowerhorns, Oscars, Cichlids', price: '₹299', stock: 'In Stock', image: 'logo.jpeg', desc: 'Premium sinking pellets, 342g — enhances color and growth' },
+    { id: 2, name: 'Tetra Guppy Color Flakes', type: 'Flakes', suitable: 'Guppys, Mollies, Tetras', price: '₹149', stock: 'In Stock', image: 'logo.jpeg', desc: 'Color-enhancing flake food, 100g — ideal for small tropical fish' },
+    { id: 3, name: 'Betta Bio-Gold Pellets', type: 'Pellets', suitable: "Betta's", price: '₹199', stock: 'In Stock', image: 'logo.jpeg', desc: 'Floating mini pellets, 20g — specially formulated for Betta fish' },
+    { id: 4, name: 'Live Bloodworms', type: 'Live Food', suitable: 'All Fishes', price: '₹99', stock: 'Low Stock', image: 'logo.jpeg', desc: 'Fresh live bloodworms — high protein treat for all fish' },
+    { id: 5, name: 'Frozen Brine Shrimp', type: 'Frozen Food', suitable: 'Guppys, Bettas, Discus', price: '₹129', stock: 'In Stock', image: 'logo.jpeg', desc: 'Individually frozen brine shrimp cubes, 100g pack' },
+    { id: 6, name: 'Arowana Growth Formula', type: 'Pellets', suitable: 'Arowana', price: '₹599', stock: 'In Stock', image: 'logo.jpeg', desc: 'High-protein floating sticks for Arowana — promotes rapid growth' }
   ];
 
   const defaultOrders = [
@@ -186,12 +213,23 @@ function initPortalState() {
   customers = JSON.parse(localStorage.getItem('sa_customers')) || defaultCustomers;
   testimonials = JSON.parse(localStorage.getItem('sa_testimonials')) || defaultTestimonials;
   inquiries = JSON.parse(localStorage.getItem('sa_inquiries')) || defaultInquiries;
+  foods = JSON.parse(localStorage.getItem('sa_foods')) || defaultFoods;
+
+  // Inject any missing required guppy varieties into existing data
+  const existingNames = new Set(products.map(p => p.name));
+  const nextId = products.length ? Math.max(...products.map(p => p.id)) + 1 : 100;
+  let idCounter = nextId;
+  defaultProducts.filter(dp => requiredGuppyNames.includes(dp.name) && !existingNames.has(dp.name))
+    .forEach(dp => {
+      products.push({ ...dp, id: idCounter++ });
+    });
 
   saveAllState();
 
   // Render everything
   renderProducts();
   renderCategories();
+  renderFoods();
   renderOrders();
   renderCustomers();
   renderInquiries();
@@ -211,6 +249,7 @@ function saveAllState() {
   localStorage.setItem('sa_customers', JSON.stringify(customers));
   localStorage.setItem('sa_testimonials', JSON.stringify(testimonials));
   localStorage.setItem('sa_inquiries', JSON.stringify(inquiries));
+  localStorage.setItem('sa_foods', JSON.stringify(foods));
 }
 
 // Render Products Table
@@ -251,20 +290,148 @@ function renderCategories() {
   const tbody = document.getElementById('categoriesTableBody');
   if (!tbody) return;
   tbody.innerHTML = '';
-  categories.forEach(c => {
+  categories.forEach((c, idx) => {
+    const itemCount = products.filter(p => p.category === c.name).length;
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><strong>🐠 ${c.name}</strong></td>
-      <td>${c.count} items</td>
+      <td><span class="badge badge-confirmed">${itemCount} fish</span></td>
       <td><span style="font-size: 0.8rem; color: var(--color-text-muted);">${c.image}</span></td>
-      <td><span class="badge badge-delivered">${c.status}</span></td>
-      <td>
-        <button class="btn-secondary" style="padding: 4px 10px;" onclick="showToast('info', 'Edit category is available!')">✏️ Edit</button>
+      <td><span class="badge badge-${c.status === 'Active' ? 'delivered' : 'cancelled'}">${c.status}</span></td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="btn-secondary" style="padding: 4px 10px;" onclick="viewCategoryItems('${c.name}')">👁️ View Items</button>
+        <button class="btn-secondary" style="padding: 4px 10px;" onclick="openEditCategory(${idx})">✏️ Edit</button>
+        <button class="btn-secondary" style="padding: 4px 10px; border-color: var(--color-accent); color: var(--color-accent);" onclick="deleteCategory(${idx})">🗑️ Delete</button>
       </td>
     `;
     tbody.appendChild(tr);
   });
 }
+
+// View items belonging to a category
+window.viewCategoryItems = function(catName) {
+  const panel = document.getElementById('categoryItemsPanel');
+  const title = document.getElementById('categoryItemsTitle');
+  const tbody = document.getElementById('categoryItemsTableBody');
+  if (!panel || !tbody) return;
+
+  title.textContent = `🐠 Fish Items in "${catName}"`;
+  const filtered = products.filter(p => p.category === catName);
+  tbody.innerHTML = '';
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--color-text-muted);">No fish items in this category yet.</td></tr>';
+  } else {
+    filtered.forEach(p => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><img src="${p.image}" alt="${p.name}" style="width:40px;height:40px;border-radius:8px;border:1.5px solid var(--color-primary);object-fit:cover;"></td>
+        <td><strong>${p.name}</strong></td>
+        <td><strong style="color:var(--color-secondary);">${p.price}</strong></td>
+        <td><span class="badge badge-pending">${p.tag || 'Regular'}</span></td>
+        <td>
+          <button class="btn-secondary" style="padding:4px 10px;margin-right:6px;" onclick="openEditProduct(${p.id})">✏️ Edit</button>
+          <button class="btn-secondary" style="padding:4px 10px;border-color:var(--color-accent);color:var(--color-accent);" onclick="deleteProduct(${p.id})">🗑️ Delete</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+window.closeCategoryItems = function() {
+  const panel = document.getElementById('categoryItemsPanel');
+  if (panel) panel.style.display = 'none';
+};
+
+// Open edit category modal
+window.openEditCategory = function(idx) {
+  const c = categories[idx];
+  if (!c) return;
+  document.getElementById('editCategoryName').value = idx;
+  document.getElementById('catName').value = c.name;
+  document.getElementById('catImage').value = c.image;
+  document.getElementById('catStatus').value = c.status;
+  document.getElementById('categoryModalTitle').textContent = 'Edit Category: ' + c.name;
+  document.getElementById('categoryModal').classList.add('active');
+};
+
+window.deleteCategory = function(idx) {
+  const c = categories[idx];
+  if (c && confirm(`Delete category "${c.name}"? This will NOT delete the fish in it.`)) {
+    categories.splice(idx, 1);
+    saveAllState();
+    renderCategories();
+    showToast('success', `Category "${c.name}" deleted.`);
+  }
+};
+
+// Render Foods Table
+function renderFoods() {
+  const tbody = document.getElementById('foodsTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  const searchVal = document.getElementById('searchFoods')?.value.toLowerCase() || '';
+  const typeFilter = document.getElementById('filterFoodType')?.value || 'all';
+
+  const filtered = foods.filter(f => {
+    const matchSearch = f.name.toLowerCase().includes(searchVal) || f.suitable.toLowerCase().includes(searchVal);
+    const matchType = typeFilter === 'all' || f.type === typeFilter;
+    return matchSearch && matchType;
+  });
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--color-text-muted);padding:20px;">No food items found. Add one above!</td></tr>';
+    return;
+  }
+
+  filtered.forEach(f => {
+    const stockBadge = f.stock === 'In Stock' ? 'delivered' : f.stock === 'Low Stock' ? 'pending' : 'cancelled';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><img src="${f.image || 'logo.jpeg'}" alt="${f.name}" style="width:44px;height:44px;border-radius:8px;border:1.5px solid var(--color-primary);object-fit:cover;"></td>
+      <td><strong>${f.name}</strong><br><span style="font-size:0.75rem;color:var(--color-text-muted);">${f.desc || ''}</span></td>
+      <td><span class="badge badge-confirmed">${f.type}</span></td>
+      <td style="font-size:0.85rem;">${f.suitable}</td>
+      <td><strong style="color:var(--color-secondary);">${f.price}</strong></td>
+      <td><span class="badge badge-${stockBadge}">${f.stock}</span></td>
+      <td>
+        <button class="btn-secondary" style="padding:4px 10px;margin-right:6px;" onclick="openEditFood(${f.id})">✏️ Edit</button>
+        <button class="btn-secondary" style="padding:4px 10px;border-color:var(--color-accent);color:var(--color-accent);" onclick="deleteFood(${f.id})">🗑️ Delete</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+window.openEditFood = function(id) {
+  const f = foods.find(food => food.id == id);
+  if (!f) return;
+  document.getElementById('editFoodId').value = f.id;
+  document.getElementById('foodName').value = f.name;
+  document.getElementById('foodType').value = f.type;
+  document.getElementById('foodSuitable').value = f.suitable;
+  document.getElementById('foodPrice').value = f.price.replace('₹', '');
+  document.getElementById('foodStock').value = f.stock;
+  document.getElementById('foodImage').value = f.image || '';
+  document.getElementById('foodDesc').value = f.desc || '';
+  document.getElementById('foodModalTitle').textContent = 'Edit: ' + f.name;
+  document.getElementById('foodModal').classList.add('active');
+};
+
+window.deleteFood = function(id) {
+  const f = foods.find(food => food.id == id);
+  if (f && confirm(`Delete "${f.name}" from foods catalog?`)) {
+    foods = foods.filter(food => food.id != id);
+    saveAllState();
+    renderFoods();
+    showToast('success', `"${f.name}" removed from foods.`);
+  }
+};
 
 // Render Orders Table
 function renderOrders() {
@@ -469,7 +636,10 @@ function initFormSubmitHandlers() {
   // Search & filter live updates
   document.getElementById('searchProducts')?.addEventListener('input', renderProducts);
   document.getElementById('filterCategory')?.addEventListener('change', renderProducts);
+  document.getElementById('searchFoods')?.addEventListener('input', renderFoods);
+  document.getElementById('filterFoodType')?.addEventListener('change', renderFoods);
 
+  // ---- FISH PRODUCT MODAL ----
   if (btnAdd && modal) {
     btnAdd.addEventListener('click', () => {
       form.reset();
@@ -478,11 +648,9 @@ function initFormSubmitHandlers() {
       modal.classList.add('active');
     });
   }
-
   if (btnClose && modal) {
     btnClose.addEventListener('click', () => modal.classList.remove('active'));
   }
-
   if (form) {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -494,33 +662,115 @@ function initFormSubmitHandlers() {
       const desc = document.getElementById('prodDesc').value;
 
       if (id) {
-        // Edit existing
         const p = products.find(prod => prod.id == id);
         if (p) {
-          p.name = name;
-          p.category = category;
+          p.name = name; p.category = category;
           p.price = price.startsWith('₹') || price.toLowerCase().includes('contact') ? price : '₹' + price;
           p.image = image;
           p.tag = desc ? desc.substring(0, 15) : 'Special';
           showToast('success', `${name} updated successfully!`);
         }
       } else {
-        // Add new
         const newId = products.length ? Math.max(...products.map(p => p.id)) + 1 : 1;
-        products.push({
-          id: newId,
-          name: name,
-          category: category,
+        products.push({ id: newId, name, category,
           price: price.startsWith('₹') || price.toLowerCase().includes('contact') ? price : '₹' + price,
-          image: image,
-          tag: desc ? desc.substring(0, 15) : 'New'
+          image, tag: desc ? desc.substring(0, 15) : 'New'
         });
         showToast('success', `New fish '${name}' added to catalog!`);
       }
-
       saveAllState();
       initPortalState();
       modal.classList.remove('active');
+    });
+  }
+
+  // ---- FOOD MODAL ----
+  const foodModal = document.getElementById('foodModal');
+  const btnAddFood = document.getElementById('btnAddFood');
+  const btnCloseFood = document.getElementById('btnCloseFoodModal');
+  const foodForm = document.getElementById('foodForm');
+
+  if (btnAddFood && foodModal) {
+    btnAddFood.addEventListener('click', () => {
+      foodForm.reset();
+      document.getElementById('editFoodId').value = '';
+      document.getElementById('foodModalTitle').textContent = 'Add Food Item';
+      foodModal.classList.add('active');
+    });
+  }
+  if (btnCloseFood && foodModal) {
+    btnCloseFood.addEventListener('click', () => foodModal.classList.remove('active'));
+  }
+  if (foodForm) {
+    foodForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = document.getElementById('editFoodId').value;
+      const name = document.getElementById('foodName').value;
+      const type = document.getElementById('foodType').value;
+      const suitable = document.getElementById('foodSuitable').value;
+      const price = document.getElementById('foodPrice').value;
+      const stock = document.getElementById('foodStock').value;
+      const image = document.getElementById('foodImage').value || 'logo.jpeg';
+      const desc = document.getElementById('foodDesc').value;
+
+      if (id) {
+        const f = foods.find(food => food.id == id);
+        if (f) {
+          f.name = name; f.type = type; f.suitable = suitable;
+          f.price = price.startsWith('₹') || price.toLowerCase().includes('contact') ? price : '₹' + price;
+          f.stock = stock; f.image = image; f.desc = desc;
+          showToast('success', `${name} updated successfully!`);
+        }
+      } else {
+        const newId = foods.length ? Math.max(...foods.map(f => f.id)) + 1 : 1;
+        foods.push({ id: newId, name, type, suitable,
+          price: price.startsWith('₹') || price.toLowerCase().includes('contact') ? price : '₹' + price,
+          stock, image, desc
+        });
+        showToast('success', `Food item '${name}' added to catalog!`);
+      }
+      saveAllState();
+      renderFoods();
+      foodModal.classList.remove('active');
+    });
+  }
+
+  // ---- CATEGORY MODAL ----
+  const categoryModal = document.getElementById('categoryModal');
+  const btnAddCat = document.getElementById('btnAddCategory');
+  const btnCloseCat = document.getElementById('btnCloseCategoryModal');
+  const categoryForm = document.getElementById('categoryForm');
+
+  if (btnAddCat && categoryModal) {
+    btnAddCat.addEventListener('click', () => {
+      categoryForm.reset();
+      document.getElementById('editCategoryName').value = '';
+      document.getElementById('categoryModalTitle').textContent = 'Create New Category';
+      categoryModal.classList.add('active');
+    });
+  }
+  if (btnCloseCat && categoryModal) {
+    btnCloseCat.addEventListener('click', () => categoryModal.classList.remove('active'));
+  }
+  if (categoryForm) {
+    categoryForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const idx = document.getElementById('editCategoryName').value;
+      const name = document.getElementById('catName').value;
+      const image = document.getElementById('catImage').value || 'logo.jpeg';
+      const status = document.getElementById('catStatus').value;
+
+      if (idx !== '') {
+        const c = categories[parseInt(idx)];
+        if (c) { c.name = name; c.image = image; c.status = status; }
+        showToast('success', `Category "${name}" updated!`);
+      } else {
+        categories.push({ name, count: 0, image, status });
+        showToast('success', `Category "${name}" created!`);
+      }
+      saveAllState();
+      renderCategories();
+      categoryModal.classList.remove('active');
     });
   }
 
