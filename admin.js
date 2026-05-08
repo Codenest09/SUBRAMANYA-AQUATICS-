@@ -212,12 +212,14 @@ function initPortalState() {
   ];
 
   const defaultFoods = [
-    { id: 1, name: 'Hikari Cichlid Gold Pellets', type: 'Pellets', suitable: 'Flowerhorns, Oscars, Cichlids', price: '₹299', stock: 'In Stock', image: 'logo.jpeg', desc: 'Premium sinking pellets, 342g — enhances color and growth' },
-    { id: 2, name: 'Tetra Guppy Color Flakes', type: 'Flakes', suitable: 'Guppys, Mollies, Tetras', price: '₹149', stock: 'In Stock', image: 'logo.jpeg', desc: 'Color-enhancing flake food, 100g — ideal for small tropical fish' },
-    { id: 3, name: 'Betta Bio-Gold Pellets', type: 'Pellets', suitable: "Betta's", price: '₹199', stock: 'In Stock', image: 'logo.jpeg', desc: 'Floating mini pellets, 20g — specially formulated for Betta fish' },
-    { id: 4, name: 'Live Bloodworms', type: 'Live Food', suitable: 'All Fishes', price: '₹99', stock: 'Low Stock', image: 'logo.jpeg', desc: 'Fresh live bloodworms — high protein treat for all fish' },
-    { id: 5, name: 'Frozen Brine Shrimp', type: 'Frozen Food', suitable: 'Guppys, Bettas, Discus', price: '₹129', stock: 'In Stock', image: 'logo.jpeg', desc: 'Individually frozen brine shrimp cubes, 100g pack' },
-    { id: 6, name: 'Arowana Growth Formula', type: 'Pellets', suitable: 'Arowana', price: '₹599', stock: 'In Stock', image: 'logo.jpeg', desc: 'High-protein floating sticks for Arowana — promotes rapid growth' }
+    { id: 1, name: 'Dry Worms (10g)', type: 'Dry Food', suitable: 'All Fishes', price: '₹25', stock: 'In Stock', image: 'food/dry worms cubes.jpeg', desc: 'High protein treat for all fish' },
+    { id: 2, name: 'Farm Food (100g)', type: 'Pellets', suitable: 'All Fishes', price: '₹200', stock: 'In Stock', image: 'food/farm food.jpg', desc: 'General farm food for fish' },
+    { id: 3, name: 'Okiko Black Pearl Flowerhorn Food', type: 'Pellets', suitable: 'Flowerhorns', price: '₹300', stock: 'In Stock', image: 'food/okiko black pearl flowehorn food.webp', desc: 'Enhances color and growth' },
+    { id: 4, name: 'Okiko Head Power Flowerhorns Food', type: 'Pellets', suitable: 'Flowerhorns', price: '₹300', stock: 'In Stock', image: 'food/Okiko head power flowerhorns food.jpeg', desc: 'Head booster for Flowerhorns' },
+    { id: 5, name: 'Okiko Red Diamond Flowerhorn Food', type: 'Pellets', suitable: 'Flowerhorns', price: '₹300', stock: 'In Stock', image: 'food/Okoko red diamond fish food.jpg', desc: 'Premium color enhancer' },
+    { id: 6, name: 'Optimun 3 in 1 Fish Food', type: 'Pellets', suitable: 'All Fishes', price: '₹160', stock: 'In Stock', image: 'food/Optimun 3 in 1 fish food.webp', desc: 'Balanced nutrition for tropical fish' },
+    { id: 7, name: 'Tiyo Fish Food (Small)', type: 'Pellets', suitable: 'Small Fishes', price: '₹20', stock: 'In Stock', image: 'food/Tiyo fish food (small).jpeg', desc: 'Daily nutrition for small fish' },
+    { id: 8, name: 'Tiyo Fish Food', type: 'Pellets', suitable: 'All Fishes', price: '₹30', stock: 'In Stock', image: 'food/Tiyo fish food(large).jpg', desc: 'Daily nutrition for all fish' }
   ];
 
   const defaultOrders = [
@@ -260,6 +262,17 @@ function initPortalState() {
   defaultProducts.filter(dp => requiredGuppyNames.includes(dp.name) && !existingNames.has(dp.name))
     .forEach(dp => {
       products.push({ ...dp, id: idCounter++ });
+    });
+
+  // Clean up old placeholder foods and inject actual ones
+  foods = foods.filter(f => !['Hikari Cichlid Gold Pellets', 'Tetra Guppy Color Flakes', 'Betta Bio-Gold Pellets', 'Live Bloodworms', 'Frozen Brine Shrimp', 'Arowana Growth Formula'].includes(f.name));
+  
+  const existingFoodNames = new Set(foods.map(f => f.name));
+  const nextFoodId = foods.length ? Math.max(...foods.map(f => f.id)) + 1 : 100;
+  let foodIdCounter = nextFoodId;
+  defaultFoods.filter(df => !existingFoodNames.has(df.name))
+    .forEach(df => {
+      foods.push({ ...df, id: foodIdCounter++ });
     });
 
   saveAllState();
