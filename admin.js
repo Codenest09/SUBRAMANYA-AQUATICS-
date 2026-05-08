@@ -156,13 +156,33 @@ function initPortalState() {
     { id: 30, name: 'Shark (Large)', category: 'Oxy-less Fishes', price: 'Contact Us', image: 'fishes/Shark large.jpeg', tag: 'Large' },
     { id: 31, name: 'Veil Tail Zebra', category: 'Oxy-less Fishes', price: '₹150', image: 'fishes/Vail tail zebra green.jpg', tag: 'Veil Tail' },
     { id: 14, name: 'OHM (Males)', category: "Betta's", price: '₹149', image: 'fishes/Beta ohm male.webp', tag: 'Exotic' },
+    { id: 32, name: 'OHM (Female)', category: "Betta's", price: '₹99', image: 'fishes/Beta ohm females.jpg', tag: 'Female' },
+    { id: 33, name: 'HMPK Male', category: "Betta's", price: '₹250', image: 'fishes/Beta HMPK male.webp', tag: 'HMPK' },
+    { id: 34, name: 'Placarts', category: "Betta's", price: '₹499', image: 'fishes/Beta placarts male.jpg', tag: 'Exotic' },
+    { id: 35, name: 'Candy Betta', category: "Betta's", price: 'Contact Us', image: 'fishes/Bata candy male.jpeg', tag: 'Candy' },
+    { id: 36, name: 'HMPK Female', category: "Betta's", price: 'Contact Us', image: 'fishes/Beta hmpk female.jpeg', tag: 'HMPK Female' },
     { id: 15, name: 'Albino Oscar', category: 'Wild Oscars', price: '₹499', image: 'fishes/Albino oscar fish.webp', tag: 'Giant' },
+    { id: 37, name: 'Tiger Red Oscar', category: 'Wild Oscars', price: '₹499', image: 'fishes/Red tiger oscar.jpg', tag: 'Tiger' },
+    { id: 38, name: 'Red Oscar', category: 'Wild Oscars', price: '₹599', image: 'fishes/Red oscar.jpg', tag: 'Red' },
+    { id: 39, name: 'Lemon Oscar', category: 'Wild Oscars', price: '₹599', image: 'fishes/Lemon oscar.jpeg', tag: 'Lemon' },
+    { id: 40, name: 'Mango Oscar', category: 'Wild Oscars', price: '₹599', image: 'fishes/Mango oscar.jpg', tag: 'Mango' },
     { id: 16, name: 'SRD', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/Srd flowerhorn.jpg', tag: 'Show Grade' },
+    { id: 41, name: 'KML', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/Kml flowerhorn.jpg', tag: 'KML' },
+    { id: 42, name: 'F2 Kamfa', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/F2 kamfa.jpg', tag: 'Kamfa' },
     { id: 17, name: 'Polar Parrot Breeding Pair', category: 'Flowerhorns', price: '₹500', image: 'fishes/Polar parrots( zebra).jpg', tag: 'Breeding Pair' },
     { id: 18, name: 'Polar Parrot Pair', category: 'Flowerhorns', price: '₹250', image: 'fishes/Polar parrots( zebra).jpg', tag: 'Pair' },
+    { id: 43, name: 'Parrots', category: 'Flowerhorns', price: '₹999', image: 'fishes/Parrot ( red).jpg', tag: 'Red Parrot' },
     { id: 19, name: 'Silver Arowana', category: 'Arowana', price: 'Contact Us', image: 'fishes/Silver arwana.webp', tag: 'Luxury' },
+    { id: 44, name: 'Golden Arowana', category: 'Arowana', price: 'Contact Us', image: 'fishes/Gold arwana.jpg', tag: 'Luxury' },
+    { id: 45, name: 'Red Arowana', category: 'Arowana', price: 'Contact Us', image: 'fishes/Red Arwana.jpeg', tag: 'Luxury' },
     { id: 20, name: 'Gold Fish', category: 'Gold Fish', price: '₹250', image: 'fishes/Gold fish.jpeg', tag: 'Classic' },
-    { id: 21, name: 'Black Moor Gold Fish', category: 'Gold Fish', price: '₹99', image: 'fishes/Black more gold fish.jpg', tag: 'Dark Accent' }
+    { id: 21, name: 'Black Moor Gold Fish', category: 'Gold Fish', price: '₹99', image: 'fishes/Black more gold fish.jpg', tag: 'Dark Accent' },
+    { id: 46, name: 'Alligator Gar (Small)', category: 'Exotics & Giants', price: '₹1000', image: 'fishes/Aligator gar.jpg', tag: 'Monster' },
+    { id: 47, name: 'Cichlids', category: 'Exotics & Giants', price: '₹200', image: 'fishes/Chichilids.jpg', tag: 'Colorful' },
+    { id: 48, name: 'Channa Fish', category: 'Exotics & Giants', price: '₹2000', image: 'fishes/Snake head fish.jpg', tag: 'Snakehead' },
+    { id: 49, name: 'Japanese Koi', category: 'Exotics & Giants', price: '₹1000', image: 'fishes/Japanese koi fish.jpg', tag: 'Imported' },
+    { id: 50, name: 'Indian Koi', category: 'Exotics & Giants', price: 'Contact Us', image: 'fishes/Indian koi fish.jpeg', tag: 'Local' },
+    { id: 51, name: 'Giant Gourami', category: 'Exotics & Giants', price: '₹1000', image: 'fishes/Giant gourami baby.jpg', tag: 'Giant' }
   ];
 
   // Fish variety names that must always exist (to inject into existing localStorage data)
@@ -172,7 +192,11 @@ function initPortalState() {
     'Guppy Babies', 'Guppy Semi Adults',
     'Moon Tail Mollies', 'Balloon Mollies', 'Molly Babies',
     'Platys', 'Sword Tail Platys', 'Zebra',
-    'Shark (Small)', 'Shark (Medium)', 'Shark (Large)', 'Veil Tail Zebra'
+    'Shark (Small)', 'Shark (Medium)', 'Shark (Large)', 'Veil Tail Zebra',
+    "OHM (Female)", 'HMPK Male', 'Placarts', 'Candy Betta', 'HMPK Female',
+    'Tiger Red Oscar', 'Red Oscar', 'Lemon Oscar', 'Mango Oscar',
+    'KML', 'F2 Kamfa', 'Parrots', 'Golden Arowana', 'Red Arowana',
+    'Alligator Gar (Small)', 'Cichlids', 'Channa Fish', 'Japanese Koi', 'Indian Koi', 'Giant Gourami'
   ];
 
   const defaultCategories = [
@@ -183,7 +207,8 @@ function initPortalState() {
     { name: 'Wild Oscars', count: 5, image: 'fishes/Albino oscar fish.webp', status: 'Active' },
     { name: 'Flowerhorns', count: 5, image: 'fishes/Srd flowerhorn.jpg', status: 'Active' },
     { name: 'Arowana', count: 3, image: 'fishes/Silver arwana.webp', status: 'Active' },
-    { name: 'Gold Fish', count: 2, image: 'fishes/Gold fish.jpeg', status: 'Active' }
+    { name: 'Gold Fish', count: 2, image: 'fishes/Gold fish.jpeg', status: 'Active' },
+    { name: 'Exotics & Giants', count: 6, image: 'fishes/Aligator gar.jpg', status: 'Active' }
   ];
 
   const defaultFoods = [
