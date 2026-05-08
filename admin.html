@@ -53,6 +53,7 @@
         <li class="sidebar-item"><a href="#" class="sidebar-link active" data-target="overview">📊 Dashboard Overview</a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="products">🐠 Fish Items</a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="foods">🍖 Foods & Nutrition</a></li>
+        <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="items">🛠️ Aquatic Items</a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="categories">📂 Categories</a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="orders">🛒 Orders Inbox <span class="badge badge-cancelled" style="padding: 1px 6px; font-size: 0.7rem;" id="ordersCounter">5</span></a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="customers">👥 Customers List</a></li>
@@ -79,6 +80,7 @@
       <a href="#" class="mobile-nav-item active" data-target="overview"><span class="mobile-nav-icon">📊</span>Overview</a>
       <a href="#" class="mobile-nav-item" data-target="products"><span class="mobile-nav-icon">🐠</span>Fishes</a>
       <a href="#" class="mobile-nav-item" data-target="foods"><span class="mobile-nav-icon">🍖</span>Foods</a>
+      <a href="#" class="mobile-nav-item" data-target="items"><span class="mobile-nav-icon">🛠️</span>Items</a>
       <a href="#" class="mobile-nav-item" data-target="orders"><span class="mobile-nav-icon">🛒</span>Orders</a>
       <a href="#" class="mobile-nav-item" data-target="messages"><span class="mobile-nav-icon">💬</span>Inbox</a>
     </nav>
@@ -347,6 +349,41 @@
         </div>
       </section>
 
+      <!-- 3c. AQUATIC ITEMS MANAGEMENT -->
+      <section class="app-section" id="sec-items">
+        <div class="card-header">
+          <h3>🛠️ Aquatic Items &amp; Accessories</h3>
+          <button class="btn-primary" id="btnAddItem" style="width: auto; padding: 10px 20px;">➕ Add Item</button>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+          <div class="search-input-wrapper">
+            <span class="search-icon-inside">🔍</span>
+            <input type="text" class="form-input search-input" id="searchItems" placeholder="Search items by name...">
+          </div>
+        </div>
+
+        <div class="data-card">
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Item Name</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="itemsTableBody">
+                <!-- Items dynamically load here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
       <!-- 4. ORDER MANAGEMENT -->
       <section class="app-section" id="sec-orders">
         <div class="card-header">
@@ -571,6 +608,44 @@
           </div>
           <div class="form-group form-full">
             <button type="submit" class="btn-primary" id="btnSubmitFood">Save Food Item</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADD / EDIT ITEM MODAL OVERLAY -->
+  <div class="modal-overlay" id="itemModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="itemModalTitle">Add Aquatic Item</h3>
+        <button class="btn-close" id="btnCloseItemModal">&times;</button>
+      </div>
+      <form id="itemForm">
+        <input type="hidden" id="editItemId">
+        <div class="form-grid">
+          <div class="form-group form-full">
+            <label class="form-label">Item Name</label>
+            <input type="text" class="form-input" id="itemName" required placeholder="e.g. Aquarium Heater (50W)">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Price (₹)</label>
+            <input type="text" class="form-input" id="itemPrice" required placeholder="e.g. 300">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Stock Status</label>
+            <select class="select-filter" style="width: 100%;" id="itemStock">
+              <option value="In Stock">In Stock</option>
+              <option value="Low Stock">Low Stock</option>
+              <option value="Out of Stock">Out of Stock</option>
+            </select>
+          </div>
+          <div class="form-group form-full">
+            <label class="form-label">Image Filename Path</label>
+            <input type="text" class="form-input" id="itemImage" placeholder="e.g. items/50w aquarium heater.webp">
+          </div>
+          <div class="form-group form-full">
+            <button type="submit" class="btn-primary" id="btnSubmitItem">Save Item</button>
           </div>
         </div>
       </form>

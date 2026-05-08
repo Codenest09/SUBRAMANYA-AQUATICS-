@@ -86,6 +86,7 @@ function initNavigation() {
     overview: { title: 'Dashboard Overview', desc: 'Real-time business performance analytics' },
     products: { title: 'Fish Items', desc: 'Manage aquatic fish catalog — add, edit, or remove fish items' },
     foods: { title: 'Foods & Nutrition', desc: 'Manage fish food products — pellets, flakes, live food and supplements' },
+    items: { title: 'Aquatic Items', desc: 'Manage aquarium items — heaters, lights, oxygen pumps' },
     categories: { title: 'Store Categories', desc: 'Manage freshwater, saltwater, and gear catalog classes' },
     orders: { title: 'Orders Management', desc: 'Process customer purchase requests, track deliveries and invoices' },
     customers: { title: 'Customers List', desc: 'View, search, filter, or ban registered customers' },
@@ -128,6 +129,7 @@ let categories = [];
 let testimonials = [];
 let inquiries = [];
 let foods = [];
+let items = [];
 
 function initPortalState() {
   // Mock/Initial Data
@@ -255,6 +257,18 @@ function initPortalState() {
   inquiries = JSON.parse(localStorage.getItem('sa_inquiries')) || defaultInquiries;
   foods = JSON.parse(localStorage.getItem('sa_foods')) || defaultFoods;
 
+  const defaultItems = [
+    { id: 1, name: 'Aquarium Heater (50W)', price: '₹300', stock: 'In Stock', image: 'items/50w aquarium heater.webp' },
+    { id: 2, name: 'Aquarium Heater (100W)', price: '₹400', stock: 'In Stock', image: 'items/100w aquarium heater.webp' },
+    { id: 3, name: 'Aquarium Light Large', price: '₹500', stock: 'In Stock', image: 'items/aquarium light large.webp' },
+    { id: 4, name: 'Aquarium Light Small', price: '₹300', stock: 'In Stock', image: 'items/aquarium light small.webp' },
+    { id: 5, name: 'Bubble Oxygen', price: '₹150', stock: 'In Stock', image: 'items/buble oxygen.jpeg' },
+    { id: 6, name: 'Double Oxygen', price: '₹250', stock: 'In Stock', image: 'items/double oxygen.jpg' },
+    { id: 7, name: 'Internal Oxygen (Small)', price: '₹200', stock: 'In Stock', image: 'items/internal oxygen (small).webp' },
+    { id: 8, name: 'Internal Oxygen (Large)', price: '₹350', stock: 'In Stock', image: 'items/internal oxygen (large).jpg' }
+  ];
+  items = JSON.parse(localStorage.getItem('sa_items')) || defaultItems;
+
   // Inject any missing required guppy varieties into existing data
   const existingNames = new Set(products.map(p => p.name));
   const nextId = products.length ? Math.max(...products.map(p => p.id)) + 1 : 100;
@@ -281,6 +295,7 @@ function initPortalState() {
   renderProducts();
   renderCategories();
   renderFoods();
+  renderItems();
   renderOrders();
   renderCustomers();
   renderInquiries();
@@ -301,6 +316,7 @@ function saveAllState() {
   localStorage.setItem('sa_testimonials', JSON.stringify(testimonials));
   localStorage.setItem('sa_inquiries', JSON.stringify(inquiries));
   localStorage.setItem('sa_foods', JSON.stringify(foods));
+  localStorage.setItem('sa_items', JSON.stringify(items));
 }
 
 // Render Products Table
@@ -481,6 +497,60 @@ window.deleteFood = function(id) {
     saveAllState();
     renderFoods();
     showToast('success', `"${f.name}" removed from foods.`);
+  }
+};
+
+// Render Aquatic Items Table
+function renderItems() {
+  const tbody = document.getElementById('itemsTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  const searchVal = document.getElementById('searchItems')?.value.toLowerCase() || '';
+
+  const filtered = items.filter(it => it.name.toLowerCase().includes(searchVal));
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--color-text-muted);padding:20px;">No items found. Add one above!</td></tr>';
+    return;
+  }
+
+  filtered.forEach(it => {
+    const stockBadge = it.stock === 'In Stock' ? 'delivered' : it.stock === 'Low Stock' ? 'pending' : 'cancelled';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><img src="${it.image || 'logo.jpeg'}" alt="${it.name}" style="width:44px;height:44px;border-radius:8px;border:1.5px solid var(--color-primary);object-fit:cover;"></td>
+      <td><strong>${it.name}</strong></td>
+      <td><strong style="color:var(--color-secondary);">${it.price}</strong></td>
+      <td><span class="badge badge-${stockBadge}">${it.stock}</span></td>
+      <td>
+        <button class="btn-secondary" style="padding:4px 10px;margin-right:6px;" onclick="openEditItem(${it.id})">✏️ Edit</button>
+        <button class="btn-secondary" style="padding:4px 10px;border-color:var(--color-accent);color:var(--color-accent);" onclick="deleteItem(${it.id})">🗑️ Delete</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+window.openEditItem = function(id) {
+  const it = items.find(item => item.id == id);
+  if (!it) return;
+  document.getElementById('editItemId').value = it.id;
+  document.getElementById('itemName').value = it.name;
+  document.getElementById('itemPrice').value = it.price.replace('₹', '');
+  document.getElementById('itemStock').value = it.stock;
+  document.getElementById('itemImage').value = it.image || '';
+  document.getElementById('itemModalTitle').textContent = 'Edit: ' + it.name;
+  document.getElementById('itemModal').classList.add('active');
+};
+
+window.deleteItem = function(id) {
+  const it = items.find(item => item.id == id);
+  if (it && confirm(`Delete "${it.name}" from items catalog?`)) {
+    items = items.filter(item => item.id != id);
+    saveAllState();
+    renderItems();
+    showToast('success', `"${it.name}" removed.`);
   }
 };
 
@@ -783,6 +853,56 @@ function initFormSubmitHandlers() {
       saveAllState();
       renderFoods();
       foodModal.classList.remove('active');
+    });
+  }
+
+  document.getElementById('searchItems')?.addEventListener('input', renderItems);
+
+  // ---- AQUATIC ITEMS MODAL ----
+  const itemModal = document.getElementById('itemModal');
+  const btnAddItem = document.getElementById('btnAddItem');
+  const btnCloseItem = document.getElementById('btnCloseItemModal');
+  const itemForm = document.getElementById('itemForm');
+
+  if (btnAddItem && itemModal) {
+    btnAddItem.addEventListener('click', () => {
+      itemForm.reset();
+      document.getElementById('editItemId').value = '';
+      document.getElementById('itemModalTitle').textContent = 'Add Aquatic Item';
+      itemModal.classList.add('active');
+    });
+  }
+  if (btnCloseItem && itemModal) {
+    btnCloseItem.addEventListener('click', () => itemModal.classList.remove('active'));
+  }
+  if (itemForm) {
+    itemForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = document.getElementById('editItemId').value;
+      const name = document.getElementById('itemName').value;
+      const price = document.getElementById('itemPrice').value;
+      const stock = document.getElementById('itemStock').value;
+      const image = document.getElementById('itemImage').value || 'logo.jpeg';
+
+      if (id) {
+        const it = items.find(item => item.id == id);
+        if (it) {
+          it.name = name;
+          it.price = price.startsWith('₹') || price.toLowerCase().includes('contact') ? price : '₹' + price;
+          it.stock = stock; it.image = image;
+          showToast('success', `${name} updated successfully!`);
+        }
+      } else {
+        const newId = items.length ? Math.max(...items.map(item => item.id)) + 1 : 1;
+        items.push({ id: newId, name,
+          price: price.startsWith('₹') || price.toLowerCase().includes('contact') ? price : '₹' + price,
+          stock, image
+        });
+        showToast('success', `Item '${name}' added to catalog!`);
+      }
+      saveAllState();
+      renderItems();
+      itemModal.classList.remove('active');
     });
   }
 
