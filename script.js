@@ -575,7 +575,7 @@ function submitOrderData(orderId, name, address, phone, t, paymentMethod, cartIt
     customer: name,
     phone: phone,
     address: address,
-    date: new Date().toLocaleDateString('en-IN'),
+    date: new Date().toLocaleDateString('en-IN') + ' ' + new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
     items: itemsToSave,
     total: t.total,
     amount: '₹' + t.total,
@@ -599,7 +599,7 @@ function submitOrderData(orderId, name, address, phone, t, paymentMethod, cartIt
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       orderId,
-      date: new Date().toLocaleDateString('en-IN'),
+      date: new Date().toLocaleDateString('en-IN') + ' ' + new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
       name,
       phone,
       address,
@@ -669,7 +669,7 @@ function confirmUpiPayment() {
 
       // Reset submit button state
       if (spinner) spinner.style.display = 'none';
-      if (btnText) btnText.textContent = 'Place Order & Submit Verification ✓';
+      if (btnText) btnText.textContent = 'Verify & Place Order';
       uploadedScreenshotBase64 = '';
 
       // Show success

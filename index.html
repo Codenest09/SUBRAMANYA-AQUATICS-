@@ -893,13 +893,11 @@
       </div>
       <div class="checkout-section">
         <h3>💳 Payment Method</h3>
-        <div class="payment-grid" id="paymentGrid">
-          <div class="payment-option selected" data-method="qr" onclick="selectPayment(this)"><span class="pay-icon">🔳</span><span class="pay-label">QR Code Payment</span></div>
-          <div class="payment-option" data-method="upi" onclick="selectPayment(this)"><span class="pay-icon">⚡</span><span class="pay-label">UPI Payment</span></div>
-        </div>
-        <div class="secure-badge">🔒 100% Secure Payment</div>
+        <button class="btn-place-order neon-pulse" id="placeOrderBtn" onclick="placeOrder()" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px; border: none; font-size: 1.1rem; border-radius: 14px; background: linear-gradient(135deg, var(--aqua-cyan), var(--neon-teal)); color: var(--deep-ocean); font-weight: 700; cursor: pointer; transition: 0.3s; box-shadow: 0 0 25px rgba(0, 212, 255, 0.45); margin-top: 10px;">
+          <span>⚡</span> Pay with UPI
+        </button>
+        <div class="secure-badge" style="margin-top: 12px;">🔒 100% Secure Payment</div>
       </div>
-      <button class="btn-place-order" id="placeOrderBtn" onclick="placeOrder()">Proceed to Payment →</button>
     </div>
   </div>
 
@@ -952,10 +950,13 @@
             </div>
           </div>
 
-          <!-- Easy Copy UPI ID Field -->
-          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 2px;">
+          <!-- Easy Copy UPI ID Field & WhatsApp Support -->
+          <div style="display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 2px;">
             <span style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">UPI ID: <strong>7995549922@ybl</strong></span>
             <button class="btn-copy-id" id="copyUpiIdBtn" onclick="copyUpiId()">📋 Copy</button>
+            <a href="https://wa.me/917995549922?text=Hi%20Subramanya%20Aquatics,%20I%20have%20completed%20the%20UPI%20payment%20and%20need%20help%20with%20order%20verification." target="_blank" class="btn-copy-id" style="background: rgba(37, 211, 102, 0.1); border-color: rgba(37, 211, 102, 0.3); color: #25d366; text-decoration: none; display: flex; align-items: center; gap: 4px;">
+              <span>💬</span> Support
+            </a>
           </div>
 
           <!-- Instruction Text -->
@@ -990,7 +991,7 @@
           <!-- Submit Action Button -->
           <button class="btn-place-order" id="submitUpiPaymentBtn" onclick="confirmUpiPayment()" disabled style="width: 100%; padding: 12px; font-size: 0.9rem; margin-top: 8px;">
             <span id="submitSpinner" class="submit-spinner" style="display: none;"></span>
-            <span id="submitBtnText">Place Order & Submit Verification ✓</span>
+            <span id="submitBtnText">Verify & Place Order</span>
           </button>
         </div>
       </div>
