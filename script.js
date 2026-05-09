@@ -175,7 +175,7 @@ function initFlashSale() {
 initFlashSale();
 
 // ========== GOOGLE SHEETS BACKEND ==========
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbx7eW-GfbJhcqsRR-JTWgi19gymekudxYniN7PLmltybN02psrnkTlDPkjTSotz2CLX/exec';
+const SHEETS_URL = '/api/orders'; // Changed to local API
 
 // ========== CART SYSTEM ==========
 let cart = JSON.parse(localStorage.getItem('sa_cart') || '[]');
@@ -603,19 +603,27 @@ function submitOrderData(orderId, name, address, phone, t, paymentMethod, cartIt
   const itemsSummary = itemsToSave.map(i => `${i.name} x${i.qty}`).join(', ');
   fetch(SHEETS_URL, {
     method: 'POST',
-    mode: 'no-cors',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      orderId,
-      date: new Date().toLocaleDateString('en-IN') + ' ' + new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
-      name,
-      phone,
-      address,
-      items: itemsSummary,
-      total: '₹' + t.total,
-      payment: paymentMethod + (utr ? ` (UTR: ${utr})` : '')
+      'Order ID': orderId,
+      'Date': new Date().toLocaleDateString('en-IN') + ' ' + new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+      'Customer Name': name,
+      'Phone': phone,
+      'Address': address,
+      'Items': itemsSummary,
+      'Total': '₹' + t.total,
+      'Payment': paymentMethod + (utr ? ` (UTR: ${utr})` : ''),
+      'Status': utr ? 'Pending Verification' : 'Confirmed'
     })
-  }).catch(() => {});
+  }).then(response => {
+    if (response.ok) {
+      console.log('Order successfully sent to Google Sheets');
+    } else {
+      console.error('Failed to send order to Google Sheets:', response.status);
+    }
+  }).catch(error => {
+    console.error('Error sending order to Google Sheets:', error);
+  });
 }
 
 // UPI Modal actions

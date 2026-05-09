@@ -66,20 +66,118 @@ console.log(`Copied ${copied} images`);
 
 // Now start HTTP server
 const http = require('http');
+const url = require('url');
+const querystring = require('querystring');
+
+// Simple in-memory storage for orders (replace with database in production)
+let orders = [];
+const ORDERS_FILE = path.join(__dirname, 'orders.json');
+
+// Load existing orders
+if (fs.existsSync(ORDERS_FILE)) {
+  try {
+    orders = JSON.parse(fs.readFileSync(ORDERS_FILE, 'utf8'));
+  } catch (e) {
+    console.log('Could not load orders file');
+  }
+}
+
+// Save orders to file
+function saveOrders() {
+  fs.writeFileSync(ORDERS_FILE, JSON.stringify(orders, null, 2));
+}
+
 const mimeTypes = {
   '.html': 'text/html', '.css': 'text/css', '.js': 'application/javascript',
   '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp',
   '.avif': 'image/avif', '.svg': 'image/svg+xml', '.json': 'application/json'
 };
 const server = http.createServer((req, res) => {
+  const parsedUrl = url.parse(req.url, true);
   let decodedUrl = decodeURI(req.url);
+  
+  // Handle API endpoints
+  if (decodedUrl === '/api/orders' && req.method === 'GET') {
+    // Return orders for admin panel
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(orders));
+    return;
+  }
+  
+  if (decodedUrl === '/api/orders' && req.method === 'POST') {
+    // Handle new order submission
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      try {
+        const orderData = JSON.parse(body);
+        const newOrder = {
+          'Order ID': orderData['Order ID'] || `SA-${9000 + orders.length + 1}`,
+          'Customer Name': orderData['Customer Name'],
+          'Phone': orderData['Phone'],
+          'Address': orderData['Address'],
+          'Items': orderData['Items'],
+          'Total': orderData['Total'],
+          'Payment': orderData['Payment'],
+          'Status': orderData['Status'] || 'Pending Verification',
+          'Date': orderData['Date'] || new Date().toLocaleDateString('en-IN')
+        };
+        orders.unshift(newOrder);
+        saveOrders();
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, orderId: newOrder['Order ID'] }));
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Invalid order data' }));
+      }
+    });
+    return;
+  }
+  
+  if (decodedUrl.startsWith('/api/orders/') && req.method === 'PUT') {
+    // Handle order status updates
+    const orderId = decodedUrl.split('/api/orders/')[1];
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      try {
+        const updateData = JSON.parse(body);
+        const order = orders.find(o => o['Order ID'] === orderId);
+        if (order) {
+          order.Status = updateData.status;
+          saveOrders();
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: true }));
+        } else {
+          res.writeHead(404, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Order not found' }));
+        }
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Invalid update data' }));
+      }
+    });
+    return;
+  }
+  
+  // Handle admin page routing
   if (decodedUrl === '/admin' || decodedUrl === '/admin/') {
     decodedUrl = '/admin.html';
   }
+  
+  // Serve static files
   let filePath = path.join(__dirname, decodedUrl === '/' ? 'index.html' : decodedUrl);
   const ext = path.extname(filePath);
   fs.readFile(filePath, (err, data) => {
-    if (err) { res.writeHead(404); res.end('Not found'); return; }
+    if (err) { 
+      res.writeHead(404); 
+      res.end('Not found'); 
+      return; 
+    }
     res.writeHead(200, { 'Content-Type': mimeTypes[ext] || 'application/octet-stream' });
     res.end(data);
   });

@@ -1,5 +1,5 @@
 // Subramanya Aquatics Admin Portal State Logic
-const ADMIN_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbx7eW-GfbJhcqsRR-JTWgi19gymekudxYniN7PLmltybN02psrnkTlDPkjTSotz2CLX/exec';
+const ADMIN_SHEETS_URL = '/api/orders'; // Changed to local API
 document.addEventListener('DOMContentLoaded', () => {
   initBubbleGenerator();
   initAuthSession();
@@ -637,6 +637,7 @@ function renderOrders() {
 
 // Change Order Status
 window.changeOrderStatus = function(id, val) {
+  // Update local state
   const o = orders.find(ord => ord.id === id);
   if (o) {
     o.status = val;
@@ -644,41 +645,54 @@ window.changeOrderStatus = function(id, val) {
     initPortalState();
     showToast('success', `Order ${id} status updated to ${val}!`);
   }
+  
+  // Update server
+  fetch(`/api/orders/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: val })
+  }).catch(() => {
+    // Server update failed, but local update succeeded
+    console.log('Server update failed, but local update succeeded');
+  });
 };
 
-// Sync real orders from Google Sheets
+// Sync real orders from server
 window.syncOrdersFromSheets = function() {
-  showToast('info', 'Syncing orders from Google Sheets...');
+  showToast('info', 'Syncing orders from server...');
   fetch(ADMIN_SHEETS_URL)
     .then(res => res.json())
     .then(data => {
       if (!Array.isArray(data) || data.length === 0) {
-        showToast('info', 'No orders found in Google Sheets yet.');
+        showToast('info', 'No orders found yet.');
         return;
       }
-      // Map sheet columns to order objects
-      const sheetOrders = data.map((row, i) => ({
-        id: row['Order ID'] || ('SA-' + (9000 + i)),
-        customer: row['Customer Name'] || 'Unknown',
-        product: row['Items'] || '-',
-        amount: row['Total'] || '-',
-        status: (row['Status'] || 'pending').toLowerCase(),
-        date: row['Date'] || '-',
-        phone: row['Phone'] || '-',
-        address: row['Address'] || '-',
-        payment: row['Payment'] || '-'
-      }));
-      // Merge with existing, sheet orders take priority by ID
-      const existingIds = new Set(orders.map(o => o.id));
-      sheetOrders.forEach(so => {
-        if (!existingIds.has(so.id)) orders.unshift(so);
+      // Merge with existing, server orders take priority by ID
+      const existingIds = new Set(orders.map(o => o.id || o['Order ID']));
+      data.forEach(serverOrder => {
+        const orderId = serverOrder['Order ID'];
+        if (!existingIds.has(orderId)) {
+          // Convert server format to local format
+          const localOrder = {
+            id: orderId,
+            customer: serverOrder['Customer Name'],
+            product: serverOrder['Items'],
+            amount: serverOrder['Total'],
+            status: (serverOrder['Status'] || 'pending').toLowerCase(),
+            date: serverOrder['Date'],
+            phone: serverOrder['Phone'],
+            address: serverOrder['Address'],
+            payment: serverOrder['Payment']
+          };
+          orders.unshift(localOrder);
+        }
       });
       saveAllState();
       renderOrders();
-      const count = sheetOrders.length;
-      showToast('success', `Synced ${count} order(s) from Google Sheets!`);
+      const count = data.length;
+      showToast('success', `Synced ${count} order(s) from server!`);
     })
-    .catch(() => showToast('error', 'Failed to connect to Google Sheets. Check script permissions.'));
+    .catch(() => showToast('error', 'Failed to connect to server.'));
 };
 
 // Render Customers List Table
