@@ -174,10 +174,8 @@ function initFlashSale() {
 }
 initFlashSale();
 
-// ========== GOOGLE SHEETS BACKEND ==========
+// ========== SERVER BACKEND ==========
 const SHEETS_URL = '/api/orders'; // Local API
-// ⬇️ PASTE YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL BELOW ⬇️
-const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyFfedvktNPSZhqP3Ferqz1OJR4bMo-X0m-KYP5tX3kGRGAZvApsGc1r5mMsja_B5Zg/exec';
 
 // ========== CART SYSTEM ==========
 let cart = JSON.parse(localStorage.getItem('sa_cart') || '[]');
@@ -649,27 +647,6 @@ function submitOrderData(orderId, name, address, city, pincode, state, phone, t,
     console.error('Error sending order to local server:', error);
   });
 
-  // ========== SEND TO GOOGLE SHEETS ==========
-  // Uses GET + URL params (reliable cross-origin, survives Google's 302 redirect)
-  // Matches columns: Name | Address | City | Pincode | State | Contact | Order ID | Utr
-  if (GOOGLE_SHEETS_URL && !GOOGLE_SHEETS_URL.includes('PASTE_YOUR_DEPLOYMENT_ID_HERE')) {
-    const sheetParams = new URLSearchParams({
-      name:    name,
-      address: address,
-      city:    city,
-      pincode: pincode,
-      state:   state,
-      contact: phone,
-      orderId: orderId,
-      utr:     utr || ''
-    }).toString();
-    
-    // Image beacon: most reliable cross-origin delivery to Apps Script
-    const beacon = new Image();
-    beacon.onload = () => console.log('✅ Order sent to Google Sheets');
-    beacon.onerror = () => console.log('✅ Order sent to Google Sheets (response received)');
-    beacon.src = `${GOOGLE_SHEETS_URL}?${sheetParams}`;
-  }
 }
 
 // UPI Modal actions

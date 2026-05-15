@@ -1,7 +1,5 @@
 // Subramanya Aquatics Admin Portal State Logic
 const ADMIN_SHEETS_URL = '/api/orders'; // Local API
-// ⬇️ PASTE YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL BELOW ⬇️
-const ADMIN_GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyFfedvktNPSZhqP3Ferqz1OJR4bMo-X0m-KYP5tX3kGRGAZvApsGc1r5mMsja_B5Zg/exec';
 document.addEventListener('DOMContentLoaded', () => {
   initBubbleGenerator();
   initAuthSession();
@@ -695,51 +693,6 @@ window.syncOrdersFromSheets = function() {
       showToast('success', `Synced ${count} order(s) from server!`);
     })
     .catch(() => showToast('error', 'Failed to connect to server.'));
-};
-
-// Sync orders from Google Sheets directly
-window.syncOrdersFromGoogleSheets = function() {
-  if (!ADMIN_GOOGLE_SHEETS_URL || ADMIN_GOOGLE_SHEETS_URL.includes('PASTE_YOUR_DEPLOYMENT_ID_HERE')) {
-    showToast('error', 'Google Sheets URL not configured. Update ADMIN_GOOGLE_SHEETS_URL in admin.js');
-    return;
-  }
-  showToast('info', 'Syncing orders from Google Sheets...');
-  fetch(ADMIN_GOOGLE_SHEETS_URL)
-    .then(res => res.json())
-    .then(data => {
-      if (data.status !== 'success' || !data.orders || data.orders.length === 0) {
-        showToast('info', 'No orders found in Google Sheets.');
-        return;
-      }
-      const existingIds = new Set(orders.map(o => o.id));
-      let newCount = 0;
-      data.orders.forEach(sheetOrder => {
-        if (!existingIds.has(sheetOrder.orderId)) {
-          orders.unshift({
-            id: sheetOrder.orderId,
-            customer: sheetOrder.name,
-            phone: sheetOrder.contact,
-            address: sheetOrder.address,
-            city: sheetOrder.city,
-            pincode: sheetOrder.pincode,
-            state: sheetOrder.state,
-            utr: sheetOrder.utr,
-            product: '-',
-            amount: '-',
-            status: sheetOrder.utr ? 'Pending Verification' : 'Confirmed',
-            date: new Date().toLocaleDateString('en-IN')
-          });
-          newCount++;
-        }
-      });
-      saveAllState();
-      renderOrders();
-      showToast('success', `Synced ${data.orders.length} order(s) from Google Sheets (${newCount} new).`);
-    })
-    .catch(err => {
-      console.error('Google Sheets sync error:', err);
-      showToast('error', 'Failed to connect to Google Sheets.');
-    });
 };
 
 // Render Customers List Table
