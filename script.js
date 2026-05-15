@@ -399,8 +399,10 @@ function validatePaymentForm() {
   if (btn) {
     if (isNameValid && isPhoneValid && isUtrValid) {
       btn.removeAttribute('disabled');
+      btn.classList.add('glow-ready');
     } else {
       btn.setAttribute('disabled', 'true');
+      btn.classList.remove('glow-ready');
     }
   }
 }
@@ -500,14 +502,25 @@ function placeOrder() {
   // Open the redesigned premium payment screen
   const upiPaymentModal = document.getElementById('upiPaymentModal');
   if (upiPaymentModal) {
-    // Set QR code image fallback if not loaded locally
+    // Ensure QR code image loads correctly with robust fallbacks
     const upiQrCode = document.getElementById('upiQrCode');
     if (upiQrCode) {
+      const qrPaths = ['QR%20scan.jpeg', 'QR scan.jpeg', './QR%20scan.jpeg', './QR scan.jpeg'];
+      let pathIndex = 0;
       upiQrCode.onerror = function() {
-        upiQrCode.src = 'C:/Users/siris/.gemini/antigravity/brain/f25292fb-0708-4f33-8f93-49f3ffb70f38/qr_scan_1778252816977.png';
-        upiQrCode.onerror = null; // Prevent infinite loop
+        pathIndex++;
+        if (pathIndex < qrPaths.length) {
+          upiQrCode.src = qrPaths[pathIndex];
+        } else {
+          upiQrCode.onerror = null;
+        }
       };
+      // Only set src if it's empty or broken - don't destroy a working image
+      if (!upiQrCode.complete || upiQrCode.naturalWidth === 0) {
+        upiQrCode.src = qrPaths[0];
+      }
     }
+
     // Prefill Name and Phone in the payment form
     const payNameInput = document.getElementById('payName');
     const payPhoneInput = document.getElementById('payPhone');
@@ -531,15 +544,15 @@ function placeOrder() {
       let itemsHtml = '';
       cart.forEach(item => {
         itemsHtml += `
-          <div style="display: flex; justify-content: space-between; font-size: 0.82rem; color: rgba(255,255,255,0.85); padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.03);">
-            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 170px;">🐟 ${item.name} <span style="color: rgba(0,212,255,0.5);">×${item.qty}</span></span>
-            <span style="font-weight: 600;">₹${item.price * item.qty}</span>
+          <div class="upi-summary-item">
+            <span class="upi-item-name">🐟 ${item.name} <span class="upi-item-qty">×${item.qty}</span></span>
+            <span class="upi-item-price">₹${item.price * item.qty}</span>
           </div>`;
       });
       itemsContainer.innerHTML = itemsHtml;
     }
 
-    // Set prices in the left breakdown
+    // Set prices in the breakdown
     const paySubtotal = document.getElementById('paySubtotal');
     const payDelivery = document.getElementById('payDelivery');
     const payPacking = document.getElementById('payPacking');
@@ -549,16 +562,19 @@ function placeOrder() {
     if (payPacking) payPacking.textContent = `₹${t.packing}`;
     if (payTotal) payTotal.textContent = `₹${t.total}`;
 
-    // Show modal and run timers, bubbles, and listeners
-    upiPaymentModal.style.display = 'flex';
+    // Show modal with animation
+    upiPaymentModal.classList.add('active');
     spawnPaymentBubbles();
     startPaymentTimer();
     validatePaymentForm();
 
-    // Attach real-time validator listeners
-    document.getElementById('payName')?.addEventListener('input', validatePaymentForm);
-    document.getElementById('payPhone')?.addEventListener('input', validatePaymentForm);
-    document.getElementById('payUtr')?.addEventListener('input', validatePaymentForm);
+    // Attach real-time validator listeners (remove first to prevent duplicates)
+    const payNameEl = document.getElementById('payName');
+    const payPhoneEl = document.getElementById('payPhone');
+    const payUtrEl = document.getElementById('payUtr');
+    if (payNameEl) { payNameEl.removeEventListener('input', validatePaymentForm); payNameEl.addEventListener('input', validatePaymentForm); }
+    if (payPhoneEl) { payPhoneEl.removeEventListener('input', validatePaymentForm); payPhoneEl.addEventListener('input', validatePaymentForm); }
+    if (payUtrEl) { payUtrEl.removeEventListener('input', validatePaymentForm); payUtrEl.addEventListener('input', validatePaymentForm); }
 
     window.pendingOrderData = { orderId, name, address, phone, t, selectedPayment, cartItems: [...cart] };
   } else {
@@ -629,7 +645,7 @@ function submitOrderData(orderId, name, address, phone, t, paymentMethod, cartIt
 // UPI Modal actions
 function closeUpiModal() {
   const upiPaymentModal = document.getElementById('upiPaymentModal');
-  if (upiPaymentModal) upiPaymentModal.style.display = 'none';
+  if (upiPaymentModal) upiPaymentModal.classList.remove('active');
   if (paymentTimerInterval) clearInterval(paymentTimerInterval);
   showClientToast('Payment cancelled.');
 }
@@ -680,7 +696,7 @@ function confirmUpiPayment() {
 
       // Hide modal and close checkout
       const upiPaymentModal = document.getElementById('upiPaymentModal');
-      if (upiPaymentModal) upiPaymentModal.style.display = 'none';
+      if (upiPaymentModal) upiPaymentModal.classList.remove('active');
       closeCheckout();
 
       // Reset submit button state

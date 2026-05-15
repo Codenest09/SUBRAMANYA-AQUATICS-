@@ -902,39 +902,21 @@
   </div>
 
   <!-- Redesigned Premium Payment & UTR Verification Screen -->
-  <div class="checkout-modal-overlay" id="upiPaymentModal" style="display: none; justify-content: center; align-items: center; z-index: 1400; position: fixed; inset: 0; background: rgba(5, 12, 25, 0.96); backdrop-filter: blur(12px);">
-    <div class="payment-modal-card">
+  <div class="upi-payment-overlay" id="upiPaymentModal">
+    <div class="upi-payment-card">
       <!-- Animated Bubbles Background -->
       <div class="payment-bubbles-container" id="paymentBubblesContainer"></div>
       
       <!-- Modal Header -->
-      <div class="checkout-header" style="display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; border-bottom: 1px solid rgba(0, 212, 255, 0.15); margin: 0; z-index: 5; position: relative;">
-        <h3 style="font-family: 'Orbitron', sans-serif; color: var(--aqua-cyan); margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">💳 Secure QR Payment & Verification</h3>
-        <button class="close-checkout" onclick="closeUpiModal()" style="background: none; border: none; color: rgba(255, 255, 255, 0.5); font-size: 1.8rem; cursor: pointer; padding: 0; line-height: 1; transition: 0.2s;">&times;</button>
+      <div class="upi-modal-header">
+        <h3>💳 Secure QR Payment</h3>
+        <button class="upi-modal-close" onclick="closeUpiModal()" aria-label="Close payment modal">&times;</button>
       </div>
 
-      <!-- Main Dual Column Layout -->
-      <div class="payment-grid-layout">
-        
-        <!-- Left Column: Order Summary -->
-        <div class="payment-summary-left">
-          <h4 style="font-family: 'Orbitron', sans-serif; color: var(--aqua-cyan); border-bottom: 1px solid rgba(0,212,255,0.1); padding-bottom: 8px; margin: 0; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">📋 Purchase Details</h4>
-          <div id="paymentSummaryItems" style="flex: 1; display: flex; flex-direction: column; gap: 10px; margin-top: 5px;">
-            <!-- Items populated dynamically by script -->
-          </div>
-          <div style="border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 10px; display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; color: rgba(255,255,255,0.65);">
-            <div style="display: flex; justify-content: space-between;"><span>Items Subtotal</span><span id="paySubtotal">₹0</span></div>
-            <div style="display: flex; justify-content: space-between;"><span>Delivery Fee</span><span id="payDelivery">₹49</span></div>
-            <div style="display: flex; justify-content: space-between;"><span>Packing Charges</span><span id="payPacking">₹10</span></div>
-            <div style="display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: bold; color: white; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; margin-top: 4px;">
-              <span>Total Amount</span>
-              <span class="glowing-text" id="payTotal">₹0</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right Column: QR Payment & UTR Submission Form -->
-        <div class="payment-details-right">
+      <!-- Scrollable Content -->
+      <div class="upi-modal-body">
+        <!-- QR Payment Section -->
+        <div class="upi-qr-section">
           
           <!-- Countdown Timer Indicator -->
           <div class="payment-timer-glow" id="paymentTimer">
@@ -942,62 +924,88 @@
             <span id="timerMinutes">05</span>:<span id="timerSeconds">00</span>
           </div>
 
+          <!-- Scan & Pay Title -->
+          <h4 class="upi-scan-title">Scan & Pay with Any UPI App</h4>
+
           <!-- QR Code Image with Sliding Scanning Line -->
-          <h4 style="font-size: 0.82rem; color: var(--aqua-cyan); margin: 5px 0 -5px 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-family: 'Orbitron', sans-serif;">Scan & Pay with Any UPI App</h4>
           <div class="qr-container">
             <div class="qr-scan-wrapper">
               <div class="qr-scan-line"></div>
-              <img id="upiQrCode" src="QR scan.jpeg" alt="UPI QR Code" style="width: 100%; height: 100%; display: block; object-fit: contain;">
+              <img id="upiQrCode" src="QR%20scan.jpeg" alt="UPI QR Code for SUBRAMANYA AQUATICS">
             </div>
           </div>
 
           <!-- Merchant Info & Secure Label -->
-          <div style="margin-top: -8px; margin-bottom: -5px; font-size: 0.76rem; color: rgba(255,255,255,0.7);">
-            Merchant: <strong style="color: var(--neon-teal);">SUBRAMANYA AQUATICS</strong>
-            <span style="margin: 0 6px; color: rgba(255,255,255,0.25);">|</span>
-            <span style="color: var(--aqua-cyan); font-size: 0.72rem;">🔒 100% Secure Transaction</span>
+          <div class="upi-merchant-info">
+            <span>Merchant: <strong>SUBRAMANYA AQUATICS</strong></span>
+            <span class="upi-secure-label">🔒 100% Secure</span>
           </div>
 
-          <!-- Easy Copy UPI ID Field & WhatsApp Support -->
-          <div style="display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 2px;">
-            <span style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">UPI ID: <strong>7995549922@ybl</strong></span>
+          <!-- UPI ID Copy & WhatsApp Support -->
+          <div class="upi-id-row">
+            <span class="upi-id-text">UPI ID: <strong>7995549922@ybl</strong></span>
             <button class="btn-copy-id" id="copyUpiIdBtn" onclick="copyUpiId()">📋 Copy</button>
-            <a href="https://wa.me/917995549922?text=Hi%20Subramanya%20Aquatics,%20I%20have%20completed%20the%20UPI%20payment%20and%20need%20help%20with%20order%20verification." target="_blank" class="btn-copy-id" style="background: rgba(37, 211, 102, 0.1); border-color: rgba(37, 211, 102, 0.3); color: #25d366; text-decoration: none; display: flex; align-items: center; gap: 4px;">
-              <span>💬</span> Support
+            <a href="https://wa.me/917995549922?text=Hi%20Subramanya%20Aquatics,%20I%20have%20completed%20the%20UPI%20payment%20and%20need%20help%20with%20order%20verification." target="_blank" class="btn-copy-id btn-whatsapp-support">
+              💬 Support
             </a>
           </div>
 
-          <!-- Instruction Text -->
-          <p style="font-size: 0.72rem; color: rgba(224,247,255,0.5); margin: 0; line-height: 1.35;">Scan QR or pay via UPI, then submit your payment verification details below to place order.</p>
+          <!-- Payment Instructions -->
+          <div class="upi-instructions">
+            <div class="upi-step"><span class="step-num">1</span> Scan QR Code above</div>
+            <div class="upi-step"><span class="step-num">2</span> Complete payment in UPI app</div>
+            <div class="upi-step"><span class="step-num">3</span> Copy UTR / Transaction ID</div>
+            <div class="upi-step"><span class="step-num">4</span> Enter UTR below & submit</div>
+          </div>
+        </div>
 
-          <!-- Verification Inputs Form -->
-          <div style="width: 100%; display: flex; flex-direction: column; gap: 8px; text-align: left; margin-top: 5px;">
-            <div>
-              <label style="font-size: 0.72rem; color: var(--aqua-cyan); margin-bottom: 2px; display: block; font-weight: 500;">Customer Name *</label>
-              <input class="checkout-input" id="payName" placeholder="Full Name" style="margin: 0; padding: 8px 12px; font-size: 0.85rem;" autocomplete="name">
+        <!-- Order Summary Section -->
+        <div class="upi-order-summary">
+          <h4 class="upi-summary-title">📋 Order Summary</h4>
+          <div id="paymentSummaryItems" class="upi-summary-items">
+            <!-- Items populated dynamically by script -->
+          </div>
+          <div class="upi-summary-breakdown">
+            <div class="upi-sum-row"><span>Subtotal</span><span id="paySubtotal">₹0</span></div>
+            <div class="upi-sum-row"><span>Delivery</span><span id="payDelivery">₹49</span></div>
+            <div class="upi-sum-row"><span>Packing</span><span id="payPacking">₹10</span></div>
+            <div class="upi-sum-total">
+              <span>Total Amount</span>
+              <span class="glowing-text" id="payTotal">₹0</span>
             </div>
-            <div>
-              <label style="font-size: 0.72rem; color: var(--aqua-cyan); margin-bottom: 2px; display: block; font-weight: 500;">Phone Number *</label>
-              <input class="checkout-input" id="payPhone" type="tel" placeholder="10-Digit Mobile Number" style="margin: 0; padding: 8px 12px; font-size: 0.85rem;" autocomplete="tel" maxlength="10">
+          </div>
+        </div>
+
+        <!-- Verification Form Section -->
+        <div class="upi-verification-form">
+          <h4 class="upi-form-title">🔐 Payment Verification</h4>
+          <div class="upi-form-fields">
+            <div class="upi-field">
+              <label for="payName">Customer Name *</label>
+              <input class="upi-input" id="payName" placeholder="Full Name" autocomplete="name">
             </div>
-            <div>
-              <label style="font-size: 0.72rem; color: var(--aqua-cyan); margin-bottom: 2px; display: block; font-weight: 500;">UTR / Transaction ID *</label>
-              <input class="checkout-input" id="payUtr" placeholder="Enter 12-Digit UTR/Transaction ID" style="margin: 0; padding: 8px 12px; font-size: 0.85rem;" maxlength="16">
+            <div class="upi-field">
+              <label for="payPhone">Phone Number *</label>
+              <input class="upi-input" id="payPhone" type="tel" placeholder="10-Digit Mobile Number" autocomplete="tel" maxlength="10">
+            </div>
+            <div class="upi-field">
+              <label for="payUtr">UTR / Transaction ID *</label>
+              <input class="upi-input" id="payUtr" placeholder="Enter 12-Digit UTR/Transaction ID" maxlength="16">
             </div>
 
-            <!-- Optional Drag & Drop Screenshot upload -->
+            <!-- Screenshot Upload -->
             <div class="screenshot-upload-box" id="dragDropBox" onclick="triggerScreenshotInput()">
-              <span style="font-size: 1.1rem; margin: 0;">📸</span>
-              <span id="uploadLabel" style="font-size: 0.72rem; color: rgba(255,255,255,0.65); line-height: 1.2;">Upload Payment Screenshot (Optional)</span>
+              <span class="upload-icon">📸</span>
+              <span id="uploadLabel" class="upload-label">Upload Payment Screenshot (Optional)</span>
               <input type="file" id="screenshotFileInput" accept="image/*" style="display: none;" onchange="handleScreenshotSelect(this)">
               <div id="screenshotPreviewContainer" style="display: none; width: 100%;">
-                <img id="screenshotPreview" class="screenshot-preview" src="">
+                <img id="screenshotPreview" class="screenshot-preview" src="" alt="Payment screenshot preview">
               </div>
             </div>
           </div>
 
           <!-- Submit Action Button -->
-          <button class="btn-place-order" id="submitUpiPaymentBtn" onclick="confirmUpiPayment()" disabled style="width: 100%; padding: 12px; font-size: 0.9rem; margin-top: 8px;">
+          <button class="upi-submit-btn" id="submitUpiPaymentBtn" onclick="confirmUpiPayment()" disabled>
             <span id="submitSpinner" class="submit-spinner" style="display: none;"></span>
             <span id="submitBtnText">Verify & Place Order</span>
           </button>
