@@ -1,7 +1,7 @@
 // Subramanya Aquatics Admin Portal State Logic
 const ADMIN_SHEETS_URL = '/api/orders'; // Local API
 // ⬇️ PASTE YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL BELOW ⬇️
-const ADMIN_GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyjP6FqCcnR7fjSO80eKM1VApcwm4Uj9yuumGZAtJ-JiPtfnJKBoSnUJerqAB72cAlw/exec';
+const ADMIN_GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyFfedvktNPSZhqP3Ferqz1OJR4bMo-X0m-KYP5tX3kGRGAZvApsGc1r5mMsja_B5Zg/exec';
 document.addEventListener('DOMContentLoaded', () => {
   initBubbleGenerator();
   initAuthSession();
