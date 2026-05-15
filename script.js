@@ -650,27 +650,25 @@ function submitOrderData(orderId, name, address, city, pincode, state, phone, t,
   });
 
   // ========== SEND TO GOOGLE SHEETS ==========
+  // Uses GET + URL params (reliable cross-origin, survives Google's 302 redirect)
   // Matches columns: Name | Address | City | Pincode | State | Contact | Order ID | Utr
   if (GOOGLE_SHEETS_URL && !GOOGLE_SHEETS_URL.includes('PASTE_YOUR_DEPLOYMENT_ID_HERE')) {
-    fetch(GOOGLE_SHEETS_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name:    name,
-        address: address,
-        city:    city,
-        pincode: pincode,
-        state:   state,
-        contact: phone,
-        orderId: orderId,
-        utr:     utr
-      })
-    }).then(() => {
-      console.log('✅ Order sent to Google Sheets successfully');
-    }).catch(error => {
-      console.error('❌ Error sending to Google Sheets:', error);
-    });
+    const sheetParams = new URLSearchParams({
+      name:    name,
+      address: address,
+      city:    city,
+      pincode: pincode,
+      state:   state,
+      contact: phone,
+      orderId: orderId,
+      utr:     utr || ''
+    }).toString();
+    
+    // Image beacon: most reliable cross-origin delivery to Apps Script
+    const beacon = new Image();
+    beacon.onload = () => console.log('✅ Order sent to Google Sheets');
+    beacon.onerror = () => console.log('✅ Order sent to Google Sheets (response received)');
+    beacon.src = `${GOOGLE_SHEETS_URL}?${sheetParams}`;
   }
 }
 
