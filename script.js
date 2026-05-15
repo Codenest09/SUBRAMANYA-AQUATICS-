@@ -175,7 +175,9 @@ function initFlashSale() {
 initFlashSale();
 
 // ========== GOOGLE SHEETS BACKEND ==========
-const SHEETS_URL = '/api/orders'; // Changed to local API
+const SHEETS_URL = '/api/orders'; // Local API
+// ⬇️ PASTE YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL BELOW ⬇️
+const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyjP6FqCcnR7fjSO80eKM1VApcwm4Uj9yuumGZAtJ-JiPtfnJKBoSnUJerqAB72cAlw/exec';
 
 // ========== CART SYSTEM ==========
 let cart = JSON.parse(localStorage.getItem('sa_cart') || '[]');
@@ -481,6 +483,9 @@ function playSuccessSound() {
 function placeOrder() {
   const name = document.getElementById('coName')?.value.trim();
   const address = document.getElementById('coAddress')?.value.trim();
+  const city = document.getElementById('coCity')?.value.trim() || '';
+  const pincode = document.getElementById('coPincode')?.value.trim() || '';
+  const state = document.getElementById('coState')?.value.trim() || '';
   const phone = document.getElementById('coPhone')?.value.trim();
 
   if (!name || !address || !phone) {
@@ -576,10 +581,10 @@ function placeOrder() {
     if (payPhoneEl) { payPhoneEl.removeEventListener('input', validatePaymentForm); payPhoneEl.addEventListener('input', validatePaymentForm); }
     if (payUtrEl) { payUtrEl.removeEventListener('input', validatePaymentForm); payUtrEl.addEventListener('input', validatePaymentForm); }
 
-    window.pendingOrderData = { orderId, name, address, phone, t, selectedPayment, cartItems: [...cart] };
+    window.pendingOrderData = { orderId, name, address, city, pincode, state, phone, t, selectedPayment, cartItems: [...cart] };
   } else {
     // Fallback if modal not present
-    submitOrderData(orderId, name, address, phone, t, selectedPayment, [...cart]);
+    submitOrderData(orderId, name, address, city, pincode, state, phone, t, selectedPayment, [...cart]);
     cart = [];
     saveCart();
     closeCheckout();
@@ -589,7 +594,7 @@ function placeOrder() {
 }
 
 // Helper function to submit order details
-function submitOrderData(orderId, name, address, phone, t, paymentMethod, cartItems, utr = '', screenshot = '') {
+function submitOrderData(orderId, name, address, city, pincode, state, phone, t, paymentMethod, cartItems, utr = '', screenshot = '') {
   const itemsToSave = cartItems || [...cart];
   // Save to order history
   const orders = JSON.parse(localStorage.getItem('sa_orders') || '[]');
@@ -599,6 +604,9 @@ function submitOrderData(orderId, name, address, phone, t, paymentMethod, cartIt
     customer: name,
     phone: phone,
     address: address,
+    city: city,
+    pincode: pincode,
+    state: state,
     date: new Date().toLocaleDateString('en-IN') + ' ' + new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
     items: itemsToSave,
     total: t.total,
@@ -615,7 +623,7 @@ function submitOrderData(orderId, name, address, phone, t, paymentMethod, cartIt
   // Save phone
   localStorage.setItem('sa_user_phone', phone);
 
-  // Send order to Google Sheets
+  // Send order to local server API
   const itemsSummary = itemsToSave.map(i => `${i.name} x${i.qty}`).join(', ');
   fetch(SHEETS_URL, {
     method: 'POST',
@@ -633,13 +641,37 @@ function submitOrderData(orderId, name, address, phone, t, paymentMethod, cartIt
     })
   }).then(response => {
     if (response.ok) {
-      console.log('Order successfully sent to Google Sheets');
+      console.log('Order sent to local server');
     } else {
-      console.error('Failed to send order to Google Sheets:', response.status);
+      console.error('Failed to send order to local server:', response.status);
     }
   }).catch(error => {
-    console.error('Error sending order to Google Sheets:', error);
+    console.error('Error sending order to local server:', error);
   });
+
+  // ========== SEND TO GOOGLE SHEETS ==========
+  // Matches columns: Name | Address | City | Pincode | State | Contact | Order ID | Utr
+  if (GOOGLE_SHEETS_URL && !GOOGLE_SHEETS_URL.includes('PASTE_YOUR_DEPLOYMENT_ID_HERE')) {
+    fetch(GOOGLE_SHEETS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name:    name,
+        address: address,
+        city:    city,
+        pincode: pincode,
+        state:   state,
+        contact: phone,
+        orderId: orderId,
+        utr:     utr
+      })
+    }).then(() => {
+      console.log('✅ Order sent to Google Sheets successfully');
+    }).catch(error => {
+      console.error('❌ Error sending to Google Sheets:', error);
+    });
+  }
 }
 
 // UPI Modal actions
@@ -652,7 +684,7 @@ function closeUpiModal() {
 
 function confirmUpiPayment() {
   if (window.pendingOrderData) {
-    const { orderId, address, selectedPayment, cartItems, t } = window.pendingOrderData;
+    const { orderId, address, city, pincode, state, selectedPayment, cartItems, t } = window.pendingOrderData;
     
     const name = document.getElementById('payName')?.value.trim() || '';
     const phone = document.getElementById('payPhone')?.value.trim() || '';
@@ -682,7 +714,7 @@ function confirmUpiPayment() {
     // Simulate authentic verification delay before showing success
     setTimeout(() => {
       // Submit order data with UTR details and screenshot
-      submitOrderData(orderId, name, address, phone, t, selectedPayment, cartItems, utr, uploadedScreenshotBase64);
+      submitOrderData(orderId, name, address, city, pincode, state, phone, t, selectedPayment, cartItems, utr, uploadedScreenshotBase64);
 
       // Synthesize premium success chime arpeggio sound
       playSuccessSound();
