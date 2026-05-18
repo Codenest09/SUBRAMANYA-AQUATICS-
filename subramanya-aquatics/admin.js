@@ -130,8 +130,13 @@ function initPortalState() {
   // Mock/Initial Data
   const defaultProducts = [
     { id: 1, name: 'Moon Tail Guppys', category: 'Guppys', price: '₹99', image: 'fishes/Sward tail guppy.jpeg', tag: 'Best Seller' },
-    { id: 2, name: 'Golden Guppys (24K)', category: 'Guppys', price: '₹249', image: 'fishes/Golden guppy.jpg', tag: 'Premium' },
-    { id: 3, name: 'Mollys', category: 'Mollies', price: '₹49', image: 'fishes/mollies.webp', tag: 'Popular' },
+    { id: 11, name: 'Guppy Semi Adults', category: 'Guppys', price: '₹40 / pair', image: 'fishes/Guppys semi adults.webp', tag: 'Semi Adult' },
+    { id: 111, name: 'Koi Texido', category: 'Guppys', price: '₹250', image: 'fishes/Koi texido.jpg', tag: 'Premium' },
+    { id: 112, name: 'Dark Knight Dragon', category: 'Guppys', price: '₹250', image: 'fishes/Dark knight dragon.jpg', tag: 'Premium' },
+    { id: 113, name: 'White Angel', category: 'Angels', price: '₹150', image: 'fishes/White angel.jpg', tag: 'Popular' },
+    { id: 114, name: 'Marbel Angel', category: 'Angels', price: '₹199', image: 'fishes/Marbel angel.jpg', tag: 'Popular' },
+    { id: 115, name: 'Angel', category: 'Angels', price: '₹100', image: 'fishes/Angel.jpg', tag: 'Standard' },
+    { id: 12, name: 'Mollys', category: 'Mollies', price: '₹49', image: 'fishes/mollies.webp', tag: 'Popular' },
     { id: 4, name: 'Gourami', category: 'Oxy-less Fishes', price: '₹79', image: 'fishes/Gourami.jpg', tag: 'Healthy' },
     { id: 5, name: 'OHM (Males)', category: "Betta's", price: '₹149', image: 'fishes/Beta ohm male.webp', tag: 'Exotic' },
     { id: 6, name: 'Albino Oscar', category: 'Wild Oscars', price: '₹499', image: 'fishes/Albino oscar fish.webp', tag: 'Giant' },
@@ -144,7 +149,8 @@ function initPortalState() {
   ];
 
   const defaultCategories = [
-    { name: 'Guppys', count: 9, image: 'fishes/Sward tail guppy.jpeg', status: 'Active' },
+    { name: 'Guppys', count: 13, image: 'fishes/Sward tail guppy.jpeg', status: 'Active' },
+    { name: 'Angels', count: 3, image: 'fishes/White angel.jpg', status: 'Active' },
     { name: 'Mollies', count: 4, image: 'fishes/mollies.webp', status: 'Active' },
     { name: 'Oxy-less Fishes', count: 8, image: 'fishes/Gourami.jpg', status: 'Active' },
     { name: "Betta's", count: 6, image: 'fishes/Beta ohm male.webp', status: 'Active' },

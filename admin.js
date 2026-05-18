@@ -147,6 +147,11 @@ function initPortalState() {
     { id: 9, name: 'Dragon Tail Guppys', category: 'Guppys', price: '₹250', image: 'fishes/Dragon tail guppys.jpg', tag: 'Dragon Tail' },
     { id: 10, name: 'Guppy Babies', category: 'Guppys', price: '₹7 / pc', image: 'fishes/Guppy babys.png', tag: 'Babies' },
     { id: 11, name: 'Guppy Semi Adults', category: 'Guppys', price: '₹40 / pair', image: 'fishes/Guppys semi adults.webp', tag: 'Semi Adult' },
+    { id: 111, name: 'Koi Texido', category: 'Guppys', price: '₹250', image: 'fishes/Koi texido.jpg', tag: 'Premium' },
+    { id: 112, name: 'Dark Knight Dragon', category: 'Guppys', price: '₹250', image: 'fishes/Dark knight dragon.jpg', tag: 'Premium' },
+    { id: 113, name: 'White Angel', category: 'Angels', price: '₹150', image: 'fishes/White angel.jpg', tag: 'Popular' },
+    { id: 114, name: 'Marbel Angel', category: 'Angels', price: '₹199', image: 'fishes/Marbel angel.jpg', tag: 'Popular' },
+    { id: 115, name: 'Angel', category: 'Angels', price: '₹100', image: 'fishes/Angel.jpg', tag: 'Standard' },
     { id: 12, name: 'Mollys', category: 'Mollies', price: '₹49', image: 'fishes/mollies.webp', tag: 'Popular' },
     { id: 22, name: 'Moon Tail Mollies', category: 'Mollies', price: '₹99', image: 'fishes/moon tail mollies.jpg', tag: 'Moon Tail' },
     { id: 23, name: 'Balloon Mollies', category: 'Mollies', price: '₹79', image: 'fishes/ballon mollies.jpeg', tag: 'Balloon' },
@@ -193,7 +198,8 @@ function initPortalState() {
   const requiredGuppyNames = [
     'Premium Mixed Guppys', 'Mixed Guppys', 'HB Blue Guppys', 'Koi Guppys',
     'Platinum Guppys', 'Platinum Dumbo Ear Guppys', 'Dragon Tail Guppys',
-    'Guppy Babies', 'Guppy Semi Adults',
+    'Guppy Babies', 'Guppy Semi Adults', 'Koi Texido', 'Dark Knight Dragon',
+    'White Angel', 'Marbel Angel', 'Angel',
     'Moon Tail Mollies', 'Balloon Mollies', 'Molly Babies',
     'Platys', 'Sword Tail Platys', 'Zebra',
     'Shark (Small)', 'Shark (Medium)', 'Shark (Large)', 'Veil Tail Zebra',
@@ -204,7 +210,8 @@ function initPortalState() {
   ];
 
   const defaultCategories = [
-    { name: 'Guppys', count: 11, image: 'fishes/Sward tail guppy.jpeg', status: 'Active' },
+    { name: 'Guppys', count: 13, image: 'fishes/Sward tail guppy.jpeg', status: 'Active' },
+    { name: 'Angels', count: 3, image: 'fishes/White angel.jpg', status: 'Active' },
     { name: 'Mollies', count: 4, image: 'fishes/mollies.webp', status: 'Active' },
     { name: 'Oxy-less Fishes', count: 8, image: 'fishes/Gourami.jpg', status: 'Active' },
     { name: "Betta's", count: 6, image: 'fishes/Beta ohm male.webp', status: 'Active' },
