@@ -94,7 +94,8 @@ function initNavigation() {
     testimonials: { title: 'Review Testimonials', desc: 'Approve or reject customer ratings' },
     media: { title: 'Media Library', desc: 'Upload, optimize and search fish images or videos' },
     seo: { title: 'SEO Configurations', desc: 'Configure search engine indexing meta tags and sitemaps' },
-    settings: { title: 'Portal Settings', desc: 'Change general portal settings, contacts and maintenance modes' }
+    settings: { title: 'Portal Settings', desc: 'Change general portal settings, contacts and maintenance modes' },
+    coupons: { title: 'Promotional Coupons', desc: 'Create, manage, and track discount coupon codes' }
   };
 
   navLinks.forEach(link => {
@@ -130,6 +131,7 @@ let testimonials = [];
 let inquiries = [];
 let foods = [];
 let items = [];
+let coupons = [];
 
 function initPortalState() {
   // Mock/Initial Data
@@ -138,13 +140,13 @@ function initPortalState() {
     { id: 2, name: 'Golden Guppys (24K)', category: 'Guppys', price: '₹249', image: 'fishes/Golden guppy.jpg', tag: 'Premium' },
     { id: 3, name: 'Premium Mixed Guppys', category: 'Guppys', price: '₹99', image: 'fishes/Premium mixed guppys.jpeg', tag: 'Premium Mix' },
     { id: 4, name: 'Mixed Guppys', category: 'Guppys', price: '₹69', image: 'fishes/Mixed guppys.jpg', tag: 'Mixed Variety' },
-    { id: 5, name: 'HB Blue Guppys', category: 'Guppys', price: '₹149', image: 'fishes/Hb blue guppys.jpg', tag: 'Half Black' },
+    { id: 5, name: 'HB Blue Guppys', category: 'Guppys', price: '₹250', image: 'fishes/Hb blue guppys.jpg', tag: 'Half Black' },
     { id: 6, name: 'Koi Guppys', category: 'Guppys', price: '₹249', image: 'fishes/Albino Red eye guppy.jpg', tag: 'Koi Pattern' },
     { id: 7, name: 'Platinum Guppys', category: 'Guppys', price: '₹99', image: 'fishes/Platinum guppys.webp', tag: 'Platinum' },
-    { id: 8, name: 'Platinum Dumbo Ear Guppys', category: 'Guppys', price: '₹149', image: 'fishes/Platinum dumbo ear guppys.jpeg', tag: 'Dumbo Ear' },
-    { id: 9, name: 'Dragon Tail Guppys', category: 'Guppys', price: '₹149', image: 'fishes/Dragon tail guppys.jpg', tag: 'Dragon Tail' },
-    { id: 10, name: 'Guppy Babies', category: 'Guppys', price: 'Contact Us', image: 'fishes/Guppy babys.png', tag: 'Babies' },
-    { id: 11, name: 'Guppy Semi Adults', category: 'Guppys', price: 'Contact Us', image: 'fishes/Guppys semi adults.webp', tag: 'Semi Adult' },
+    { id: 8, name: 'Platinum Dumbo Ear Guppys', category: 'Guppys', price: '₹250', image: 'fishes/Platinum dumbo ear guppys.jpeg', tag: 'Dumbo Ear' },
+    { id: 9, name: 'Dragon Tail Guppys', category: 'Guppys', price: '₹250', image: 'fishes/Dragon tail guppys.jpg', tag: 'Dragon Tail' },
+    { id: 10, name: 'Guppy Babies', category: 'Guppys', price: '₹7 / pc', image: 'fishes/Guppy babys.png', tag: 'Babies' },
+    { id: 11, name: 'Guppy Semi Adults', category: 'Guppys', price: '₹40 / pair', image: 'fishes/Guppys semi adults.webp', tag: 'Semi Adult' },
     { id: 12, name: 'Mollys', category: 'Mollies', price: '₹49', image: 'fishes/mollies.webp', tag: 'Popular' },
     { id: 22, name: 'Moon Tail Mollies', category: 'Mollies', price: '₹99', image: 'fishes/moon tail mollies.jpg', tag: 'Moon Tail' },
     { id: 23, name: 'Balloon Mollies', category: 'Mollies', price: '₹79', image: 'fishes/ballon mollies.jpeg', tag: 'Balloon' },
@@ -250,12 +252,28 @@ function initPortalState() {
 
   // Load state from local storage or set defaults
   products = JSON.parse(localStorage.getItem('sa_products')) || defaultProducts;
+  // Force update specific default guppy prices if they exist in localStorage to reflect new corporate updates
+  products.forEach(p => {
+    if (p.name === 'HB Blue Guppys') p.price = '₹250';
+    if (p.name === 'Platinum Dumbo Ear Guppys') p.price = '₹250';
+    if (p.name === 'Dragon Tail Guppys') p.price = '₹250';
+    if (p.name === 'Guppy Babies') p.price = '₹7 / pc';
+    if (p.name === 'Guppy Semi Adults') p.price = '₹40 / pair';
+  });
   categories = JSON.parse(localStorage.getItem('sa_categories')) || defaultCategories;
   orders = JSON.parse(localStorage.getItem('sa_orders')) || defaultOrders;
   customers = JSON.parse(localStorage.getItem('sa_customers')) || defaultCustomers;
   testimonials = JSON.parse(localStorage.getItem('sa_testimonials')) || defaultTestimonials;
   inquiries = JSON.parse(localStorage.getItem('sa_inquiries')) || defaultInquiries;
   foods = JSON.parse(localStorage.getItem('sa_foods')) || defaultFoods;
+
+  const defaultCoupons = [
+    { id: 1, code: 'AQUA10', type: 'percentage', value: 10, minOrder: 300, expiry: new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0], maxUsage: 100, currentUsage: 0, active: true },
+    { id: 2, code: 'FISH20', type: 'percentage', value: 20, minOrder: 500, expiry: new Date(Date.now() + 60*24*60*60*1000).toISOString().split('T')[0], maxUsage: 50, currentUsage: 0, active: true },
+    { id: 3, code: 'NEWUSER50', type: 'fixed', value: 50, minOrder: 200, expiry: new Date(Date.now() + 90*24*60*60*1000).toISOString().split('T')[0], maxUsage: 200, currentUsage: 0, active: true },
+    { id: 4, code: 'PREMIUM100', type: 'fixed', value: 100, minOrder: 1000, expiry: new Date(Date.now() + 45*24*60*60*1000).toISOString().split('T')[0], maxUsage: 30, currentUsage: 0, active: true }
+  ];
+  coupons = JSON.parse(localStorage.getItem('sa_coupons')) || defaultCoupons;
 
   const defaultItems = [
     { id: 1, name: 'Aquarium Heater (50W)', price: '₹300', stock: 'In Stock', image: 'items/50w aquarium heater.webp' },
@@ -312,11 +330,14 @@ function initPortalState() {
   renderInquiries();
   renderTestimonials();
   renderMediaLibrary();
+  renderCoupons();
 
   // Update counters
   document.getElementById('cardTotalProducts').textContent = products.length;
   document.getElementById('cardActiveOrders').textContent = orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length;
   document.getElementById('ordersCounter').textContent = orders.filter(o => o.status === 'pending').length;
+  if(document.getElementById('cardTotalCoupons')) document.getElementById('cardTotalCoupons').textContent = coupons.length;
+  if(document.getElementById('cardActiveCoupons')) document.getElementById('cardActiveCoupons').textContent = coupons.filter(c => c.active).length;
 }
 
 function saveAllState() {
@@ -328,7 +349,81 @@ function saveAllState() {
   localStorage.setItem('sa_inquiries', JSON.stringify(inquiries));
   localStorage.setItem('sa_foods', JSON.stringify(foods));
   localStorage.setItem('sa_items', JSON.stringify(items));
+  localStorage.setItem('sa_coupons', JSON.stringify(coupons));
 }
+
+// Render Coupons Table
+function renderCoupons() {
+  const tbody = document.getElementById('couponsTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  const searchVal = document.getElementById('searchCoupons')?.value.toLowerCase() || '';
+  const filtered = coupons.filter(c => c.code.toLowerCase().includes(searchVal));
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--color-text-muted);padding:20px;">No coupons found. Create one!</td></tr>';
+    return;
+  }
+
+  filtered.forEach(c => {
+    const isExpired = new Date(c.expiry) < new Date();
+    const isLimitReached = c.maxUsage && c.currentUsage >= c.maxUsage;
+    const statusText = !c.active ? 'Inactive' : (isExpired ? 'Expired' : (isLimitReached ? 'Limit Reached' : 'Active'));
+    const statusClass = !c.active || isExpired || isLimitReached ? 'cancelled' : 'delivered';
+    
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="coupon-code">${c.code}</span></td>
+      <td><span class="coupon-discount">${c.type === 'percentage' ? c.value + '%' : '₹' + c.value} OFF</span></td>
+      <td>₹${c.minOrder}</td>
+      <td>${c.expiry}</td>
+      <td>${c.currentUsage} / ${c.maxUsage || '∞'}</td>
+      <td><span class="badge badge-${statusClass}">${statusText}</span></td>
+      <td style="display:flex;gap:6px;">
+        <button class="btn-secondary" style="padding: 4px 10px;" onclick="toggleCouponStatus(${c.id})">${c.active ? '⛔ Disable' : '✅ Enable'}</button>
+        <button class="btn-secondary" style="padding: 4px 10px;" onclick="openEditCoupon(${c.id})">✏️ Edit</button>
+        <button class="btn-secondary" style="padding: 4px 10px; border-color: var(--color-accent); color: var(--color-accent);" onclick="deleteCoupon(${c.id})">🗑️ Delete</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+window.toggleCouponStatus = function(id) {
+  const c = coupons.find(coupon => coupon.id == id);
+  if (c) {
+    c.active = !c.active;
+    saveAllState();
+    initPortalState(); // re-render and update counts
+    showToast('info', \`Coupon \${c.code} is now \${c.active ? 'Active' : 'Inactive'}\`);
+  }
+};
+
+window.openEditCoupon = function(id) {
+  const c = coupons.find(coupon => coupon.id == id);
+  if (!c) return;
+  document.getElementById('editCouponId').value = c.id;
+  document.getElementById('couponCode').value = c.code;
+  document.getElementById('couponType').value = c.type;
+  document.getElementById('couponValue').value = c.value;
+  document.getElementById('couponMinOrder').value = c.minOrder;
+  document.getElementById('couponExpiry').value = c.expiry;
+  document.getElementById('couponMaxUsage').value = c.maxUsage || '';
+  document.getElementById('couponActiveToggle').checked = c.active;
+  document.getElementById('couponModalTitle').textContent = 'Edit Coupon: ' + c.code;
+  document.getElementById('couponModal').classList.add('active');
+};
+
+window.deleteCoupon = function(id) {
+  const c = coupons.find(coupon => coupon.id == id);
+  if (c && confirm(\`Delete coupon "\${c.code}"?\`)) {
+    coupons = coupons.filter(coupon => coupon.id != id);
+    saveAllState();
+    initPortalState();
+    showToast('success', \`Coupon "\${c.code}" deleted.\`);
+  }
+};
 
 // Render Products Table
 function renderProducts() {
@@ -825,6 +920,7 @@ function initFormSubmitHandlers() {
   document.getElementById('filterCategory')?.addEventListener('change', renderProducts);
   document.getElementById('searchFoods')?.addEventListener('input', renderFoods);
   document.getElementById('filterFoodType')?.addEventListener('change', renderFoods);
+  document.getElementById('searchCoupons')?.addEventListener('input', renderCoupons);
 
   // ---- FISH PRODUCT MODAL ----
   if (btnAdd && modal) {
@@ -1008,6 +1104,62 @@ function initFormSubmitHandlers() {
       saveAllState();
       renderCategories();
       categoryModal.classList.remove('active');
+    });
+  }
+
+  // ---- COUPON MODAL ----
+  const couponModal = document.getElementById('couponModal');
+  const btnAddCoupon = document.getElementById('btnAddNewCoupon');
+  const btnCloseCoupon = document.getElementById('btnCloseCouponModal');
+  const couponForm = document.getElementById('couponForm');
+
+  if (btnAddCoupon && couponModal) {
+    btnAddCoupon.addEventListener('click', () => {
+      couponForm.reset();
+      document.getElementById('editCouponId').value = '';
+      document.getElementById('couponModalTitle').textContent = 'Create New Coupon';
+      document.getElementById('couponExpiry').value = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0]; // Default 30 days
+      couponModal.classList.add('active');
+    });
+  }
+  if (btnCloseCoupon && couponModal) {
+    btnCloseCoupon.addEventListener('click', () => couponModal.classList.remove('active'));
+  }
+  if (couponForm) {
+    couponForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = document.getElementById('editCouponId').value;
+      const code = document.getElementById('couponCode').value.trim().toUpperCase();
+      const type = document.getElementById('couponType').value;
+      const value = parseFloat(document.getElementById('couponValue').value);
+      const minOrder = parseFloat(document.getElementById('couponMinOrder').value);
+      const expiry = document.getElementById('couponExpiry').value;
+      const maxUsage = document.getElementById('couponMaxUsage').value ? parseInt(document.getElementById('couponMaxUsage').value) : null;
+      const active = document.getElementById('couponActiveToggle').checked;
+
+      // Duplicate check (ignore self)
+      const isDuplicate = coupons.some(c => c.code === code && c.id != id);
+      if (isDuplicate) {
+        showToast('error', 'Coupon code already exists!');
+        return;
+      }
+
+      if (id) {
+        const c = coupons.find(coupon => coupon.id == id);
+        if (c) { 
+          c.code = code; c.type = type; c.value = value; 
+          c.minOrder = minOrder; c.expiry = expiry; 
+          c.maxUsage = maxUsage; c.active = active; 
+        }
+        showToast('success', \`Coupon "\${code}" updated!\`);
+      } else {
+        const newId = coupons.length ? Math.max(...coupons.map(c => c.id)) + 1 : 1;
+        coupons.push({ id: newId, code, type, value, minOrder, expiry, maxUsage, currentUsage: 0, active });
+        showToast('success', \`Coupon "\${code}" created!\`);
+      }
+      saveAllState();
+      initPortalState();
+      couponModal.classList.remove('active');
     });
   }
 

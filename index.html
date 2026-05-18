@@ -107,7 +107,7 @@
             <div class="fish-img-container"><img src="fishes/Hb%20blue%20guppys.jpg" alt="HB Blue" loading="lazy"></div>
             <div class="fish-info">
               <h4>HB Blue</h4>
-              <span class="price">₹149</span>
+              <span class="price">₹250</span>
             </div>
           </div>
           <div class="fish-card">
@@ -128,28 +128,28 @@
             <div class="fish-img-container"><img src="fishes/Platinum%20dumbo%20ear%20guppys.jpeg" alt="Platinum (Dumbo)" loading="lazy"></div>
             <div class="fish-info">
               <h4>Platinum (Dumbo)</h4>
-              <span class="price">₹149</span>
+              <span class="price">₹250</span>
             </div>
           </div>
           <div class="fish-card">
             <div class="fish-img-container"><img src="fishes/Dragon%20tail%20guppys.jpg" alt="Dragon Tail" loading="lazy"></div>
             <div class="fish-info">
               <h4>Dragon Tail</h4>
-              <span class="price">₹149</span>
+              <span class="price">₹250</span>
             </div>
           </div>
           <div class="fish-card">
             <div class="fish-img-container"><img src="fishes/Guppy%20babys.png" alt="Guppy Baby's" loading="lazy"></div>
             <div class="fish-info">
               <h4>Guppy Baby's</h4>
-              <span class="price">Contact Us</span>
+              <span class="price">₹7 / pc</span>
             </div>
           </div>
           <div class="fish-card">
             <div class="fish-img-container"><img src="fishes/Guppys%20semi%20adults.webp" alt="Guppy Semi Adults" loading="lazy"></div>
             <div class="fish-info">
               <h4>Guppy Semi Adults</h4>
-              <span class="price">Contact Us</span>
+              <span class="price">₹40 / pair</span>
             </div>
           </div>
         </div>
@@ -853,14 +853,21 @@
     <div class="sheet-items" id="cartSheetItems">
       <div class="sheet-empty"><span class="empty-icon">🛒</span>Your cart is empty<br>Start adding some amazing fish!</div>
     </div>
-    <div class="coupon-row" id="couponRow" style="display:none;">
-      <input type="text" id="couponInput" placeholder="Enter coupon code">
-      <button id="applyCouponBtn">Apply</button>
+    <div class="coupon-row" id="couponRow" style="display:none; flex-direction:column; gap:8px;">
+      <div style="display:flex; gap:10px;">
+        <input type="text" id="couponInput" placeholder="Enter coupon code" autocomplete="off">
+        <button id="applyCouponBtn">Apply</button>
+      </div>
+      <div id="couponSuggestions" class="coupon-suggestions" style="display:none;"></div>
+      <div id="appliedCouponInfo" style="display:none; font-size:0.85rem; color:var(--color-secondary); align-items:center; justify-content:space-between;">
+        <span>✅ <strong id="appliedCouponCode"></strong> applied!</span>
+        <button id="removeCouponBtn" style="background:none; border:none; color:var(--color-accent); cursor:pointer;">Remove</button>
+      </div>
     </div>
     <div class="sheet-summary" id="cartSummary" style="display:none;">
       <div class="sum-row"><span>Subtotal</span><span id="sumSubtotal">₹0</span></div>
       <div class="sum-row"><span>Delivery</span><span id="sumDelivery">₹49</span></div>
-      <div class="sum-row"><span>Packing Charges</span><span id="sumPacking">₹0</span></div>
+      <div class="sum-row" id="sumDiscountRow" style="display:none; color:var(--color-secondary);"><span>Discount</span><span id="sumDiscount">-₹0</span></div>
       <div class="sum-total"><span>Total</span><span id="sumTotal">₹0</span></div>
       <button class="btn-proceed-checkout" id="proceedCheckoutBtn">Proceed to Checkout →</button>
     </div>
@@ -969,6 +976,7 @@
             <div class="upi-sum-row"><span>Subtotal</span><span id="paySubtotal">₹0</span></div>
             <div class="upi-sum-row"><span>Delivery</span><span id="payDelivery">₹49</span></div>
             <div class="upi-sum-row"><span>Packing</span><span id="payPacking">₹10</span></div>
+            <div class="upi-sum-row" id="payDiscountRow" style="display:none; color:var(--color-secondary);"><span>Discount</span><span id="payDiscount">-₹0</span></div>
             <div class="upi-sum-total">
               <span>Total Amount</span>
               <span class="glowing-text" id="payTotal">₹0</span>

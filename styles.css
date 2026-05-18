@@ -1386,6 +1386,23 @@ body { padding-bottom: 72px; }
   background: rgba(0,212,255,0.15); color: var(--aqua-cyan);
   font-weight: 600; font-size: 0.8rem; cursor: pointer;
 }
+.coupon-suggestions {
+  display: flex; flex-direction: column; gap: 5px;
+  max-height: 120px; overflow-y: auto;
+  background: rgba(0,0,0,0.4); border-radius: 8px;
+  padding: 5px;
+}
+.coupon-suggestion-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 10px; border-radius: 6px; cursor: pointer;
+  background: rgba(0,212,255,0.05); border: 1px solid rgba(0,212,255,0.1);
+  transition: 0.2s; font-size: 0.8rem;
+}
+.coupon-suggestion-item:hover {
+  background: rgba(0,212,255,0.15); border-color: rgba(0,212,255,0.3);
+}
+.coupon-suggestion-code { color: var(--white-glow); font-weight: bold; font-family: monospace; letter-spacing: 1px; }
+.coupon-suggestion-desc { color: var(--neon-teal); font-size: 0.75rem; }
 
 /* Cart Summary */
 .sheet-summary {

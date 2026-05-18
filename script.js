@@ -179,6 +179,7 @@ const SHEETS_URL = '/api/orders'; // Local API
 
 // ========== CART SYSTEM ==========
 let cart = JSON.parse(localStorage.getItem('sa_cart') || '[]');
+let appliedCoupon = null;
 
 function saveCart() {
   localStorage.setItem('sa_cart', JSON.stringify(cart));
@@ -223,8 +224,22 @@ function getCartTotals() {
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
   const delivery = cart.length > 0 ? 49 : 0;
   const packing = cart.length > 0 ? 10 : 0;
-  const total = subtotal + delivery + packing;
-  return { subtotal, delivery, packing, total };
+  
+  let discount = 0;
+  if (appliedCoupon) {
+    if (subtotal < appliedCoupon.minOrder) {
+      appliedCoupon = null; // silently remove if conditions fail
+    } else {
+      if (appliedCoupon.type === 'percentage') {
+        discount = Math.round(subtotal * (appliedCoupon.value / 100));
+      } else {
+        discount = appliedCoupon.value;
+      }
+    }
+  }
+  
+  const total = Math.max(0, subtotal + delivery + packing - discount);
+  return { subtotal, delivery, packing, discount, total };
 }
 
 function renderCartSheet() {
@@ -256,13 +271,37 @@ function renderCartSheet() {
     </div>
   `).join('');
 
-  if (couponRow) couponRow.style.display = 'flex';
+  if (couponRow) {
+    couponRow.style.display = 'flex';
+    const inputWrapper = document.getElementById('couponInput')?.parentElement;
+    const info = document.getElementById('appliedCouponInfo');
+    const codeSpan = document.getElementById('appliedCouponCode');
+    
+    if (appliedCoupon) {
+      if(inputWrapper) inputWrapper.style.display = 'none';
+      if(info) info.style.display = 'flex';
+      if(codeSpan) codeSpan.textContent = appliedCoupon.code;
+    } else {
+      if(inputWrapper) inputWrapper.style.display = 'flex';
+      if(info) info.style.display = 'none';
+    }
+  }
+
   if (summary) {
     summary.style.display = 'block';
     const t = getCartTotals();
     document.getElementById('sumSubtotal').textContent = `₹${t.subtotal}`;
     document.getElementById('sumDelivery').textContent = `₹${t.delivery}`;
     document.getElementById('sumPacking').textContent = `₹${t.packing}`;
+    
+    const discRow = document.getElementById('sumDiscountRow');
+    if (t.discount > 0 && discRow) {
+      discRow.style.display = 'flex';
+      document.getElementById('sumDiscount').textContent = `-₹${t.discount}`;
+    } else if (discRow) {
+      discRow.style.display = 'none';
+    }
+    
     document.getElementById('sumTotal').textContent = `₹${t.total}`;
   }
 }
@@ -308,6 +347,7 @@ function openCheckout() {
         <div style="display:flex;justify-content:space-between;padding:4px 0;color:rgba(255,255,255,0.5);"><span>Subtotal</span><span>₹${t.subtotal}</span></div>
         <div style="display:flex;justify-content:space-between;padding:4px 0;color:rgba(255,255,255,0.5);"><span>Delivery Charge</span><span>₹${t.delivery}</span></div>
         <div style="display:flex;justify-content:space-between;padding:4px 0;color:rgba(255,255,255,0.5);"><span>Packing Charges</span><span>₹${t.packing}</span></div>
+        ${t.discount > 0 ? `<div style="display:flex;justify-content:space-between;padding:4px 0;color:var(--color-secondary);"><span>Discount (${appliedCoupon?.code})</span><span>-₹${t.discount}</span></div>` : ''}
       </div>
       <div style="display:flex;justify-content:space-between;padding:10px 0 4px;margin-top:8px;border-top:2px solid rgba(0,212,255,0.2);font-size:1rem;font-weight:700;color:var(--neon-teal);">
         <span>Total Amount</span><span>₹${t.total}</span>
@@ -559,10 +599,20 @@ function placeOrder() {
     const paySubtotal = document.getElementById('paySubtotal');
     const payDelivery = document.getElementById('payDelivery');
     const payPacking = document.getElementById('payPacking');
+    const payDiscountRow = document.getElementById('payDiscountRow');
+    const payDiscount = document.getElementById('payDiscount');
     const payTotal = document.getElementById('payTotal');
     if (paySubtotal) paySubtotal.textContent = `₹${t.subtotal}`;
     if (payDelivery) payDelivery.textContent = `₹${t.delivery}`;
     if (payPacking) payPacking.textContent = `₹${t.packing}`;
+    
+    if (t.discount > 0 && payDiscountRow) {
+      payDiscountRow.style.display = 'flex';
+      if(payDiscount) payDiscount.textContent = `-₹${t.discount}`;
+    } else if (payDiscountRow) {
+      payDiscountRow.style.display = 'none';
+    }
+    
     if (payTotal) payTotal.textContent = `₹${t.total}`;
 
     // Show modal with animation
@@ -617,6 +667,16 @@ function submitOrderData(orderId, name, address, city, pincode, state, phone, t,
 
   orders.unshift(newOrder);
   localStorage.setItem('sa_orders', JSON.stringify(orders));
+
+  // Increment coupon usage limit
+  if (appliedCoupon) {
+    const coupons = JSON.parse(localStorage.getItem('sa_coupons') || '[]');
+    const cIdx = coupons.findIndex(c => c.code === appliedCoupon.code);
+    if (cIdx > -1) {
+      coupons[cIdx].currentUsage = (coupons[cIdx].currentUsage || 0) + 1;
+      localStorage.setItem('sa_coupons', JSON.stringify(coupons));
+    }
+  }
 
   // Save phone
   localStorage.setItem('sa_user_phone', phone);
@@ -844,14 +904,98 @@ document.addEventListener('DOMContentLoaded', () => {
   // Checkout controls
   document.getElementById('checkoutBackBtn')?.addEventListener('click', closeCheckout);
 
-  // Coupon button
-  document.getElementById('applyCouponBtn')?.addEventListener('click', () => {
-    const code = document.getElementById('couponInput')?.value.trim().toUpperCase();
-    if (code === 'AQUA20') {
-      showClientToast('Coupon AQUA20 applied! 20% off');
-    } else {
-      showClientToast('Invalid coupon code');
+  // Coupon dynamic logic
+  const couponInput = document.getElementById('couponInput');
+  const suggestionsBox = document.getElementById('couponSuggestions');
+  
+  couponInput?.addEventListener('focus', showCouponSuggestions);
+  couponInput?.addEventListener('input', showCouponSuggestions);
+  
+  function showCouponSuggestions() {
+    if(!suggestionsBox) return;
+    const coupons = JSON.parse(localStorage.getItem('sa_coupons') || '[]');
+    const val = couponInput.value.trim().toUpperCase();
+    
+    const available = coupons.filter(c => {
+      if(!c.active) return false;
+      if(new Date(c.expiry) < new Date()) return false;
+      if(c.maxUsage && c.currentUsage >= c.maxUsage) return false;
+      if(val && !c.code.includes(val)) return false;
+      return true;
+    });
+    
+    if(available.length === 0) {
+      suggestionsBox.style.display = 'none';
+      return;
     }
+    
+    suggestionsBox.innerHTML = available.map(c => \`
+      <div class="coupon-suggestion-item" onclick="selectCouponSuggestion('\${c.code}')">
+        <span class="coupon-suggestion-code">\${c.code}</span>
+        <span class="coupon-suggestion-desc">\${c.type === 'percentage' ? c.value + '%' : '₹' + c.value} OFF (Min ₹\${c.minOrder})</span>
+      </div>
+    \`).join('');
+    suggestionsBox.style.display = 'flex';
+  }
+  
+  window.selectCouponSuggestion = function(code) {
+    if(couponInput) couponInput.value = code;
+    if(suggestionsBox) suggestionsBox.style.display = 'none';
+  };
+
+  // Hide suggestions when clicking outside
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('#couponRow') === null && suggestionsBox) {
+      suggestionsBox.style.display = 'none';
+    }
+  });
+
+  document.getElementById('applyCouponBtn')?.addEventListener('click', () => {
+    const code = couponInput?.value.trim().toUpperCase();
+    if (!code) return;
+    
+    const coupons = JSON.parse(localStorage.getItem('sa_coupons') || '[]');
+    const c = coupons.find(x => x.code === code);
+    
+    if (!c) {
+      showClientToast('Invalid coupon code');
+      return;
+    }
+    if (!c.active) {
+      showClientToast('This coupon is currently inactive');
+      return;
+    }
+    if (new Date(c.expiry) < new Date()) {
+      showClientToast('This coupon has expired');
+      return;
+    }
+    if (c.maxUsage && c.currentUsage >= c.maxUsage) {
+      showClientToast('This coupon usage limit has been reached');
+      return;
+    }
+    
+    const totals = getCartTotals(); // Get totals without current discount
+    // We temporarily null out the applied coupon to get the raw subtotal
+    const prevCoupon = appliedCoupon;
+    appliedCoupon = null;
+    const rawTotals = getCartTotals();
+    
+    if (rawTotals.subtotal < c.minOrder) {
+      appliedCoupon = prevCoupon; // Restore
+      showClientToast(\`Minimum order amount of ₹\${c.minOrder} required\`);
+      return;
+    }
+    
+    appliedCoupon = c;
+    if (couponInput) couponInput.value = '';
+    renderCartSheet();
+    showClientToast(\`Coupon \${c.code} applied successfully!\`);
+  });
+
+  document.getElementById('removeCouponBtn')?.addEventListener('click', () => {
+    appliedCoupon = null;
+    renderCartSheet();
+    showClientToast('Coupon removed');
   });
 
   // Bottom navigation
