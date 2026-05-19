@@ -366,7 +366,6 @@ function closeCheckout() {
 // ========== PAYMENT ==========
 let selectedPayment = 'upi';
 let paymentTimerInterval = null;
-let uploadedScreenshotBase64 = '';
 
 function spawnPaymentBubbles() {
   const container = document.getElementById('paymentBubblesContainer');
@@ -431,37 +430,6 @@ function validatePaymentForm() {
       btn.classList.remove('glow-ready');
     }
   }
-}
-
-function triggerScreenshotInput() {
-  const fileInput = document.getElementById('screenshotFileInput');
-  if (fileInput) fileInput.click();
-}
-
-function handleScreenshotSelect(input) {
-  const file = input.files[0];
-  if (!file) return;
-  
-  if (!file.type.startsWith('image/')) {
-    showClientToast('Please select a valid image file');
-    return;
-  }
-  
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    uploadedScreenshotBase64 = e.target.result;
-    
-    const previewContainer = document.getElementById('screenshotPreviewContainer');
-    const preview = document.getElementById('screenshotPreview');
-    const label = document.getElementById('uploadLabel');
-    if (preview && previewContainer) {
-      preview.src = uploadedScreenshotBase64;
-      previewContainer.style.display = 'block';
-      if (label) label.textContent = 'Change Screenshot ✓';
-    }
-    showClientToast('Screenshot uploaded successfully!');
-  };
-  reader.readAsDataURL(file);
 }
 
 function copyUpiId() {
@@ -555,12 +523,6 @@ function placeOrder() {
     const payUtrInput = document.getElementById('payUtr');
     if (payUtrInput) payUtrInput.value = '';
 
-    uploadedScreenshotBase64 = '';
-    const previewContainer = document.getElementById('screenshotPreviewContainer');
-    const label = document.getElementById('uploadLabel');
-    if (previewContainer) previewContainer.style.display = 'none';
-    if (label) label.textContent = 'Upload Payment Screenshot (Optional)';
-
     const itemsContainer = document.getElementById('paymentSummaryItems');
     if (itemsContainer) {
       let itemsHtml = '';
@@ -616,7 +578,7 @@ function placeOrder() {
   }
 }
 
-function submitOrderData(orderId, name, address, city, pincode, state, phone, t, paymentMethod, cartItems, utr = '', screenshot = '') {
+function submitOrderData(orderId, name, address, city, pincode, state, phone, t, paymentMethod, cartItems, utr = '') {
   const itemsToSave = cartItems || [...cart];
   const orders = JSON.parse(localStorage.getItem('sa_orders') || '[]');
   
@@ -634,8 +596,7 @@ function submitOrderData(orderId, name, address, city, pincode, state, phone, t,
     amount: '₹' + t.total,
     payment: paymentMethod,
     status: utr ? 'Pending Verification' : 'Confirmed',
-    utr: utr,
-    screenshot: screenshot
+    utr: utr
   };
 
   orders.unshift(newOrder);
@@ -725,7 +686,7 @@ function confirmUpiPayment() {
     if (btn) btn.disabled = true;
 
     setTimeout(() => {
-      submitOrderData(orderId, name, address, city, pincode, state, phone, t, selectedPayment, cartItems, utr, uploadedScreenshotBase64);
+      submitOrderData(orderId, name, address, city, pincode, state, phone, t, selectedPayment, cartItems, utr);
 
       playSuccessSound();
 
@@ -740,7 +701,6 @@ function confirmUpiPayment() {
 
       if (spinner) spinner.style.display = 'none';
       if (btnText) btnText.textContent = 'Verify & Place Order';
-      uploadedScreenshotBase64 = '';
 
       document.getElementById('successOrderId').textContent = `Order #${orderId}`;
       document.getElementById('orderSuccessOverlay')?.classList.add('active');
@@ -1032,8 +992,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const upiModalClose = document.querySelector('.upi-modal-close');
   const copyUpiIdBtn = document.getElementById('copyUpiIdBtn');
   const submitUpiPaymentBtn = document.getElementById('submitUpiPaymentBtn');
-  const screenshotFileInput = document.getElementById('screenshotFileInput');
-  const dragDropBox = document.getElementById('dragDropBox');
   
   if (upiModalClose) {
     upiModalClose.addEventListener('click', closeUpiModal);
@@ -1045,16 +1003,6 @@ document.addEventListener('DOMContentLoaded', () => {
   
   if (submitUpiPaymentBtn) {
     submitUpiPaymentBtn.addEventListener('click', confirmUpiPayment);
-  }
-  
-  if (screenshotFileInput) {
-    screenshotFileInput.addEventListener('change', function() {
-      handleScreenshotSelect(this);
-    });
-  }
-  
-  if (dragDropBox) {
-    dragDropBox.addEventListener('click', triggerScreenshotInput);
   }
 
   // ========== AUTH MODAL CONTROLS ==========

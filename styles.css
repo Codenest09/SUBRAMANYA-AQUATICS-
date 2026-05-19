@@ -1934,37 +1934,6 @@ body { padding-bottom: 72px; }
   100% { transform: translateY(-500px) scale(0.8); opacity: 0; }
 }
 
-/* Drag-and-drop Screenshot proof uploader */
-.screenshot-upload-box {
-  border: 1.5px dashed rgba(0, 212, 255, 0.3);
-  background: rgba(0, 212, 255, 0.02);
-  border-radius: 12px;
-  padding: 12px;
-  text-align: center;
-  cursor: pointer;
-  transition: 0.3s;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-.screenshot-upload-box:hover {
-  border-color: var(--neon-teal);
-  background: rgba(0, 255, 200, 0.04);
-  box-shadow: 0 0 15px rgba(0, 255, 200, 0.15);
-}
-.screenshot-preview {
-  width: 90px;
-  height: 90px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-top: 4px;
-  border: 1.5px solid var(--aqua-cyan);
-  box-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
-}
-
 /* Success Confirmation Screen Styles */
 .success-check-svg-wrapper {
   margin: 0 auto 20px;
