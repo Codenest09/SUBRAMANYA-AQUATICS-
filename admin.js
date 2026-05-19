@@ -748,7 +748,7 @@ window.changeOrderStatus = function(id, val) {
     showToast('success', `Order ${id} status updated to ${val}!`);
   }
   
-  // Update server
+  // Update server API
   fetch(`/api/orders/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
@@ -757,44 +757,80 @@ window.changeOrderStatus = function(id, val) {
     // Server update failed, but local update succeeded
     console.log('Server update failed, but local update succeeded');
   });
+
+  // Update Firebase Firestore if initialized
+  if (window.db) {
+    db.collection('orders').doc(id).update({ 'Status': val })
+      .then(() => {
+        console.log('Order status updated in Firebase Firestore');
+      })
+      .catch((error) => {
+        console.error('Error updating order status in Firebase Firestore:', error);
+      });
+  }
 };
 
 // Sync real orders from server
 window.syncOrdersFromSheets = function() {
-  showToast('info', 'Syncing orders from server...');
-  fetch(ADMIN_SHEETS_URL)
-    .then(res => res.json())
-    .then(data => {
-      if (!Array.isArray(data) || data.length === 0) {
-        showToast('info', 'No orders found yet.');
-        return;
-      }
-      // Merge with existing, server orders take priority by ID
-      const existingIds = new Set(orders.map(o => o.id || o['Order ID']));
-      data.forEach(serverOrder => {
-        const orderId = serverOrder['Order ID'];
-        if (!existingIds.has(orderId)) {
-          // Convert server format to local format
-          const localOrder = {
-            id: orderId,
-            customer: serverOrder['Customer Name'],
-            product: serverOrder['Items'],
-            amount: serverOrder['Total'],
-            status: (serverOrder['Status'] || 'pending').toLowerCase(),
-            date: serverOrder['Date'],
-            phone: serverOrder['Phone'],
-            address: serverOrder['Address'],
-            payment: serverOrder['Payment']
-          };
-          orders.unshift(localOrder);
+  showToast('info', 'Syncing orders...');
+
+  // Fallback API sync function
+  const fallbackSync = () => {
+    fetch(ADMIN_SHEETS_URL)
+      .then(res => res.json())
+      .then(data => {
+        if (!Array.isArray(data) || data.length === 0) {
+          showToast('info', 'No orders found yet.');
+          return;
         }
+        processIncomingOrders(data);
+        showToast('success', `Synced ${data.length} order(s) from server!`);
+      })
+      .catch(() => showToast('error', 'Failed to connect to server.'));
+  };
+
+  // Process data array into local orders
+  const processIncomingOrders = (data) => {
+    // Merge with existing, server orders take priority by ID
+    const existingIds = new Set(orders.map(o => o.id || o['Order ID']));
+    data.forEach(serverOrder => {
+      const orderId = serverOrder['Order ID'];
+      if (!existingIds.has(orderId)) {
+        // Convert server format to local format
+        const localOrder = {
+          id: orderId,
+          customer: serverOrder['Customer Name'],
+          product: serverOrder['Items'],
+          amount: serverOrder['Total'],
+          status: (serverOrder['Status'] || 'pending').toLowerCase(),
+          date: serverOrder['Date'],
+          phone: serverOrder['Phone'],
+          address: serverOrder['Address'],
+          payment: serverOrder['Payment']
+        };
+        orders.unshift(localOrder);
+      }
+    });
+    saveAllState();
+    renderOrders();
+  };
+
+  // Try Firebase Firestore first if initialized
+  if (window.db) {
+    db.collection('orders').get().then((querySnapshot) => {
+      const data = [];
+      querySnapshot.forEach((doc) => {
+        data.push(doc.data());
       });
-      saveAllState();
-      renderOrders();
-      const count = data.length;
-      showToast('success', `Synced ${count} order(s) from server!`);
-    })
-    .catch(() => showToast('error', 'Failed to connect to server.'));
+      processIncomingOrders(data);
+      showToast('success', `Synced ${data.length} order(s) from Firebase!`);
+    }).catch((error) => {
+      console.error('Error fetching orders from Firebase Firestore:', error);
+      fallbackSync();
+    });
+  } else {
+    fallbackSync();
+  }
 };
 
 // Render Customers List Table

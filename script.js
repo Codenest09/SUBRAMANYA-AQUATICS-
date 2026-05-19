@@ -683,20 +683,22 @@ function submitOrderData(orderId, name, address, city, pincode, state, phone, t,
 
   // Send order to local server API
   const itemsSummary = itemsToSave.map(i => `${i.name} x${i.qty}`).join(', ');
+  const orderPayload = {
+    'Order ID': orderId,
+    'Date': new Date().toLocaleDateString('en-IN') + ' ' + new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+    'Customer Name': name,
+    'Phone': phone,
+    'Address': address,
+    'Items': itemsSummary,
+    'Total': '₹' + t.total,
+    'Payment': paymentMethod + (utr ? ` (UTR: ${utr})` : ''),
+    'Status': utr ? 'Pending Verification' : 'Confirmed'
+  };
+
   fetch(SHEETS_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      'Order ID': orderId,
-      'Date': new Date().toLocaleDateString('en-IN') + ' ' + new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
-      'Customer Name': name,
-      'Phone': phone,
-      'Address': address,
-      'Items': itemsSummary,
-      'Total': '₹' + t.total,
-      'Payment': paymentMethod + (utr ? ` (UTR: ${utr})` : ''),
-      'Status': utr ? 'Pending Verification' : 'Confirmed'
-    })
+    body: JSON.stringify(orderPayload)
   }).then(response => {
     if (response.ok) {
       console.log('Order sent to local server');
@@ -707,6 +709,16 @@ function submitOrderData(orderId, name, address, city, pincode, state, phone, t,
     console.error('Error sending order to local server:', error);
   });
 
+  // Save to Firebase Firestore if initialized
+  if (window.db) {
+    db.collection('orders').doc(orderId).set(orderPayload)
+      .then(() => {
+        console.log('Order successfully written to Firebase Firestore!');
+      })
+      .catch((error) => {
+        console.error('Error writing order to Firebase Firestore:', error);
+      });
+  }
 }
 
 // UPI Modal actions
