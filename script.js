@@ -952,12 +952,12 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     
-    suggestionsBox.innerHTML = available.map(c => \`
-      <div class="coupon-suggestion-item" onclick="selectCouponSuggestion('\${c.code}')">
-        <span class="coupon-suggestion-code">\${c.code}</span>
-        <span class="coupon-suggestion-desc">\${c.type === 'percentage' ? c.value + '%' : '₹' + c.value} OFF (Min ₹\${c.minOrder})</span>
+    suggestionsBox.innerHTML = available.map(c => `
+      <div class="coupon-suggestion-item" onclick="selectCouponSuggestion('${c.code}')">
+        <span class="coupon-suggestion-code">${c.code}</span>
+        <span class="coupon-suggestion-desc">${c.type === 'percentage' ? c.value + '%' : '₹' + c.value} OFF (Min ₹${c.minOrder})</span>
       </div>
-    \`).join('');
+    `).join('');
     suggestionsBox.style.display = 'flex';
   }
   
@@ -1005,14 +1005,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (rawTotals.subtotal < c.minOrder) {
       appliedCoupon = prevCoupon; // Restore
-      showClientToast(\`Minimum order amount of ₹\${c.minOrder} required\`);
+      showClientToast(`Minimum order amount of ₹${c.minOrder} required`);
       return;
     }
     
     appliedCoupon = c;
     if (couponInput) couponInput.value = '';
     renderCartSheet();
-    showClientToast(\`Coupon \${c.code} applied successfully!\`);
+    showClientToast(`Coupon ${c.code} applied successfully!`);
   });
 
   document.getElementById('removeCouponBtn')?.addEventListener('click', () => {
