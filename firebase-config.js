@@ -11,15 +11,15 @@ const firebaseConfig = {
   appId: "1:908359586796:web:311558cfdb6f9a2f5c26c9"
 };
 
-// Initialize Firebase only if the API key has been replaced
-let db = null;
-let auth = null;
+// Attach to window so other scripts can access them
+window.db = null;
+window.auth = null;
 
 if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
   try {
     firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-    auth = firebase.auth();
+    window.db = firebase.firestore();
+    window.auth = firebase.auth();
     console.log("Firebase successfully initialized!");
   } catch (error) {
     console.error("Firebase initialization error:", error);

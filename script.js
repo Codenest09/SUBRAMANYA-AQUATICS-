@@ -1,9 +1,20 @@
 // ========== LOADING SCREEN ==========
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    document.getElementById('loader').classList.add('hidden');
-  }, 200);
-});
+function hideLoader() {
+  const loader = document.getElementById('loader');
+  if (loader) {
+    loader.classList.add('hidden');
+    setTimeout(() => { loader.style.display = 'none'; }, 800);
+  }
+}
+
+// Hide loader as soon as DOM is ready
+document.addEventListener('DOMContentLoaded', () => setTimeout(hideLoader, 500));
+
+// Also hide on window load (if it fires later)
+window.addEventListener('load', () => setTimeout(hideLoader, 200));
+
+// Fallback: force hide after 2 seconds max
+setTimeout(hideLoader, 2000);
 
 // ========== CUSTOM CURSOR (desktop only) ==========
 const cursorGlow = document.querySelector('.cursor-glow');
