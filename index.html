@@ -52,8 +52,8 @@
   <!-- Hero Section -->
   <section class="hero" id="home">
     <div class="hero-content">
-      <h1>SUBRAMANYA AQUATICS</h1>
-      <p>Premium Exotic Fishes &bull; Aquariums &bull; Aquatic Accessories</p>
+      <h1 id="heroTitle">SUBRAMANYA AQUATICS</h1>
+      <p id="heroSubtitle">Premium Exotic Fishes &bull; Aquariums &bull; Aquatic Accessories</p>
       <div class="hero-buttons">
         <a href="#collection" class="btn-primary">🐠 Explore Collection</a>
         <a href="#contact" class="btn-secondary">📞 Contact Us</a>
@@ -65,19 +65,20 @@
   <section class="section" id="collection">
 
     <!-- Flash Sale Banner -->
-    <div class="flash-sale-banner reveal">
+    <div class="flash-sale-banner reveal" id="flashBanner">
       <div class="flash-content">
         <span class="flash-icon">⚡</span>
-        <h3>FLASH SALE: 20% OFF ALL EXOTICS</h3>
+        <h3 id="flashTitle">FLASH SALE: 20% OFF ALL EXOTICS</h3>
         <div class="countdown" id="flashTimer">00:00:00</div>
-        <span class="flash-code">Use Code: <strong>AQUA20</strong></span>
+        <span class="flash-code">Use Code: <strong id="flashCode">AQUA20</strong></span>
       </div>
     </div>
 
     <h2 class="section-title reveal">Our Collection & Price List</h2>
     <p class="section-subtitle reveal">Premium quality fishes at the best prices</p>
     <div class="catalog-container">
-
+      <div id="dynamicCatalog" style="width: 100%;"></div>
+      <div style="display: none !important;">
       <!-- Guppys Category -->
       <div class="category-section reveal">
         <h3 class="category-title">🐠 Guppys</h3>
@@ -199,10 +200,10 @@
             </div>
           </div>
           <div class="fish-card">
-            <div class="fish-img-container"><img src="fishes/Marbel%20angel.jpg" alt="Marbel Angel" loading="lazy"
+            <div class="fish-img-container"><img src="fishes/Marvel%20angel.jpg" alt="Marvel Angel" loading="lazy"
                 onerror="this.src='logo.jpeg'"></div>
             <div class="fish-info">
-              <h4>Marbel Angel</h4>
+              <h4>Marvel Angel</h4>
               <span class="price">₹199</span>
             </div>
           </div>
@@ -756,6 +757,7 @@
         </ul>
         <a href="#contact" class="catalog-cta">Enquire Now →</a>
       </div>
+      </div>
 
     </div>
   </section>
@@ -1243,6 +1245,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
   <!-- Firebase Auth -->
   <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+  <!-- Firebase Storage -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-storage-compat.js"></script>
   <!-- Custom Firebase Config -->
   <script src="firebase-config.js"></script>
 
