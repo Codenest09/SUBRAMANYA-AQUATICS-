@@ -38,6 +38,8 @@ function initAuthSession() {
   const loginForm = document.getElementById('loginForm');
   const btnLogout = document.getElementById('btnLogout');
   const loginBtn = loginForm ? loginForm.querySelector('button[type="submit"]') : null;
+  const passwordToggle = document.getElementById('passwordToggle');
+  const loginPassword = document.getElementById('loginPassword');
   let isLoggingIn = false;
 
   console.log('%c🔐 Auth Session Init', 'color: #00d4ff; font-weight: bold;');
@@ -200,6 +202,23 @@ function initAuthSession() {
           appSec.style.display = 'none';
           loginSec.style.display = 'flex';
         }, 800);
+      }
+    });
+  }
+
+  // Handle Password Visibility Toggle
+  if (passwordToggle && loginPassword) {
+    passwordToggle.addEventListener('click', () => {
+      const isPassword = loginPassword.type === 'password';
+      loginPassword.type = isPassword ? 'text' : 'password';
+      const eyeOff = passwordToggle.querySelector('.eye-off');
+      const eyeOn = passwordToggle.querySelector('.eye-on');
+      if (isPassword) {
+        eyeOff.style.display = 'none';
+        eyeOn.style.display = 'block';
+      } else {
+        eyeOff.style.display = 'block';
+        eyeOn.style.display = 'none';
       }
     });
   }
