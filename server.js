@@ -165,7 +165,7 @@ const server = http.createServer((req, res) => {
   }
   
   // Handle admin page routing
-  if (decodedUrl === '/admin' || decodedUrl === '/admin/') {
+  if (decodedUrl === '/admin' || decodedUrl === '/admin/' || decodedUrl.startsWith('/admin/')) {
     decodedUrl = '/admin.html';
   }
   

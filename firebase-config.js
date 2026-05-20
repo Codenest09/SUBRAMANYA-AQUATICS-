@@ -20,6 +20,14 @@ try {
   firebase.initializeApp(firebaseConfig);
   window.db = firebase.firestore();
   window.auth = firebase.auth();
+  try {
+    if (typeof firebase.storage === 'function') {
+      window.storage = firebase.storage();
+      console.log('   Storage: Ready');
+    }
+  } catch (se) {
+    console.warn('Firebase Storage SDK not loaded or failed to initialize:', se.message);
+  }
   window.firebaseReady = true;
   console.log('%c✅ Firebase initialized successfully!', 'color: #00ffc8; font-weight: bold;');
   console.log('   Auth:', window.auth ? 'Ready' : 'NOT available');

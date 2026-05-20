@@ -68,11 +68,13 @@
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="items">🛠️ Aquatic Items</a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="categories">📂 Categories</a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="coupons">🎟️ Coupons</a></li>
+        <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="payments">💳 Payment &amp; QR Control</a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="orders">🛒 Orders Inbox <span class="badge badge-cancelled" style="padding: 1px 6px; font-size: 0.7rem;" id="ordersCounter">5</span></a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="customers">👥 Customers List</a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="messages">💬 Inquiries Inbox</a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="testimonials">⭐ Testimonials</a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="media">🖼️ Media Library</a></li>
+        <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="banners">✨ Homepage Banners</a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="seo">🔍 SEO Settings</a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="settings">⚙️ Portal Settings</a></li>
       </ul>
@@ -634,6 +636,94 @@
         </div>
       </section>
 
+      <!-- 11. HOMEPAGE BANNERS SECTION -->
+      <section class="app-section" id="sec-banners">
+        <div class="card-header">
+          <h3>Homepage Hero Banner &amp; Promotion Settings</h3>
+          <button class="btn-primary" id="btnSaveBanners" style="width: auto; padding: 10px 20px;">💾 Save Banner Settings</button>
+        </div>
+        <div class="data-card form-grid" style="display: grid;">
+          <div class="form-group form-full">
+            <h4 style="color:var(--color-primary); margin-bottom:10px; border-bottom:1px solid var(--glass-border); padding-bottom:5px;">Hero Section Config</h4>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Hero Title Text</label>
+            <input type="text" class="form-input" id="cfgHeroTitle" placeholder="e.g. SUBRAMANYA AQUATICS">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Hero Subtitle Text</label>
+            <input type="text" class="form-input" id="cfgHeroSubtitle" placeholder="e.g. Premium Exotic Fishes &amp; Aquariums">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Hero Background Image Path / URL</label>
+            <input type="text" class="form-input" id="cfgHeroBg" placeholder="e.g. logo.jpeg">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Or Upload Hero Background</label>
+            <div style="display:flex; gap:10px;">
+              <input type="file" class="form-input" id="cfgHeroBgFile" accept="image/*">
+              <span id="cfgHeroBgProgress" style="display:none; align-self:center; font-size:0.85rem; color:var(--color-secondary);">0%</span>
+            </div>
+          </div>
+
+          <div class="form-group form-full" style="margin-top:20px;">
+            <h4 style="color:var(--color-primary); margin-bottom:10px; border-bottom:1px solid var(--glass-border); padding-bottom:5px;">Promotion Offer Timer Bar</h4>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Offer Title / Banner Text</label>
+            <input type="text" class="form-input" id="cfgOfferTitle" placeholder="e.g. Special Summer Splash Discount!">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Associated Coupon Code</label>
+            <input type="text" class="form-input" id="cfgOfferCode" placeholder="e.g. AQUA10">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Offer Expiry Date (Countdown Timer)</label>
+            <input type="date" class="form-input" id="cfgOfferTimer">
+          </div>
+        </div>
+      </section>
+
+      <!-- 12. PAYMENTS & QR CONTROL SECTION -->
+      <section class="app-section" id="sec-payments">
+        <div class="card-header">
+          <h3>Payment Gateway &amp; Charges Configuration</h3>
+          <button class="btn-primary" id="btnSavePayments" style="width: auto; padding: 10px 20px;">💾 Save Payment Settings</button>
+        </div>
+        <div class="data-card form-grid" style="display: grid;">
+          <div class="form-group form-full">
+            <h4 style="color:var(--color-primary); margin-bottom:10px; border-bottom:1px solid var(--glass-border); padding-bottom:5px;">Store UPI Details</h4>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Primary UPI ID</label>
+            <input type="text" class="form-input" id="cfgUpiId" placeholder="e.g. subramanyaaquatics@ybl">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Payment QR Code Image URL</label>
+            <input type="text" class="form-input" id="cfgQrImage" placeholder="e.g. QR scan.jpeg">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Or Upload New Payment QR Image</label>
+            <div style="display:flex; gap:10px;">
+              <input type="file" class="form-input" id="cfgQrImageFile" accept="image/*">
+              <span id="cfgQrImageProgress" style="display:none; align-self:center; font-size:0.85rem; color:var(--color-secondary);">0%</span>
+            </div>
+          </div>
+
+          <div class="form-group form-full" style="margin-top:20px;">
+            <h4 style="color:var(--color-primary); margin-bottom:10px; border-bottom:1px solid var(--glass-border); padding-bottom:5px;">Shipping &amp; Handling Charges</h4>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Flat Delivery Charge (₹)</label>
+            <input type="number" class="form-input" id="cfgDeliveryCharge" placeholder="e.g. 150">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Packing Box Charge (₹)</label>
+            <input type="number" class="form-input" id="cfgPackingCharge" placeholder="e.g. 50">
+          </div>
+        </div>
+      </section>
+
     </main>
   </div>
 
@@ -677,9 +767,16 @@
               <option value="Out of Stock">Out of Stock</option>
             </select>
           </div>
-          <div class="form-group form-full">
+          <div class="form-group">
             <label class="form-label">Image Filename Path</label>
             <input type="text" class="form-input" id="foodImage" placeholder="e.g. foods/hikari-pellets.jpg">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Or Upload Image</label>
+            <div style="display:flex; gap:10px;">
+              <input type="file" class="form-input" id="foodImageFile" accept="image/*">
+              <span id="foodImageUploadProgress" style="display:none; align-self:center; font-size:0.85rem; color:var(--color-secondary);">0%</span>
+            </div>
           </div>
           <div class="form-group form-full">
             <label class="form-label">Description / Notes</label>
@@ -719,9 +816,16 @@
               <option value="Out of Stock">Out of Stock</option>
             </select>
           </div>
-          <div class="form-group form-full">
+          <div class="form-group">
             <label class="form-label">Image Filename Path</label>
             <input type="text" class="form-input" id="itemImage" placeholder="e.g. items/50w aquarium heater.webp">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Or Upload Image</label>
+            <div style="display:flex; gap:10px;">
+              <input type="file" class="form-input" id="itemImageFile" accept="image/*">
+              <span id="itemImageUploadProgress" style="display:none; align-self:center; font-size:0.85rem; color:var(--color-secondary);">0%</span>
+            </div>
           </div>
           <div class="form-group form-full">
             <button type="submit" class="btn-primary" id="btnSubmitItem">Save Item</button>
@@ -745,9 +849,16 @@
             <label class="form-label">Category Name</label>
             <input type="text" class="form-input" id="catName" required placeholder="e.g. Discus Fish">
           </div>
-          <div class="form-group form-full">
+          <div class="form-group">
             <label class="form-label">Banner Image Path</label>
             <input type="text" class="form-input" id="catImage" placeholder="e.g. fishes/discus.jpg">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Or Upload Image</label>
+            <div style="display:flex; gap:10px;">
+              <input type="file" class="form-input" id="catImageFile" accept="image/*">
+              <span id="catImageUploadProgress" style="display:none; align-self:center; font-size:0.85rem; color:var(--color-secondary);">0%</span>
+            </div>
           </div>
           <div class="form-group form-full">
             <label class="form-label">Status</label>
@@ -851,9 +962,16 @@
             <label class="form-label">Price / Rate (₹)</label>
             <input type="text" class="form-input" id="prodPrice" required placeholder="e.g. 250 or Contact Us">
           </div>
-          <div class="form-group form-full">
+          <div class="form-group">
             <label class="form-label">Image Filename Path</label>
             <input type="text" class="form-input" id="prodImage" required placeholder="e.g. fishes/Sward tail guppy.jpeg">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Or Upload Image</label>
+            <div style="display:flex; gap:10px;">
+              <input type="file" class="form-input" id="prodImageFile" accept="image/*">
+              <span id="prodImageUploadProgress" style="display:none; align-self:center; font-size:0.85rem; color:var(--color-secondary);">0%</span>
+            </div>
           </div>
           <div class="form-group form-full">
             <label class="form-label">Description</label>
@@ -901,6 +1019,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
   <!-- Firebase Auth -->
   <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+  <!-- Firebase Storage -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-storage-compat.js"></script>
   <!-- Custom Firebase Config -->
   <script src="firebase-config.js"></script>
 

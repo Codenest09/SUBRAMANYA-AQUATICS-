@@ -76,6 +76,30 @@ function revealOnScroll() {
 window.addEventListener('scroll', revealOnScroll);
 window.addEventListener('load', revealOnScroll);
 
+// ========== GALLERY LIGHTBOX ==========
+function openGalleryLightbox(item) {
+  const img = item.querySelector('img');
+  if (!img) return;
+  const lb = document.getElementById('galleryLightbox');
+  const lbImg = document.getElementById('galleryLightboxImg');
+  if (!lb || !lbImg) return;
+  lbImg.src = img.src;
+  lbImg.alt = img.alt;
+  lb.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeGalleryLightbox() {
+  const lb = document.getElementById('galleryLightbox');
+  if (lb) lb.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+// Close lightbox on Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeGalleryLightbox();
+});
+
 // ========== REVIEWS SLIDER ==========
 let currentReview = 0;
 const track = document.querySelector('.reviews-track');

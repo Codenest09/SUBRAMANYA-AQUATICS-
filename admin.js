@@ -54,6 +54,7 @@ function initAuthSession() {
       appSec.style.display = 'flex';
       initPortalState();
       drawAnalyticsCharts();
+      window.handleRoute(); // Process current path route
       console.log('%c✅ Admin dashboard loaded', 'color: #00ffc8;');
     } catch (err) {
       console.error('Error initializing admin dashboard:', err);
@@ -90,6 +91,9 @@ function initAuthSession() {
         showAdminDashboard();
       } else {
         console.log('%c🔒 No user session - showing login', 'color: #ffaa00;');
+        if (window.location.pathname !== '/admin/login') {
+          history.replaceState(null, '', '/admin/login');
+        }
         loginSec.style.display = 'flex';
         appSec.style.display = 'none';
       }
@@ -99,6 +103,12 @@ function initAuthSession() {
     // Fallback to localStorage if Firebase not initialized
     if (localStorage.getItem('adminToken') === 'true') {
       showAdminDashboard();
+    } else {
+      if (window.location.pathname !== '/admin/login') {
+        history.replaceState(null, '', '/admin/login');
+      }
+      loginSec.style.display = 'flex';
+      appSec.style.display = 'none';
     }
   }
 
@@ -225,15 +235,78 @@ function initAuthSession() {
 }
 
 // 3. SPA Navigation Routing
-function initNavigation() {
+// 3. SPA Navigation Routing
+window.navigateToRoute = function(route) {
+  history.pushState(null, '', route);
+  window.handleRoute();
+};
+
+window.handleRoute = function() {
+  let path = window.location.pathname;
+  if (path.endsWith('/') && path.length > 1) {
+    path = path.slice(0, -1);
+  }
+  
+  const isAuthenticated = window.auth ? window.auth.currentUser : localStorage.getItem('adminToken') === 'true';
+  
+  const routeMap = {
+    '/admin/login': 'login',
+    '/admin/dashboard': 'overview',
+    '/admin/products': 'products',
+    '/admin/orders': 'orders',
+    '/admin/coupons': 'coupons',
+    '/admin/payments': 'payments',
+    '/admin/banners': 'banners',
+    '/admin/settings': 'settings',
+    '/admin/foods': 'foods',
+    '/admin/items': 'items',
+    '/admin/categories': 'categories',
+    '/admin/customers': 'customers',
+    '/admin/messages': 'messages',
+    '/admin/testimonials': 'testimonials',
+    '/admin/media': 'media',
+    '/admin/seo': 'seo',
+    '/admin': 'overview'
+  };
+  
+  let target = routeMap[path] || 'overview';
+  
+  const loginSec = document.getElementById('loginSection');
+  const appSec = document.getElementById('appSection');
+  
+  if (!isAuthenticated) {
+    if (path !== '/admin/login') {
+      history.replaceState(null, '', '/admin/login');
+    }
+    if (loginSec) loginSec.style.display = 'flex';
+    if (appSec) appSec.style.display = 'none';
+    return;
+  }
+  
+  // If authenticated and tries to go to login, redirect to dashboard
+  if (path === '/admin/login' || path === '/admin') {
+    history.replaceState(null, '', '/admin/dashboard');
+    target = 'overview';
+  }
+  
+  if (loginSec) loginSec.style.display = 'none';
+  if (appSec) appSec.style.display = 'flex';
+  
+  // Deactivate all links and sections
   const navLinks = document.querySelectorAll('.sidebar-link, .mobile-nav-item');
   const sections = document.querySelectorAll('.app-section');
-  const titleEl = document.getElementById('sectionHeaderTitle');
-  const subEl = document.getElementById('sectionHeaderSubtitle');
-
+  navLinks.forEach(l => l.classList.remove('active'));
+  sections.forEach(s => s.classList.remove('active'));
+  
+  // Activate target
+  document.querySelectorAll(`[data-target="${target}"]`).forEach(l => l.classList.add('active'));
+  const activeSection = document.getElementById(`sec-${target}`);
+  if (activeSection) activeSection.classList.add('active');
+  
+  // Update header titles
   const headersMap = {
     overview: { title: 'Dashboard Overview', desc: 'Real-time business performance analytics' },
-    products: { title: 'Fish Items', desc: 'Manage aquatic fish catalog — add, edit, or remove fish items' },
+    products: { title: 'Fish Catalog', desc: 'Manage aquatic fish catalog — add, edit, or remove fish items' },
     foods: { title: 'Foods & Nutrition', desc: 'Manage fish food products — pellets, flakes, live food and supplements' },
     items: { title: 'Aquatic Items', desc: 'Manage aquarium items — heaters, lights, oxygen pumps' },
     categories: { title: 'Store Categories', desc: 'Manage freshwater, saltwater, and gear catalog classes' },
@@ -244,31 +317,53 @@ function initNavigation() {
     media: { title: 'Media Library', desc: 'Upload, optimize and search fish images or videos' },
     seo: { title: 'SEO Configurations', desc: 'Configure search engine indexing meta tags and sitemaps' },
     settings: { title: 'Portal Settings', desc: 'Change general portal settings, contacts and maintenance modes' },
-    coupons: { title: 'Promotional Coupons', desc: 'Create, manage, and track discount coupon codes' }
+    coupons: { title: 'Promotional Coupons', desc: 'Create, manage, and track discount coupon codes' },
+    payments: { title: 'Payment & QR Control', desc: 'Manage QR code image, UPI settings, and verify UTR payments' },
+    banners: { title: 'Homepage Banners', desc: 'Manage Hero text, banners, featured products' }
   };
+  
+  const titleEl = document.getElementById('sectionHeaderTitle');
+  const subEl = document.getElementById('sectionHeaderSubtitle');
+  if (headersMap[target] && titleEl && subEl) {
+    titleEl.textContent = headersMap[target].title;
+    subEl.textContent = headersMap[target].desc;
+  }
+};
 
+function initNavigation() {
+  const navLinks = document.querySelectorAll('.sidebar-link, .mobile-nav-item');
+  const targetRouteMap = {
+    overview: '/admin/dashboard',
+    products: '/admin/products',
+    foods: '/admin/foods',
+    items: '/admin/items',
+    categories: '/admin/categories',
+    coupons: '/admin/coupons',
+    orders: '/admin/orders',
+    customers: '/admin/customers',
+    messages: '/admin/messages',
+    testimonials: '/admin/testimonials',
+    media: '/admin/media',
+    seo: '/admin/seo',
+    settings: '/admin/settings',
+    payments: '/admin/payments',
+    banners: '/admin/banners'
+  };
+  
   navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
       const target = link.getAttribute('data-target');
       if (!target) return;
-
-      // Deactivate all links and sections
-      navLinks.forEach(l => l.classList.remove('active'));
-      sections.forEach(s => s.classList.remove('active'));
-
-      // Activate clicked
-      document.querySelectorAll(`[data-target="${target}"]`).forEach(l => l.classList.add('active'));
-      const activeSection = document.getElementById(`sec-${target}`);
-      if (activeSection) activeSection.classList.add('active');
-
-      // Update titles
-      if (headersMap[target]) {
-        titleEl.textContent = headersMap[target].title;
-        subEl.textContent = headersMap[target].desc;
-      }
+      const route = targetRouteMap[target] || '/admin/dashboard';
+      window.navigateToRoute(route);
     });
   });
+  
+  window.addEventListener('popstate', window.handleRoute);
+  
+  // Call routing on load (will check auth status)
+  window.handleRoute();
 }
 
 // 4. Portal State and Tables Renderer
@@ -283,13 +378,125 @@ let items = [];
 let coupons = [];
 let firestoreListenersActive = false;
 
+// Default Static Data (used as fallbacks and for database seeding)
+const defaultProducts = [
+  { id: 1, name: 'Moon Tail Guppys', category: 'Guppys', price: '₹99', image: 'fishes/Sward tail guppy.jpeg', tag: 'Best Seller' },
+  { id: 2, name: 'Golden Guppys (24K)', category: 'Guppys', price: '₹249', image: 'fishes/Golden guppy.jpg', tag: 'Premium' },
+  { id: 3, name: 'Premium Mixed Guppys', category: 'Guppys', price: '₹99', image: 'fishes/Premium mixed guppys.jpeg', tag: 'Premium Mix' },
+  { id: 4, name: 'Mixed Guppys', category: 'Guppys', price: '₹69', image: 'fishes/Mixed guppys.jpg', tag: 'Mixed Variety' },
+  { id: 5, name: 'HB Blue Guppys', category: 'Guppys', price: '₹250', image: 'fishes/Hb blue guppys.jpg', tag: 'Half Black' },
+  { id: 6, name: 'Koi Guppys', category: 'Guppys', price: '₹249', image: 'fishes/Albino Red eye guppy.jpg', tag: 'Koi Pattern' },
+  { id: 7, name: 'Platinum Guppys', category: 'Guppys', price: '₹99', image: 'fishes/Platinum guppys.webp', tag: 'Platinum' },
+  { id: 8, name: 'Platinum Dumbo Ear Guppys', category: 'Guppys', price: '₹250', image: 'fishes/Platinum dumbo ear guppys.jpeg', tag: 'Dumbo Ear' },
+  { id: 9, name: 'Dragon Tail Guppys', category: 'Guppys', price: '₹250', image: 'fishes/Dragon tail guppys.jpg', tag: 'Dragon Tail' },
+  { id: 10, name: 'Guppy Babies', category: 'Guppys', price: '₹7 / pc', image: 'fishes/Guppy babys.png', tag: 'Babies' },
+  { id: 11, name: 'Guppy Semi Adults', category: 'Guppys', price: '₹40 / pair', image: 'fishes/Guppys semi adults.webp', tag: 'Semi Adult' },
+  { id: 111, name: 'Koi Texido', category: 'Guppys', price: '₹250', image: 'fishes/Koi texido.jpg', tag: 'Premium' },
+  { id: 112, name: 'Dark Knight Dragon', category: 'Guppys', price: '₹250', image: 'fishes/Dark knight dragon.jpg', tag: 'Premium' },
+  { id: 113, name: 'White Angel', category: 'Angels', price: '₹150', image: 'fishes/White angel.jpg', tag: 'Popular' },
+  { id: 114, name: 'Marbel Angel', category: 'Angels', price: '₹199', image: 'fishes/Marbel angel.jpg', tag: 'Popular' },
+  { id: 115, name: 'Angel', category: 'Angels', price: '₹100', image: 'fishes/Angel.jpg', tag: 'Standard' },
+  { id: 12, name: 'Mollys', category: 'Mollies', price: '₹49', image: 'fishes/mollies.webp', tag: 'Popular' },
+  { id: 22, name: 'Moon Tail Mollies', category: 'Mollies', price: '₹99', image: 'fishes/moon tail mollies.jpg', tag: 'Moon Tail' },
+  { id: 23, name: 'Balloon Mollies', category: 'Mollies', price: '₹79', image: 'fishes/ballon mollies.jpeg', tag: 'Balloon' },
+  { id: 24, name: 'Molly Babies', category: 'Mollies', price: '₹5 / pc', image: 'fishes/Molly babyes.jpeg', tag: 'Babies' },
+  { id: 13, name: 'Gourami', category: 'Oxy-less Fishes', price: '₹79', image: 'fishes/Gourami.jpg', tag: 'Healthy' },
+  { id: 25, name: 'Platys', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/Platy fish.webp', tag: 'Colorful' },
+  { id: 26, name: 'Sword Tail Platys', category: 'Oxy-less Fishes', price: '₹99', image: 'fishes/Sward tail platy.jpeg', tag: 'Sword Tail' },
+  { id: 27, name: 'Zebra', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/Zebra fish.webp', tag: 'Striped' },
+  { id: 28, name: 'Shark (Small)', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/Shark small.webp', tag: 'Small' },
+  { id: 14, name: 'Red Cap Oranda Gold Fish', category: 'Gold Fish', price: '₹150', image: 'fishes/Red cap oranda gold fish.jpeg', tag: 'Cute' },
+  { id: 29, name: 'Black Moor Gold Fish', category: 'Gold Fish', price: '₹99', image: 'fishes/Black moor gold fish.jpg', tag: 'Dark' },
+  { id: 30, name: 'Standard Gold Fish', category: 'Gold Fish', price: '₹79', image: 'fishes/standard gold fish.webp', tag: 'Standard' },
+  { id: 15, name: 'Arowana (Silver)', category: 'Exotic & Large Fishes', price: 'Contact Us', image: 'fishes/Arowana silver .webp', tag: 'Exotic Giant' },
+  { id: 31, name: 'Flowerhorn SRD', category: 'Exotic & Large Fishes', price: 'Contact Us', image: 'fishes/Flowerhorn srd.jpg', tag: 'Ultra Head' },
+  { id: 32, name: 'Oscar (Copper)', category: 'Exotic & Large Fishes', price: '₹200', image: 'fishes/Copper oscar.webp', tag: 'Aggressive' },
+  { id: 33, name: 'Oscar (Albino)', category: 'Exotic & Large Fishes', price: '₹250', image: 'fishes/Albino oscar.jpeg', tag: 'Aggressive' },
+  { id: 34, name: 'Oscar (White)', category: 'Exotic & Large Fishes', price: '₹250', image: 'fishes/White oscar.webp', tag: 'Beautiful' },
+  { id: 35, name: 'Parrot Fish', category: 'Exotic & Large Fishes', price: '₹250', image: 'fishes/Parrot fish.webp', tag: 'Premium' },
+  { id: 36, name: 'Polar Parrot Breeding Pair', category: 'Exotic & Large Fishes', price: '₹500', image: 'fishes/polar parrot breeding pair.jpg', tag: 'Breeder' },
+  { id: 37, name: 'Milky Carp', category: 'Carp & Koi', price: '₹150', image: 'fishes/milky carp.webp', tag: 'Stunning' },
+  { id: 38, name: 'Koi Carp', category: 'Carp & Koi', price: '₹99', image: 'fishes/koi carp.webp', tag: 'Active' },
+  { id: 16, name: 'Flowerhorn Food (Humpy Head)', type: 'Pellets', suitable: 'Flowerhorns', price: '₹250', stock: 'In Stock', image: 'food/Humpy head food.jpeg', desc: 'Promotes head growth' }
+];
+
+const requiredGuppyNames = [
+  'HB Blue Guppys',
+  'Platinum Dumbo Ear Guppys',
+  'Dragon Tail Guppys',
+  'Guppy Babies',
+  'Guppy Semi Adults'
+];
+
+const defaultCategories = [
+  { name: 'Guppys', count: 11, image: 'fishes/Golden guppy.jpg', status: 'Active' },
+  { name: 'Angels', count: 3, image: 'fishes/White angel.jpg', status: 'Active' },
+  { name: 'Mollies', count: 4, image: 'fishes/moon tail mollies.jpg', status: 'Active' },
+  { name: 'Oxy-less Fishes', count: 5, image: 'fishes/Gourami.jpg', status: 'Active' },
+  { name: 'Gold Fish', count: 3, image: 'fishes/Red cap oranda gold fish.jpeg', status: 'Active' },
+  { name: 'Exotic & Large Fishes', count: 7, image: 'fishes/Flowerhorn srd.jpg', status: 'Active' },
+  { name: 'Carp & Koi', count: 2, image: 'fishes/milky carp.webp', status: 'Active' }
+];
+
+const defaultFoods = [
+  { id: 1, name: 'Dry Worms (10g)', type: 'Dry Food', suitable: 'All Fishes', price: '₹25', stock: 'In Stock', image: 'food/dry worms cubes.jpeg', desc: 'High protein treat for all fish' },
+  { id: 2, name: 'Farm Food (100g)', type: 'Pellets', suitable: 'All Fishes', price: '₹200', stock: 'In Stock', image: 'food/farm food.jpg', desc: 'General farm food for fish' },
+  { id: 3, name: 'Okiko Black Pearl Flowerhorn Food', type: 'Pellets', suitable: 'Flowerhorns', price: '₹300', stock: 'In Stock', image: 'food/okiko black pearl flowehorn food.webp', desc: 'Enhances color and growth' },
+  { id: 4, name: 'Okiko Head Power Flowerhorns Food', type: 'Pellets', suitable: 'Flowerhorns', price: '₹300', stock: 'In Stock', image: 'food/Okiko head power flowerhorns food.jpeg', desc: 'Head booster for Flowerhorns' },
+  { id: 5, name: 'Okiko Red Diamond Flowerhorn Food', type: 'Pellets', suitable: 'Flowerhorns', price: '₹300', stock: 'In Stock', image: 'food/Okoko red diamond fish food.jpg', desc: 'Premium color enhancer' },
+  { id: 6, name: 'Optimun 3 in 1 Fish Food', type: 'Pellets', suitable: 'All Fishes', price: '₹160', stock: 'In Stock', image: 'food/Optimun 3 in 1 fish food.webp', desc: 'Balanced nutrition for tropical fish' },
+  { id: 7, name: 'Tiyo Fish Food (Small)', type: 'Pellets', suitable: 'Small Fishes', price: '₹20', stock: 'In Stock', image: 'food/Tiyo fish food (small).jpeg', desc: 'Daily nutrition for small fish' },
+  { id: 8, name: 'Tiyo Fish Food', type: 'Pellets', suitable: 'All Fishes', price: '₹30', stock: 'In Stock', image: 'food/Tiyo fish food(large).jpg', desc: 'Daily nutrition for all fish' }
+];
+
+const defaultOrders = [
+  { id: 'ORD-8932', customer: 'Rajesh Kumar', product: 'Silver Arowana (1 Pair)', amount: 'Contact Us', status: 'confirmed', date: 'May 06, 2026' },
+  { id: 'ORD-8933', customer: 'Priya Sharma', product: 'Golden Guppys 24K (5 pairs)', amount: '₹1,245', status: 'delivered', date: 'May 05, 2026' },
+  { id: 'ORD-8934', customer: 'Vikram Patel', product: 'Black Moor Gold Fish (2 pairs)', amount: '₹198', status: 'pending', date: 'May 04, 2026' },
+  { id: 'ORD-8935', customer: 'Anitha Reddy', product: 'Polar Parrot Breeding Pair (1 Pair)', amount: '₹500', status: 'shipped', date: 'May 03, 2026' }
+];
+
+const defaultCustomers = [
+  { id: 'CUST-001', name: 'Rajesh Kumar', email: 'rajesh@gmail.com', orders: 4, status: 'Active' },
+  { id: 'CUST-002', name: 'Priya Sharma', email: 'priya@gmail.com', orders: 2, status: 'Active' },
+  { id: 'CUST-003', name: 'Vikram Patel', email: 'vikram@gmail.com', orders: 1, status: 'Active' },
+  { id: 'CUST-004', name: 'Anitha Reddy', email: 'anitha@gmail.com', orders: 7, status: 'Active' }
+];
+
+const defaultTestimonials = [
+  { name: 'Rajesh Kumar', text: 'Absolutely amazing collection of exotic fishes! The Arowana I purchased is healthy and stunning.', rating: '⭐⭐⭐⭐⭐', status: 'Approved' },
+  { name: 'Priya Sharma', text: 'Got my entire aquarium setup done by Subramanya Aquatics. The planted tank looks like an underwater paradise.', rating: '⭐⭐⭐⭐⭐', status: 'Approved' }
+];
+
+const defaultInquiries = [
+  { id: 1, name: 'Sanjay Kumar', email: 'sanjay@gmail.com', msg: 'Do you ship live fishes to Hyderabad safely? Looking for some SRD Flowerhorn.', phone: '+91 98765 43210' },
+  { id: 2, name: 'Megha Sen', email: 'megha@yahoo.com', msg: 'Interested in getting a custom 3ft glass aquarium setup for my living room.', phone: '+91 87654 32109' }
+];
+
+const defaultCoupons = [
+  { id: 1, code: 'AQUA10', type: 'percentage', value: 10, minOrder: 300, expiry: new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0], maxUsage: 100, currentUsage: 0, active: true },
+  { id: 2, code: 'FISH20', type: 'percentage', value: 20, minOrder: 500, expiry: new Date(Date.now() + 60*24*60*60*1000).toISOString().split('T')[0], maxUsage: 50, currentUsage: 0, active: true },
+  { id: 3, code: 'NEWUSER50', type: 'fixed', value: 50, minOrder: 200, expiry: new Date(Date.now() + 90*24*60*60*1000).toISOString().split('T')[0], maxUsage: 200, currentUsage: 0, active: true },
+  { id: 4, code: 'PREMIUM100', type: 'fixed', value: 100, minOrder: 1000, expiry: new Date(Date.now() + 45*24*60*60*1000).toISOString().split('T')[0], maxUsage: 30, currentUsage: 0, active: true }
+];
+
+const defaultItems = [
+  { id: 1, name: 'Aquarium Heater (50W)', price: '₹300', stock: 'In Stock', image: 'items/50w aquarium heater.webp' },
+  { id: 2, name: 'Aquarium Heater (100W)', price: '₹350', stock: 'In Stock', image: 'items/100 w aquarium heater.webp' },
+  { id: 3, name: 'Aquarium Light Large', price: '₹400', stock: 'In Stock', image: 'items/Aquarium light (large ).jpg' },
+  { id: 4, name: 'Aquarium Light Small', price: '₹300', stock: 'In Stock', image: 'items/Aquarium light (small).jpg' },
+  { id: 5, name: 'Bubble Oxygen', price: '₹200', stock: 'In Stock', image: 'items/buble oxygen.webp' },
+  { id: 6, name: 'Double Oxygen', price: '₹300', stock: 'In Stock', image: 'items/double oxygen.webp' },
+  { id: 7, name: 'Internal Oxygen (Small)', price: '₹300', stock: 'In Stock', image: 'items/internal oxgyen (small).webp' },
+  { id: 8, name: 'Internal Oxygen (Large)', price: '₹400', stock: 'In Stock', image: 'items/internal oxgyen (big).jpg' }
+];
+
 // ── Firebase Firestore Helpers ──────────────────────────────────────────────────
 
 // Save a single collection to Firestore
 function saveCollectionToFirestore(collectionName, dataArray, idField = 'id') {
   if (!window.db) return Promise.resolve();
   const batch = db.batch();
-  // We store each item as a doc keyed by its id
   dataArray.forEach(item => {
     const docId = String(item[idField] || item.code || Date.now());
     const ref = db.collection(collectionName).doc(docId);
@@ -332,14 +539,121 @@ function loadCollectionFromFirestore(collectionName) {
     });
 }
 
-// Setup real-time Firestore listeners for coupons, foods, items
+// Seed default data if empty in Firebase
+window.seedDefaultDataIfEmpty = async function(force = false) {
+  if (!window.db) return;
+  console.log('%c🌱 Checking if database seeding is required...', 'color: #ffaa00; font-weight: bold;');
+  try {
+    const productsSnapshot = await db.collection('products').limit(1).get();
+    if (productsSnapshot.empty || force) {
+      console.log('%c🌱 Seeding default products to Firebase...', 'color: #00ffc8;');
+      await saveCollectionToFirestore('products', defaultProducts);
+    }
+    
+    const categoriesSnapshot = await db.collection('categories').limit(1).get();
+    if (categoriesSnapshot.empty || force) {
+      console.log('%c🌱 Seeding default categories to Firebase...', 'color: #00ffc8;');
+      await saveCollectionToFirestore('categories', defaultCategories, 'name');
+    }
+
+    const couponsSnapshot = await db.collection('coupons').limit(1).get();
+    if (couponsSnapshot.empty || force) {
+      console.log('%c🌱 Seeding default coupons to Firebase...', 'color: #00ffc8;');
+      await saveCollectionToFirestore('coupons', defaultCoupons);
+    }
+
+    const foodsSnapshot = await db.collection('foods').limit(1).get();
+    if (foodsSnapshot.empty || force) {
+      console.log('%c🌱 Seeding default foods to Firebase...', 'color: #00ffc8;');
+      await saveCollectionToFirestore('foods', defaultFoods);
+    }
+
+    const itemsSnapshot = await db.collection('items').limit(1).get();
+    if (itemsSnapshot.empty || force) {
+      console.log('%c🌱 Seeding default items to Firebase...', 'color: #00ffc8;');
+      await saveCollectionToFirestore('items', defaultItems);
+    }
+
+    const ordersSnapshot = await db.collection('orders').limit(1).get();
+    if (ordersSnapshot.empty || force) {
+      console.log('%c🌱 Seeding default orders to Firebase...', 'color: #00ffc8;');
+      await saveCollectionToFirestore('orders', defaultOrders);
+    }
+
+    const customersSnapshot = await db.collection('customers').limit(1).get();
+    if (customersSnapshot.empty || force) {
+      console.log('%c🌱 Seeding default customers to Firebase...', 'color: #00ffc8;');
+      await saveCollectionToFirestore('customers', defaultCustomers);
+    }
+
+    const inquiriesSnapshot = await db.collection('inquiries').limit(1).get();
+    if (inquiriesSnapshot.empty || force) {
+      console.log('%c🌱 Seeding default inquiries to Firebase...', 'color: #00ffc8;');
+      await saveCollectionToFirestore('inquiries', defaultInquiries);
+    }
+
+    const testimonialsSnapshot = await db.collection('testimonials').limit(1).get();
+    if (testimonialsSnapshot.empty || force) {
+      console.log('%c🌱 Seeding default testimonials to Firebase...', 'color: #00ffc8;');
+      await saveCollectionToFirestore('testimonials', defaultTestimonials, 'name');
+    }
+
+    // Seed settings (config, banners, payments)
+    const configRef = db.collection('settings').doc('config');
+    const configSnap = await configRef.get();
+    if (!configSnap.exists || force) {
+      console.log('%c🌱 Seeding default config to Firebase...', 'color: #00ffc8;');
+      await configRef.set({
+        whatsApp: '+91 9876543210',
+        email: 'info@subramanyaaquatics.com',
+        address: 'Visakhapatnam, Andhra Pradesh, India',
+        maintenance: 'no',
+        soundPitch: '400'
+      });
+    }
+
+    const bannersRef = db.collection('settings').doc('banners');
+    const bannersSnap = await bannersRef.get();
+    if (!bannersSnap.exists || force) {
+      console.log('%c🌱 Seeding default banners to Firebase...', 'color: #00ffc8;');
+      await bannersRef.set({
+        heroTitle: 'Subramanya Aquatics',
+        heroSubtitle: 'Premium Quality Fish & Aquarium Accessories',
+        heroBg: 'logo.jpeg',
+        offerTitle: 'Special Summer Splash Discount!',
+        offerCode: 'AQUA10',
+        offerTimer: new Date(Date.now() + 7*24*60*60*1000).toISOString().split('T')[0]
+      });
+    }
+
+    const paymentsRef = db.collection('settings').doc('payments');
+    const paymentsSnap = await paymentsRef.get();
+    if (!paymentsSnap.exists || force) {
+      console.log('%c🌱 Seeding default payments config to Firebase...', 'color: #00ffc8;');
+      await paymentsRef.set({
+        upiId: 'subramanyaaquatics@ybl',
+        qrImage: 'qr_code.png',
+        deliveryCharge: '150',
+        packingCharge: '50'
+      });
+    }
+
+    console.log('%c🌱 Database seeding checked/completed.', 'color: #00ffc8; font-weight: bold;');
+  } catch (err) {
+    console.error('❌ Error during seeding:', err);
+  }
+};
+
+// Setup real-time Firestore listeners for ALL collections
 function setupFirestoreListeners() {
   if (!window.db || firestoreListenersActive) return;
   firestoreListenersActive = true;
 
+  console.log('%c👂 Setting up real-time Firestore listeners for all collections...', 'color: #00d4ff; font-weight: bold;');
+
   // Coupons listener
   db.collection('coupons').onSnapshot(snapshot => {
-    if (snapshot.metadata.hasPendingWrites) return; // ignore local writes
+    if (snapshot.metadata.hasPendingWrites) return;
     const fireData = [];
     snapshot.forEach(doc => fireData.push(doc.data()));
     if (fireData.length > 0) {
@@ -378,179 +692,224 @@ function setupFirestoreListeners() {
     }
   }, err => console.error('Items listener error:', err));
 
-  console.log('%c👂 Firebase real-time listeners active for: coupons, foods, items', 'color: #00d4ff; font-weight: bold;');
+  // Products listener
+  db.collection('products').onSnapshot(snapshot => {
+    if (snapshot.metadata.hasPendingWrites) return;
+    const fireData = [];
+    snapshot.forEach(doc => fireData.push(doc.data()));
+    if (fireData.length > 0) {
+      products = fireData.sort((a,b) => a.id - b.id);
+      localStorage.setItem('sa_products', JSON.stringify(products));
+      renderProducts();
+      if (document.getElementById('cardTotalProducts')) document.getElementById('cardTotalProducts').textContent = products.length;
+      console.log('%c🔄 Products updated from Firebase real-time', 'color: #00ffc8;');
+    }
+  }, err => console.error('Products listener error:', err));
+
+  // Categories listener
+  db.collection('categories').onSnapshot(snapshot => {
+    if (snapshot.metadata.hasPendingWrites) return;
+    const fireData = [];
+    snapshot.forEach(doc => fireData.push(doc.data()));
+    if (fireData.length > 0) {
+      categories = fireData;
+      localStorage.setItem('sa_categories', JSON.stringify(categories));
+      renderCategories();
+      console.log('%c🔄 Categories updated from Firebase real-time', 'color: #00ffc8;');
+    }
+  }, err => console.error('Categories listener error:', err));
+
+  // Orders listener
+  db.collection('orders').onSnapshot(snapshot => {
+    if (snapshot.metadata.hasPendingWrites) return;
+    const fireData = [];
+    snapshot.forEach(doc => {
+      const d = doc.data();
+      fireData.push({
+        id: doc.id,
+        customer: d.customer || d['Customer Name'] || 'Guest',
+        product: d.product || d['Items'] || '',
+        amount: d.amount || d['Total'] || '0',
+        status: (d.status || d['Status'] || 'pending').toLowerCase(),
+        date: d.date || d['Date'] || '',
+        phone: d.phone || d['Phone'] || '',
+        address: d.address || d['Address'] || '',
+        payment: d.payment || d['Payment'] || '',
+        utr: d.utr || '',
+        screenshot: d.screenshot || '',
+        items: d.items || null
+      });
+    });
+    if (fireData.length > 0) {
+      orders = fireData;
+      localStorage.setItem('sa_orders', JSON.stringify(orders));
+      renderOrders();
+      if (document.getElementById('cardActiveOrders')) document.getElementById('cardActiveOrders').textContent = orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length;
+      if (document.getElementById('ordersCounter')) document.getElementById('ordersCounter').textContent = orders.filter(o => o.status === 'pending').length;
+      console.log('%c🔄 Orders updated from Firebase real-time', 'color: #00ffc8;');
+    }
+  }, err => console.error('Orders listener error:', err));
+
+  // Customers listener
+  db.collection('customers').onSnapshot(snapshot => {
+    if (snapshot.metadata.hasPendingWrites) return;
+    const fireData = [];
+    snapshot.forEach(doc => fireData.push(doc.data()));
+    if (fireData.length > 0) {
+      customers = fireData;
+      localStorage.setItem('sa_customers', JSON.stringify(customers));
+      renderCustomers();
+      console.log('%c🔄 Customers updated from Firebase real-time', 'color: #00ffc8;');
+    }
+  }, err => console.error('Customers listener error:', err));
+
+  // Inquiries listener
+  db.collection('inquiries').onSnapshot(snapshot => {
+    if (snapshot.metadata.hasPendingWrites) return;
+    const fireData = [];
+    snapshot.forEach(doc => fireData.push(doc.data()));
+    if (fireData.length > 0) {
+      inquiries = fireData;
+      localStorage.setItem('sa_inquiries', JSON.stringify(inquiries));
+      renderInquiries();
+      console.log('%c🔄 Inquiries updated from Firebase real-time', 'color: #00ffc8;');
+    }
+  }, err => console.error('Inquiries listener error:', err));
+
+  // Testimonials listener
+  db.collection('testimonials').onSnapshot(snapshot => {
+    if (snapshot.metadata.hasPendingWrites) return;
+    const fireData = [];
+    snapshot.forEach(doc => fireData.push(doc.data()));
+    if (fireData.length > 0) {
+      testimonials = fireData;
+      localStorage.setItem('sa_testimonials', JSON.stringify(testimonials));
+      renderTestimonials();
+      console.log('%c🔄 Testimonials updated from Firebase real-time', 'color: #00ffc8;');
+    }
+  }, err => console.error('Testimonials listener error:', err));
+
+  // Config listener
+  db.collection('settings').doc('config').onSnapshot(doc => {
+    if (doc.exists) {
+      const cfg = doc.data();
+      localStorage.setItem('sa_cfg', JSON.stringify(cfg));
+      if (document.getElementById('cfgWhatsApp')) document.getElementById('cfgWhatsApp').value = cfg.whatsApp || '';
+      if (document.getElementById('cfgEmail')) document.getElementById('cfgEmail').value = cfg.email || '';
+      if (document.getElementById('cfgAddress')) document.getElementById('cfgAddress').value = cfg.address || '';
+      if (document.getElementById('cfgMaintenance')) document.getElementById('cfgMaintenance').value = cfg.maintenance || 'no';
+      if (document.getElementById('cfgSoundPitch')) document.getElementById('cfgSoundPitch').value = cfg.soundPitch || '400';
+      console.log('%c🔄 Config updated from Firebase real-time', 'color: #00ffc8;');
+    }
+  }, err => console.error('Config listener error:', err));
+
+  // Banners listener
+  db.collection('settings').doc('banners').onSnapshot(doc => {
+    if (doc.exists) {
+      const bnr = doc.data();
+      localStorage.setItem('sa_banners', JSON.stringify(bnr));
+      if (document.getElementById('cfgHeroTitle')) document.getElementById('cfgHeroTitle').value = bnr.heroTitle || '';
+      if (document.getElementById('cfgHeroSubtitle')) document.getElementById('cfgHeroSubtitle').value = bnr.heroSubtitle || '';
+      if (document.getElementById('cfgHeroBg')) document.getElementById('cfgHeroBg').value = bnr.heroBg || '';
+      if (document.getElementById('cfgOfferTitle')) document.getElementById('cfgOfferTitle').value = bnr.offerTitle || '';
+      if (document.getElementById('cfgOfferCode')) document.getElementById('cfgOfferCode').value = bnr.offerCode || '';
+      if (document.getElementById('cfgOfferTimer')) document.getElementById('cfgOfferTimer').value = bnr.offerTimer || '';
+      console.log('%c🔄 Banners updated from Firebase real-time', 'color: #00ffc8;');
+    }
+  }, err => console.error('Banners listener error:', err));
+
+  // Payments listener
+  db.collection('settings').doc('payments').onSnapshot(doc => {
+    if (doc.exists) {
+      const pm = doc.data();
+      localStorage.setItem('sa_payments', JSON.stringify(pm));
+      if (document.getElementById('cfgUpiId')) document.getElementById('cfgUpiId').value = pm.upiId || '';
+      if (document.getElementById('cfgQrImage')) document.getElementById('cfgQrImage').value = pm.qrImage || '';
+      if (document.getElementById('cfgDeliveryCharge')) document.getElementById('cfgDeliveryCharge').value = pm.deliveryCharge || '0';
+      if (document.getElementById('cfgPackingCharge')) document.getElementById('cfgPackingCharge').value = pm.packingCharge || '0';
+      console.log('%c🔄 Payments updated from Firebase real-time', 'color: #00ffc8;');
+    }
+  }, err => console.error('Payments listener error:', err));
 }
 
-// Sync all three collections to Firestore (push local → cloud)
+// Sync all collections to Firestore (push local → cloud)
 window.syncAllToFirestore = function() {
   if (!window.db) {
     showToast('error', 'Firebase not connected. Check your internet.');
     return;
   }
-  showToast('info', '☁️ Syncing all data to Firebase...');
+  showToast('info', '☁️ Syncing all catalogs to Firebase...');
   Promise.all([
-    saveCollectionToFirestore('coupons', coupons),
+    saveCollectionToFirestore('products', products),
+    saveCollectionToFirestore('categories', categories, 'name'),
     saveCollectionToFirestore('foods', foods),
-    saveCollectionToFirestore('items', items)
+    saveCollectionToFirestore('items', items),
+    saveCollectionToFirestore('coupons', coupons),
+    saveCollectionToFirestore('orders', orders),
+    saveCollectionToFirestore('customers', customers),
+    saveCollectionToFirestore('inquiries', inquiries),
+    saveCollectionToFirestore('testimonials', testimonials, 'name')
   ]).then(() => {
-    showToast('success', '✅ All data synced to Firebase successfully!');
-  }).catch(() => {
-    showToast('error', 'Some data failed to sync. Check console.');
+    showToast('success', '✅ All catalogs synced to Firebase successfully!');
+  }).catch((err) => {
+    console.error('Error syncing all to Firebase:', err);
+    showToast('error', 'Some catalogs failed to sync. Check console.');
   });
 };
 
-// Load all three collections from Firestore (pull cloud → local)
+// Load all collections from Firebase (pull cloud → local)
 window.loadAllFromFirestore = async function() {
   if (!window.db) {
     showToast('error', 'Firebase not connected. Check your internet.');
     return;
   }
-  showToast('info', '📥 Loading data from Firebase...');
+  showToast('info', '📥 Checking & seeding default data if empty...');
+  await seedDefaultDataIfEmpty();
+  
+  showToast('info', '📥 Loading database from Firebase...');
   try {
-    const [fbCoupons, fbFoods, fbItems] = await Promise.all([
-      loadCollectionFromFirestore('coupons'),
+    const [fbProducts, fbCategories, fbFoods, fbItems, fbCoupons, fbOrders, fbCustomers, fbInquiries, fbTestimonials] = await Promise.all([
+      loadCollectionFromFirestore('products'),
+      loadCollectionFromFirestore('categories'),
       loadCollectionFromFirestore('foods'),
-      loadCollectionFromFirestore('items')
+      loadCollectionFromFirestore('items'),
+      loadCollectionFromFirestore('coupons'),
+      loadCollectionFromFirestore('orders'),
+      loadCollectionFromFirestore('customers'),
+      loadCollectionFromFirestore('inquiries'),
+      loadCollectionFromFirestore('testimonials')
     ]);
-    if (fbCoupons.length > 0) { coupons = fbCoupons; localStorage.setItem('sa_coupons', JSON.stringify(coupons)); }
+
+    if (fbProducts.length > 0) { products = fbProducts.sort((a,b) => a.id - b.id); localStorage.setItem('sa_products', JSON.stringify(products)); }
+    if (fbCategories.length > 0) { categories = fbCategories; localStorage.setItem('sa_categories', JSON.stringify(categories)); }
     if (fbFoods.length > 0) { foods = fbFoods; localStorage.setItem('sa_foods', JSON.stringify(foods)); }
     if (fbItems.length > 0) { items = fbItems; localStorage.setItem('sa_items', JSON.stringify(items)); }
-    renderCoupons(); renderFoods(); renderItems();
+    if (fbCoupons.length > 0) { coupons = fbCoupons; localStorage.setItem('sa_coupons', JSON.stringify(coupons)); }
+    if (fbOrders.length > 0) { orders = fbOrders; localStorage.setItem('sa_orders', JSON.stringify(orders)); }
+    if (fbCustomers.length > 0) { customers = fbCustomers; localStorage.setItem('sa_customers', JSON.stringify(customers)); }
+    if (fbInquiries.length > 0) { inquiries = fbInquiries; localStorage.setItem('sa_inquiries', JSON.stringify(inquiries)); }
+    if (fbTestimonials.length > 0) { testimonials = fbTestimonials; localStorage.setItem('sa_testimonials', JSON.stringify(testimonials)); }
+
+    renderProducts(); renderCategories(); renderFoods(); renderItems(); renderCoupons(); renderOrders(); renderCustomers(); renderInquiries(); renderTestimonials(); renderMediaLibrary();
+    
+    // Update counters
+    document.getElementById('cardTotalProducts').textContent = products.length;
+    document.getElementById('cardActiveOrders').textContent = orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length;
+    document.getElementById('ordersCounter').textContent = orders.filter(o => o.status === 'pending').length;
     if (document.getElementById('cardTotalCoupons')) document.getElementById('cardTotalCoupons').textContent = coupons.length;
     if (document.getElementById('cardActiveCoupons')) document.getElementById('cardActiveCoupons').textContent = coupons.filter(c => c.active).length;
-    showToast('success', `✅ Loaded: ${fbCoupons.length} coupons, ${fbFoods.length} foods, ${fbItems.length} items`);
+
+    showToast('success', '✅ Loaded all catalogs from Firebase successfully!');
   } catch (err) {
-    console.error('Error loading from Firebase:', err);
-    showToast('error', 'Failed to load from Firebase.');
+    console.error('Error loading database from Firebase:', err);
+    showToast('error', 'Failed to load database from Firebase. Using local fallback.');
   }
 };
 
 function initPortalState() {
-  // Mock/Initial Data
-  const defaultProducts = [
-    { id: 1, name: 'Moon Tail Guppys', category: 'Guppys', price: '₹99', image: 'fishes/Sward tail guppy.jpeg', tag: 'Best Seller' },
-    { id: 2, name: 'Golden Guppys (24K)', category: 'Guppys', price: '₹249', image: 'fishes/Golden guppy.jpg', tag: 'Premium' },
-    { id: 3, name: 'Premium Mixed Guppys', category: 'Guppys', price: '₹99', image: 'fishes/Premium mixed guppys.jpeg', tag: 'Premium Mix' },
-    { id: 4, name: 'Mixed Guppys', category: 'Guppys', price: '₹69', image: 'fishes/Mixed guppys.jpg', tag: 'Mixed Variety' },
-    { id: 5, name: 'HB Blue Guppys', category: 'Guppys', price: '₹250', image: 'fishes/Hb blue guppys.jpg', tag: 'Half Black' },
-    { id: 6, name: 'Koi Guppys', category: 'Guppys', price: '₹249', image: 'fishes/Albino Red eye guppy.jpg', tag: 'Koi Pattern' },
-    { id: 7, name: 'Platinum Guppys', category: 'Guppys', price: '₹99', image: 'fishes/Platinum guppys.webp', tag: 'Platinum' },
-    { id: 8, name: 'Platinum Dumbo Ear Guppys', category: 'Guppys', price: '₹250', image: 'fishes/Platinum dumbo ear guppys.jpeg', tag: 'Dumbo Ear' },
-    { id: 9, name: 'Dragon Tail Guppys', category: 'Guppys', price: '₹250', image: 'fishes/Dragon tail guppys.jpg', tag: 'Dragon Tail' },
-    { id: 10, name: 'Guppy Babies', category: 'Guppys', price: '₹7 / pc', image: 'fishes/Guppy babys.png', tag: 'Babies' },
-    { id: 11, name: 'Guppy Semi Adults', category: 'Guppys', price: '₹40 / pair', image: 'fishes/Guppys semi adults.webp', tag: 'Semi Adult' },
-    { id: 111, name: 'Koi Texido', category: 'Guppys', price: '₹250', image: 'fishes/Koi texido.jpg', tag: 'Premium' },
-    { id: 112, name: 'Dark Knight Dragon', category: 'Guppys', price: '₹250', image: 'fishes/Dark knight dragon.jpg', tag: 'Premium' },
-    { id: 113, name: 'White Angel', category: 'Angels', price: '₹150', image: 'fishes/White angel.jpg', tag: 'Popular' },
-    { id: 114, name: 'Marbel Angel', category: 'Angels', price: '₹199', image: 'fishes/Marbel angel.jpg', tag: 'Popular' },
-    { id: 115, name: 'Angel', category: 'Angels', price: '₹100', image: 'fishes/Angel.jpg', tag: 'Standard' },
-    { id: 12, name: 'Mollys', category: 'Mollies', price: '₹49', image: 'fishes/mollies.webp', tag: 'Popular' },
-    { id: 22, name: 'Moon Tail Mollies', category: 'Mollies', price: '₹99', image: 'fishes/moon tail mollies.jpg', tag: 'Moon Tail' },
-    { id: 23, name: 'Balloon Mollies', category: 'Mollies', price: '₹79', image: 'fishes/ballon mollies.jpeg', tag: 'Balloon' },
-    { id: 24, name: 'Molly Babies', category: 'Mollies', price: '₹5 / pc', image: 'fishes/Molly babyes.jpeg', tag: 'Babies' },
-    { id: 13, name: 'Gourami', category: 'Oxy-less Fishes', price: '₹79', image: 'fishes/Gourami.jpg', tag: 'Healthy' },
-    { id: 25, name: 'Platys', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/Platy fish.webp', tag: 'Colorful' },
-    { id: 26, name: 'Sword Tail Platys', category: 'Oxy-less Fishes', price: '₹99', image: 'fishes/Sward tail platy.jpeg', tag: 'Sword Tail' },
-    { id: 27, name: 'Zebra', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/Zebra fish.webp', tag: 'Striped' },
-    { id: 28, name: 'Shark (Small)', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/Shark small.webp', tag: 'Small' },
-    { id: 29, name: 'Shark (Medium)', category: 'Oxy-less Fishes', price: '₹99', image: 'fishes/Shark medium.avif', tag: 'Medium' },
-    { id: 30, name: 'Shark (Large)', category: 'Oxy-less Fishes', price: 'Contact Us', image: 'fishes/Shark large.jpeg', tag: 'Large' },
-    { id: 31, name: 'Veil Tail Zebra', category: 'Oxy-less Fishes', price: '₹150', image: 'fishes/Vail tail zebra green.jpg', tag: 'Veil Tail' },
-    { id: 14, name: 'OHM (Males)', category: "Betta's", price: '₹149', image: 'fishes/Beta ohm male.webp', tag: 'Exotic' },
-    { id: 32, name: 'OHM (Female)', category: "Betta's", price: '₹99', image: 'fishes/Beta ohm females.jpg', tag: 'Female' },
-    { id: 33, name: 'HMPK Male', category: "Betta's", price: '₹250', image: 'fishes/Beta HMPK male.webp', tag: 'HMPK' },
-    { id: 34, name: 'Placarts', category: "Betta's", price: '₹499', image: 'fishes/Beta placarts male.jpg', tag: 'Exotic' },
-    { id: 35, name: 'Candy Betta', category: "Betta's", price: 'Contact Us', image: 'fishes/Bata candy male.jpeg', tag: 'Candy' },
-    { id: 36, name: 'HMPK Female', category: "Betta's", price: 'Contact Us', image: 'fishes/Beta hmpk female.jpeg', tag: 'HMPK Female' },
-    { id: 15, name: 'Albino Oscar', category: 'Wild Oscars', price: '₹499', image: 'fishes/Albino oscar fish.webp', tag: 'Giant' },
-    { id: 37, name: 'Tiger Red Oscar', category: 'Wild Oscars', price: '₹499', image: 'fishes/Red tiger oscar.jpg', tag: 'Tiger' },
-    { id: 38, name: 'Red Oscar', category: 'Wild Oscars', price: '₹599', image: 'fishes/Red oscar.jpg', tag: 'Red' },
-    { id: 39, name: 'Lemon Oscar', category: 'Wild Oscars', price: '₹599', image: 'fishes/Lemon oscar.jpeg', tag: 'Lemon' },
-    { id: 40, name: 'Mango Oscar', category: 'Wild Oscars', price: '₹599', image: 'fishes/Mango oscar.jpg', tag: 'Mango' },
-    { id: 16, name: 'SRD', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/Srd flowerhorn.jpg', tag: 'Show Grade' },
-    { id: 41, name: 'KML', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/Kml flowerhorn.jpg', tag: 'KML' },
-    { id: 42, name: 'F2 Kamfa', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/F2 kamfa.jpg', tag: 'Kamfa' },
-    { id: 17, name: 'Polar Parrot Breeding Pair', category: 'Flowerhorns', price: '₹500', image: 'fishes/Polar parrots( zebra).jpg', tag: 'Breeding Pair' },
-    { id: 18, name: 'Polar Parrot Pair', category: 'Flowerhorns', price: '₹250', image: 'fishes/Polar parrots( zebra).jpg', tag: 'Pair' },
-    { id: 43, name: 'Parrots', category: 'Flowerhorns', price: '₹999', image: 'fishes/Parrot ( red).jpg', tag: 'Red Parrot' },
-    { id: 19, name: 'Silver Arowana', category: 'Arowana', price: 'Contact Us', image: 'fishes/Silver arwana.webp', tag: 'Luxury' },
-    { id: 44, name: 'Golden Arowana', category: 'Arowana', price: 'Contact Us', image: 'fishes/Gold arwana.jpg', tag: 'Luxury' },
-    { id: 45, name: 'Red Arowana', category: 'Arowana', price: 'Contact Us', image: 'fishes/Red Arwana.jpeg', tag: 'Luxury' },
-    { id: 20, name: 'Gold Fish', category: 'Gold Fish', price: '₹250', image: 'fishes/Gold fish.jpeg', tag: 'Classic' },
-    { id: 21, name: 'Black Moor Gold Fish', category: 'Gold Fish', price: '₹99', image: 'fishes/Black more gold fish.jpg', tag: 'Dark Accent' },
-    { id: 46, name: 'Alligator Gar (Small)', category: 'Exotics & Giants', price: '₹1000', image: 'fishes/Aligator gar.jpg', tag: 'Monster' },
-    { id: 47, name: 'Cichlids', category: 'Exotics & Giants', price: '₹200', image: 'fishes/Chichilids.jpg', tag: 'Colorful' },
-    { id: 48, name: 'Channa Fish', category: 'Exotics & Giants', price: '₹2000', image: 'fishes/Snake head fish.jpg', tag: 'Snakehead' },
-    { id: 49, name: 'Japanese Koi', category: 'Exotics & Giants', price: '₹1000', image: 'fishes/Japanese koi fish.jpg', tag: 'Imported' },
-    { id: 50, name: 'Indian Koi', category: 'Exotics & Giants', price: 'Contact Us', image: 'fishes/Indian koi fish.jpeg', tag: 'Local' },
-    { id: 51, name: 'Giant Gourami', category: 'Exotics & Giants', price: '₹1000', image: 'fishes/Giant gourami baby.jpg', tag: 'Giant' }
-  ];
-
-  // Fish variety names that must always exist (to inject into existing localStorage data)
-  const requiredGuppyNames = [
-    'Premium Mixed Guppys', 'Mixed Guppys', 'HB Blue Guppys', 'Koi Guppys',
-    'Platinum Guppys', 'Platinum Dumbo Ear Guppys', 'Dragon Tail Guppys',
-    'Guppy Babies', 'Guppy Semi Adults', 'Koi Texido', 'Dark Knight Dragon',
-    'White Angel', 'Marbel Angel', 'Angel',
-    'Moon Tail Mollies', 'Balloon Mollies', 'Molly Babies',
-    'Platys', 'Sword Tail Platys', 'Zebra',
-    'Shark (Small)', 'Shark (Medium)', 'Shark (Large)', 'Veil Tail Zebra',
-    "OHM (Female)", 'HMPK Male', 'Placarts', 'Candy Betta', 'HMPK Female',
-    'Tiger Red Oscar', 'Red Oscar', 'Lemon Oscar', 'Mango Oscar',
-    'KML', 'F2 Kamfa', 'Parrots', 'Golden Arowana', 'Red Arowana',
-    'Alligator Gar (Small)', 'Cichlids', 'Channa Fish', 'Japanese Koi', 'Indian Koi', 'Giant Gourami'
-  ];
-
-  const defaultCategories = [
-    { name: 'Guppys', count: 13, image: 'fishes/Sward tail guppy.jpeg', status: 'Active' },
-    { name: 'Angels', count: 3, image: 'fishes/White angel.jpg', status: 'Active' },
-    { name: 'Mollies', count: 4, image: 'fishes/mollies.webp', status: 'Active' },
-    { name: 'Oxy-less Fishes', count: 8, image: 'fishes/Gourami.jpg', status: 'Active' },
-    { name: "Betta's", count: 6, image: 'fishes/Beta ohm male.webp', status: 'Active' },
-    { name: 'Wild Oscars', count: 5, image: 'fishes/Albino oscar fish.webp', status: 'Active' },
-    { name: 'Flowerhorns', count: 5, image: 'fishes/Srd flowerhorn.jpg', status: 'Active' },
-    { name: 'Arowana', count: 3, image: 'fishes/Silver arwana.webp', status: 'Active' },
-    { name: 'Gold Fish', count: 2, image: 'fishes/Gold fish.jpeg', status: 'Active' },
-    { name: 'Exotics & Giants', count: 6, image: 'fishes/Aligator gar.jpg', status: 'Active' }
-  ];
-
-  const defaultFoods = [
-    { id: 1, name: 'Dry Worms (10g)', type: 'Dry Food', suitable: 'All Fishes', price: '₹25', stock: 'In Stock', image: 'food/dry worms cubes.jpeg', desc: 'High protein treat for all fish' },
-    { id: 2, name: 'Farm Food (100g)', type: 'Pellets', suitable: 'All Fishes', price: '₹200', stock: 'In Stock', image: 'food/farm food.jpg', desc: 'General farm food for fish' },
-    { id: 3, name: 'Okiko Black Pearl Flowerhorn Food', type: 'Pellets', suitable: 'Flowerhorns', price: '₹300', stock: 'In Stock', image: 'food/okiko black pearl flowehorn food.webp', desc: 'Enhances color and growth' },
-    { id: 4, name: 'Okiko Head Power Flowerhorns Food', type: 'Pellets', suitable: 'Flowerhorns', price: '₹300', stock: 'In Stock', image: 'food/Okiko head power flowerhorns food.jpeg', desc: 'Head booster for Flowerhorns' },
-    { id: 5, name: 'Okiko Red Diamond Flowerhorn Food', type: 'Pellets', suitable: 'Flowerhorns', price: '₹300', stock: 'In Stock', image: 'food/Okoko red diamond fish food.jpg', desc: 'Premium color enhancer' },
-    { id: 6, name: 'Optimun 3 in 1 Fish Food', type: 'Pellets', suitable: 'All Fishes', price: '₹160', stock: 'In Stock', image: 'food/Optimun 3 in 1 fish food.webp', desc: 'Balanced nutrition for tropical fish' },
-    { id: 7, name: 'Tiyo Fish Food (Small)', type: 'Pellets', suitable: 'Small Fishes', price: '₹20', stock: 'In Stock', image: 'food/Tiyo fish food (small).jpeg', desc: 'Daily nutrition for small fish' },
-    { id: 8, name: 'Tiyo Fish Food', type: 'Pellets', suitable: 'All Fishes', price: '₹30', stock: 'In Stock', image: 'food/Tiyo fish food(large).jpg', desc: 'Daily nutrition for all fish' }
-  ];
-
-  const defaultOrders = [
-    { id: 'ORD-8932', customer: 'Rajesh Kumar', product: 'Silver Arowana (1 Pair)', amount: 'Contact Us', status: 'confirmed', date: 'May 06, 2026' },
-    { id: 'ORD-8933', customer: 'Priya Sharma', product: 'Golden Guppys 24K (5 pairs)', amount: '₹1,245', status: 'delivered', date: 'May 05, 2026' },
-    { id: 'ORD-8934', customer: 'Vikram Patel', product: 'Black Moor Gold Fish (2 pairs)', amount: '₹198', status: 'pending', date: 'May 04, 2026' },
-    { id: 'ORD-8935', customer: 'Anitha Reddy', product: 'Polar Parrot Breeding Pair (1 Pair)', amount: '₹500', status: 'shipped', date: 'May 03, 2026' }
-  ];
-
-  const defaultCustomers = [
-    { id: 'CUST-001', name: 'Rajesh Kumar', email: 'rajesh@gmail.com', orders: 4, status: 'Active' },
-    { id: 'CUST-002', name: 'Priya Sharma', email: 'priya@gmail.com', orders: 2, status: 'Active' },
-    { id: 'CUST-003', name: 'Vikram Patel', email: 'vikram@gmail.com', orders: 1, status: 'Active' },
-    { id: 'CUST-004', name: 'Anitha Reddy', email: 'anitha@gmail.com', orders: 7, status: 'Active' }
-  ];
-
-  const defaultTestimonials = [
-    { name: 'Rajesh Kumar', text: 'Absolutely amazing collection of exotic fishes! The Arowana I purchased is healthy and stunning.', rating: '⭐⭐⭐⭐⭐', status: 'Approved' },
-    { name: 'Priya Sharma', text: 'Got my entire aquarium setup done by Subramanya Aquatics. The planted tank looks like an underwater paradise.', rating: '⭐⭐⭐⭐⭐', status: 'Approved' }
-  ];
-
-  const defaultInquiries = [
-    { id: 1, name: 'Sanjay Kumar', email: 'sanjay@gmail.com', msg: 'Do you ship live fishes to Hyderabad safely? Looking for some SRD Flowerhorn.', phone: '+91 98765 43210' },
-    { id: 2, name: 'Megha Sen', email: 'megha@yahoo.com', msg: 'Interested in getting a custom 3ft glass aquarium setup for my living room.', phone: '+91 87654 32109' }
-  ];
-
   // Load state from local storage or set defaults
   products = JSON.parse(localStorage.getItem('sa_products')) || defaultProducts;
+  
   // Force update specific default guppy prices if they exist in localStorage to reflect new corporate updates
   products.forEach(p => {
     if (p.name === 'HB Blue Guppys') p.price = '₹250';
@@ -559,31 +918,14 @@ function initPortalState() {
     if (p.name === 'Guppy Babies') p.price = '₹7 / pc';
     if (p.name === 'Guppy Semi Adults') p.price = '₹40 / pair';
   });
+  
   categories = JSON.parse(localStorage.getItem('sa_categories')) || defaultCategories;
   orders = JSON.parse(localStorage.getItem('sa_orders')) || defaultOrders;
   customers = JSON.parse(localStorage.getItem('sa_customers')) || defaultCustomers;
   testimonials = JSON.parse(localStorage.getItem('sa_testimonials')) || defaultTestimonials;
   inquiries = JSON.parse(localStorage.getItem('sa_inquiries')) || defaultInquiries;
   foods = JSON.parse(localStorage.getItem('sa_foods')) || defaultFoods;
-
-  const defaultCoupons = [
-    { id: 1, code: 'AQUA10', type: 'percentage', value: 10, minOrder: 300, expiry: new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0], maxUsage: 100, currentUsage: 0, active: true },
-    { id: 2, code: 'FISH20', type: 'percentage', value: 20, minOrder: 500, expiry: new Date(Date.now() + 60*24*60*60*1000).toISOString().split('T')[0], maxUsage: 50, currentUsage: 0, active: true },
-    { id: 3, code: 'NEWUSER50', type: 'fixed', value: 50, minOrder: 200, expiry: new Date(Date.now() + 90*24*60*60*1000).toISOString().split('T')[0], maxUsage: 200, currentUsage: 0, active: true },
-    { id: 4, code: 'PREMIUM100', type: 'fixed', value: 100, minOrder: 1000, expiry: new Date(Date.now() + 45*24*60*60*1000).toISOString().split('T')[0], maxUsage: 30, currentUsage: 0, active: true }
-  ];
   coupons = JSON.parse(localStorage.getItem('sa_coupons')) || defaultCoupons;
-
-  const defaultItems = [
-    { id: 1, name: 'Aquarium Heater (50W)', price: '₹300', stock: 'In Stock', image: 'items/50w aquarium heater.webp' },
-    { id: 2, name: 'Aquarium Heater (100W)', price: '₹350', stock: 'In Stock', image: 'items/100 w aquarium heater.webp' },
-    { id: 3, name: 'Aquarium Light Large', price: '₹400', stock: 'In Stock', image: 'items/Aquarium light (large ).jpg' },
-    { id: 4, name: 'Aquarium Light Small', price: '₹300', stock: 'In Stock', image: 'items/Aquarium light (small).jpg' },
-    { id: 5, name: 'Bubble Oxygen', price: '₹200', stock: 'In Stock', image: 'items/buble oxygen.webp' },
-    { id: 6, name: 'Double Oxygen', price: '₹300', stock: 'In Stock', image: 'items/double oxygen.webp' },
-    { id: 7, name: 'Internal Oxygen (Small)', price: '₹300', stock: 'In Stock', image: 'items/internal oxgyen (small).webp' },
-    { id: 8, name: 'Internal Oxygen (Large)', price: '₹400', stock: 'In Stock', image: 'items/internal oxgyen (big).jpg' }
-  ];
   items = JSON.parse(localStorage.getItem('sa_items')) || defaultItems;
 
   // Clean up old items with wrong photo filenames and prices, and inject actual ones
@@ -849,6 +1191,7 @@ window.deleteCategory = function(idx) {
   if (c && confirm(`Delete category "${c.name}"? This will NOT delete the fish in it.`)) {
     categories.splice(idx, 1);
     saveAllState();
+    deleteDocFromFirestore('categories', c.name);
     renderCategories();
     showToast('success', `Category "${c.name}" deleted.`);
   }
@@ -1258,6 +1601,52 @@ function renderMediaLibrary() {
   });
 }
 
+// Helper to upload images dynamically to Firebase Storage and update text input URL paths
+window.handleImageUpload = function(fileInputId, textInputId, progressSpanId, folderName) {
+  const fileInput = document.getElementById(fileInputId);
+  const textInput = document.getElementById(textInputId);
+  const progressSpan = document.getElementById(progressSpanId);
+  
+  if (!fileInput || !fileInput.files || fileInput.files.length === 0) return;
+  const file = fileInput.files[0];
+  
+  if (!window.storage) {
+    showToast('error', 'Firebase Storage not initialized. Cannot upload image.');
+    return;
+  }
+  
+  // Create a storage ref
+  const filename = Date.now() + '_' + file.name;
+  const storageRef = window.storage.ref().child(`${folderName}/${filename}`);
+  
+  progressSpan.style.display = 'inline-block';
+  progressSpan.textContent = 'Uploading: 0%';
+  progressSpan.style.color = 'var(--color-primary)';
+  
+  const uploadTask = storageRef.put(file);
+  
+  uploadTask.on('state_changed', 
+    (snapshot) => {
+      const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+      progressSpan.textContent = `Uploading: ${progress}%`;
+    }, 
+    (error) => {
+      console.error('Upload failed:', error);
+      progressSpan.textContent = 'Failed!';
+      progressSpan.style.color = 'var(--color-accent)';
+      showToast('error', 'Image upload failed: ' + error.message);
+    }, 
+    () => {
+      uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+        textInput.value = downloadURL;
+        progressSpan.textContent = 'Success!';
+        progressSpan.style.color = 'var(--color-secondary)';
+        showToast('success', 'Image uploaded to Firebase successfully!');
+      });
+    }
+  );
+};
+
 // 5. Form Submissions Handlers & Modal Controllers
 function initFormSubmitHandlers() {
   const modal = document.getElementById('productModal');
@@ -1301,14 +1690,17 @@ function initFormSubmitHandlers() {
           p.price = price.startsWith('₹') || price.toLowerCase().includes('contact') ? price : '₹' + price;
           p.image = image;
           p.tag = desc ? desc.substring(0, 15) : 'Special';
+          saveDocToFirestore('products', p.id, p);
           showToast('success', `${name} updated successfully!`);
         }
       } else {
         const newId = products.length ? Math.max(...products.map(p => p.id)) + 1 : 1;
-        products.push({ id: newId, name, category,
+        const newProd = { id: newId, name, category,
           price: price.startsWith('₹') || price.toLowerCase().includes('contact') ? price : '₹' + price,
           image, tag: desc ? desc.substring(0, 15) : 'New'
-        });
+        };
+        products.push(newProd);
+        saveDocToFirestore('products', newId, newProd);
         showToast('success', `New fish '${name}' added to catalog!`);
       }
       saveAllState();
@@ -1451,10 +1843,15 @@ function initFormSubmitHandlers() {
 
       if (idx !== '') {
         const c = categories[parseInt(idx)];
-        if (c) { c.name = name; c.image = image; c.status = status; }
+        if (c) { 
+          c.name = name; c.image = image; c.status = status; 
+          saveDocToFirestore('categories', c.name, c);
+        }
         showToast('success', `Category "${name}" updated!`);
       } else {
-        categories.push({ name, count: 0, image, status });
+        const newCat = { name, count: 0, image, status };
+        categories.push(newCat);
+        saveDocToFirestore('categories', name, newCat);
         showToast('success', `Category "${name}" created!`);
       }
       saveAllState();
@@ -1526,7 +1923,62 @@ function initFormSubmitHandlers() {
 
   // Configurations submission
   document.getElementById('btnSaveConfig')?.addEventListener('click', () => {
-    showToast('success', 'Subramanya Aquatics core configuration saved successfully!');
+    const data = {
+      whatsApp: document.getElementById('cfgWhatsApp')?.value || '',
+      email: document.getElementById('cfgEmail')?.value || '',
+      address: document.getElementById('cfgAddress')?.value || '',
+      maintenance: document.getElementById('cfgMaintenance')?.value || 'no',
+      soundPitch: document.getElementById('cfgSoundPitch')?.value || '400'
+    };
+    saveDocToFirestore('settings', 'config', data)
+      .then(() => showToast('success', 'Subramanya Aquatics core configuration saved successfully!'))
+      .catch(err => showToast('error', 'Failed to save configuration: ' + err.message));
+  });
+
+  document.getElementById('btnSaveBanners')?.addEventListener('click', () => {
+    const data = {
+      heroTitle: document.getElementById('cfgHeroTitle')?.value || '',
+      heroSubtitle: document.getElementById('cfgHeroSubtitle')?.value || '',
+      heroBg: document.getElementById('cfgHeroBg')?.value || '',
+      offerTitle: document.getElementById('cfgOfferTitle')?.value || '',
+      offerCode: document.getElementById('cfgOfferCode')?.value || '',
+      offerTimer: document.getElementById('cfgOfferTimer')?.value || ''
+    };
+    saveDocToFirestore('settings', 'banners', data)
+      .then(() => showToast('success', 'Homepage banner settings saved successfully!'))
+      .catch(err => showToast('error', 'Failed to save banner settings: ' + err.message));
+  });
+
+  document.getElementById('btnSavePayments')?.addEventListener('click', () => {
+    const data = {
+      upiId: document.getElementById('cfgUpiId')?.value || '',
+      qrImage: document.getElementById('cfgQrImage')?.value || '',
+      deliveryCharge: document.getElementById('cfgDeliveryCharge')?.value || '0',
+      packingCharge: document.getElementById('cfgPackingCharge')?.value || '0'
+    };
+    saveDocToFirestore('settings', 'payments', data)
+      .then(() => showToast('success', 'Payment gateway settings saved successfully!'))
+      .catch(err => showToast('error', 'Failed to save payment settings: ' + err.message));
+  });
+
+  // Image file upload change listeners
+  document.getElementById('prodImageFile')?.addEventListener('change', () => {
+    window.handleImageUpload('prodImageFile', 'prodImage', 'prodImageUploadProgress', 'fishes');
+  });
+  document.getElementById('foodImageFile')?.addEventListener('change', () => {
+    window.handleImageUpload('foodImageFile', 'foodImage', 'foodImageUploadProgress', 'food');
+  });
+  document.getElementById('itemImageFile')?.addEventListener('change', () => {
+    window.handleImageUpload('itemImageFile', 'itemImage', 'itemImageUploadProgress', 'items');
+  });
+  document.getElementById('catImageFile')?.addEventListener('change', () => {
+    window.handleImageUpload('catImageFile', 'catImage', 'catImageUploadProgress', 'categories');
+  });
+  document.getElementById('cfgHeroBgFile')?.addEventListener('change', () => {
+    window.handleImageUpload('cfgHeroBgFile', 'cfgHeroBg', 'cfgHeroBgProgress', 'banners');
+  });
+  document.getElementById('cfgQrImageFile')?.addEventListener('change', () => {
+    window.handleImageUpload('cfgQrImageFile', 'cfgQrImage', 'cfgQrImageProgress', 'payments');
   });
 }
 
@@ -1552,6 +2004,7 @@ window.deleteProduct = function(id) {
   if (p && confirm(`Are you sure you want to delete ${p.name} from catalog?`)) {
     products = products.filter(prod => prod.id != id);
     saveAllState();
+    deleteDocFromFirestore('products', id);
     initPortalState();
     showToast('success', 'Product deleted from catalog.');
   }
