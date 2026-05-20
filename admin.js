@@ -37,6 +37,13 @@ function initAuthSession() {
   const appSec = document.getElementById('appSection');
   const loginForm = document.getElementById('loginForm');
   const btnLogout = document.getElementById('btnLogout');
+  const loginBtn = loginForm ? loginForm.querySelector('button[type="submit"]') : null;
+  let isLoggingIn = false;
+
+  console.log('%c🔐 Auth Session Init', 'color: #00d4ff; font-weight: bold;');
+  console.log('   Firebase Auth available:', !!window.auth);
+  console.log('   Login form found:', !!loginForm);
+  console.log('   Login button found:', !!loginBtn);
 
   // Helper to safely show the admin dashboard
   function showAdminDashboard() {
@@ -45,6 +52,7 @@ function initAuthSession() {
       appSec.style.display = 'flex';
       initPortalState();
       drawAnalyticsCharts();
+      console.log('%c✅ Admin dashboard loaded', 'color: #00ffc8;');
     } catch (err) {
       console.error('Error initializing admin dashboard:', err);
       // Still show the dashboard even if init fails
@@ -53,17 +61,39 @@ function initAuthSession() {
     }
   }
 
+  // Helper to set button loading state
+  function setLoginLoading(loading) {
+    if (!loginBtn) return;
+    isLoggingIn = loading;
+    if (loading) {
+      loginBtn.dataset.originalText = loginBtn.innerHTML;
+      loginBtn.innerHTML = '<span class="login-spinner"></span> Authenticating...';
+      loginBtn.disabled = true;
+      loginBtn.style.opacity = '0.7';
+      loginBtn.style.cursor = 'wait';
+    } else {
+      loginBtn.innerHTML = loginBtn.dataset.originalText || '🔐 Enter Portal';
+      loginBtn.disabled = false;
+      loginBtn.style.opacity = '1';
+      loginBtn.style.cursor = 'pointer';
+    }
+  }
+
   // Firebase Auth state observer
   if (window.auth) {
+    console.log('   Setting up onAuthStateChanged listener...');
     window.auth.onAuthStateChanged((user) => {
       if (user) {
+        console.log('%c✅ User authenticated:', 'color: #00ffc8;', user.email);
         showAdminDashboard();
       } else {
+        console.log('%c🔒 No user session - showing login', 'color: #ffaa00;');
         loginSec.style.display = 'flex';
         appSec.style.display = 'none';
       }
     });
   } else {
+    console.warn('⚠️ Firebase Auth not available - using localStorage fallback');
     // Fallback to localStorage if Firebase not initialized
     if (localStorage.getItem('adminToken') === 'true') {
       showAdminDashboard();
@@ -74,38 +104,79 @@ function initAuthSession() {
   if (loginForm) {
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const email = document.getElementById('loginEmail').value;
+
+      // Prevent double submit
+      if (isLoggingIn) return;
+
+      const email = document.getElementById('loginEmail').value.trim();
       const pass = document.getElementById('loginPassword').value;
 
+      console.log('%c🔑 Login attempt:', 'color: #00d4ff;', email);
+
+      if (!email || !pass) {
+        showToast('error', 'Please enter both email and password.');
+        return;
+      }
+
       if (window.auth) {
+        setLoginLoading(true);
+        console.log('   Calling signInWithEmailAndPassword...');
+
         window.auth.signInWithEmailAndPassword(email, pass)
           .then((userCredential) => {
+            console.log('%c✅ Login SUCCESS:', 'color: #00ffc8; font-weight: bold;', userCredential.user.email);
+            setLoginLoading(false);
             showToast('success', 'Access granted! Welcome back Admin.');
-            // Also directly show the dashboard as a safety net
-            // (onAuthStateChanged should also fire, but this ensures it)
+            // Directly show dashboard as safety net (onAuthStateChanged also fires)
             showAdminDashboard();
           })
           .catch((error) => {
+            setLoginLoading(false);
+            console.error('%c❌ Login FAILED:', 'color: #ff4444; font-weight: bold;');
+            console.error('   Error code:', error.code);
+            console.error('   Error message:', error.message);
+
             let errorMsg = 'Access denied! Invalid credentials.';
-            if (error.code === 'auth/user-not-found') errorMsg = 'No admin account found with this email.';
-            else if (error.code === 'auth/wrong-password') errorMsg = 'Incorrect password.';
-            else if (error.code === 'auth/invalid-email') errorMsg = 'Invalid email format.';
-            else if (error.code === 'auth/invalid-credential') errorMsg = 'Invalid email or password.';
-            else if (error.code === 'auth/too-many-requests') errorMsg = 'Too many failed attempts. Try again later.';
+            switch (error.code) {
+              case 'auth/user-not-found':
+                errorMsg = 'No admin account found with this email.';
+                break;
+              case 'auth/wrong-password':
+                errorMsg = 'Incorrect password. Please try again.';
+                break;
+              case 'auth/invalid-email':
+                errorMsg = 'Invalid email format.';
+                break;
+              case 'auth/invalid-credential':
+                errorMsg = 'Invalid email or password. Please check your credentials.';
+                break;
+              case 'auth/too-many-requests':
+                errorMsg = 'Too many failed attempts. Please wait and try again later.';
+                break;
+              case 'auth/network-request-failed':
+                errorMsg = 'Network error. Please check your internet connection.';
+                break;
+              case 'auth/operation-not-allowed':
+                errorMsg = 'Email/Password sign-in is NOT enabled in Firebase Console. Go to Firebase Console → Authentication → Sign-in method → Enable Email/Password.';
+                console.error('%c⚠️ IMPORTANT: You need to enable Email/Password auth in Firebase Console!', 'color: #ff4444; font-size: 14px; font-weight: bold;');
+                console.error('   Go to: https://console.firebase.google.com/project/subramanya-c02b6/authentication/providers');
+                break;
+              case 'auth/user-disabled':
+                errorMsg = 'This admin account has been disabled.';
+                break;
+              default:
+                errorMsg = `Login failed: ${error.message}`;
+            }
             showToast('error', errorMsg);
-            console.error('Firebase Auth error:', error);
           });
       } else {
-        // Fallback to hardcoded credentials
-        if (email === 'admin@subramanya.com' && pass === 'Aquatics@2025') {
-          localStorage.setItem('adminToken', 'true');
-          showToast('success', 'Access granted! Welcome back Admin.');
-          setTimeout(() => {
-            showAdminDashboard();
-          }, 1200);
-        } else {
-          showToast('error', 'Access denied! Invalid credentials.');
-        }
+        // Firebase not available — show clear message
+        console.error('%c❌ Firebase Auth is NOT initialized!', 'color: #ff4444; font-weight: bold;');
+        console.error('   Possible causes:');
+        console.error('   1. No internet connection (Firebase CDN scripts failed to load)');
+        console.error('   2. Firebase SDK scripts blocked by browser/firewall');
+        console.error('   3. Error in firebase-config.js');
+        showToast('error', 'Firebase not connected. Check your internet connection and browser console for details.');
       }
     });
   }
@@ -116,9 +187,11 @@ function initAuthSession() {
       if (window.auth) {
         window.auth.signOut().then(() => {
           localStorage.removeItem('adminToken');
+          console.log('%c🚪 Logged out successfully', 'color: #00ffc8;');
           showToast('info', 'Logged out of portal securely.');
         }).catch((error) => {
           console.error('Logout error:', error);
+          showToast('error', 'Error logging out. Please try again.');
         });
       } else {
         localStorage.removeItem('adminToken');
@@ -460,7 +533,7 @@ window.toggleCouponStatus = function(id) {
     c.active = !c.active;
     saveAllState();
     initPortalState(); // re-render and update counts
-    showToast('info', \`Coupon \${c.code} is now \${c.active ? 'Active' : 'Inactive'}\`);
+    showToast('info', `Coupon ${c.code} is now ${c.active ? 'Active' : 'Inactive'}`);
   }
 };
 
@@ -481,11 +554,11 @@ window.openEditCoupon = function(id) {
 
 window.deleteCoupon = function(id) {
   const c = coupons.find(coupon => coupon.id == id);
-  if (c && confirm(\`Delete coupon "\${c.code}"?\`)) {
+  if (c && confirm(`Delete coupon "${c.code}"?`)) {
     coupons = coupons.filter(coupon => coupon.id != id);
     saveAllState();
     initPortalState();
-    showToast('success', \`Coupon "\${c.code}" deleted.\`);
+    showToast('success', `Coupon "${c.code}" deleted.`);
   }
 };
 
@@ -1251,11 +1324,11 @@ function initFormSubmitHandlers() {
           c.minOrder = minOrder; c.expiry = expiry; 
           c.maxUsage = maxUsage; c.active = active; 
         }
-        showToast('success', \`Coupon "\${code}" updated!\`);
+        showToast('success', `Coupon "${code}" updated!`);
       } else {
         const newId = coupons.length ? Math.max(...coupons.map(c => c.id)) + 1 : 1;
         coupons.push({ id: newId, code, type, value, minOrder, expiry, maxUsage, currentUsage: 0, active });
-        showToast('success', \`Coupon "\${code}" created!\`);
+        showToast('success', `Coupon "${code}" created!`);
       }
       saveAllState();
       initPortalState();
