@@ -281,6 +281,149 @@ let inquiries = [];
 let foods = [];
 let items = [];
 let coupons = [];
+let firestoreListenersActive = false;
+
+// ── Firebase Firestore Helpers ──────────────────────────────────────────────────
+
+// Save a single collection to Firestore
+function saveCollectionToFirestore(collectionName, dataArray, idField = 'id') {
+  if (!window.db) return Promise.resolve();
+  const batch = db.batch();
+  // We store each item as a doc keyed by its id
+  dataArray.forEach(item => {
+    const docId = String(item[idField] || item.code || Date.now());
+    const ref = db.collection(collectionName).doc(docId);
+    batch.set(ref, JSON.parse(JSON.stringify(item)));
+  });
+  return batch.commit()
+    .then(() => console.log(`%c☁️ ${collectionName} synced to Firebase (${dataArray.length} docs)`, 'color: #00ffc8;'))
+    .catch(err => console.error(`❌ Failed to sync ${collectionName}:`, err));
+}
+
+// Delete a single doc from Firestore
+function deleteDocFromFirestore(collectionName, docId) {
+  if (!window.db) return Promise.resolve();
+  return db.collection(collectionName).doc(String(docId)).delete()
+    .then(() => console.log(`%c🗑️ Deleted ${collectionName}/${docId} from Firebase`, 'color: #ffaa00;'))
+    .catch(err => console.error(`❌ Failed to delete ${collectionName}/${docId}:`, err));
+}
+
+// Save/Update a single doc in Firestore
+function saveDocToFirestore(collectionName, docId, data) {
+  if (!window.db) return Promise.resolve();
+  return db.collection(collectionName).doc(String(docId)).set(JSON.parse(JSON.stringify(data)))
+    .then(() => console.log(`%c☁️ Saved ${collectionName}/${docId} to Firebase`, 'color: #00ffc8;'))
+    .catch(err => console.error(`❌ Failed to save ${collectionName}/${docId}:`, err));
+}
+
+// Load a full collection from Firestore
+function loadCollectionFromFirestore(collectionName) {
+  if (!window.db) return Promise.resolve([]);
+  return db.collection(collectionName).get()
+    .then(snapshot => {
+      const data = [];
+      snapshot.forEach(doc => data.push(doc.data()));
+      console.log(`%c📥 Loaded ${data.length} docs from Firebase ${collectionName}`, 'color: #00d4ff;');
+      return data;
+    })
+    .catch(err => {
+      console.error(`❌ Failed to load ${collectionName}:`, err);
+      return [];
+    });
+}
+
+// Setup real-time Firestore listeners for coupons, foods, items
+function setupFirestoreListeners() {
+  if (!window.db || firestoreListenersActive) return;
+  firestoreListenersActive = true;
+
+  // Coupons listener
+  db.collection('coupons').onSnapshot(snapshot => {
+    if (snapshot.metadata.hasPendingWrites) return; // ignore local writes
+    const fireData = [];
+    snapshot.forEach(doc => fireData.push(doc.data()));
+    if (fireData.length > 0) {
+      coupons = fireData;
+      localStorage.setItem('sa_coupons', JSON.stringify(coupons));
+      renderCoupons();
+      if (document.getElementById('cardTotalCoupons')) document.getElementById('cardTotalCoupons').textContent = coupons.length;
+      if (document.getElementById('cardActiveCoupons')) document.getElementById('cardActiveCoupons').textContent = coupons.filter(c => c.active).length;
+      console.log('%c🔄 Coupons updated from Firebase real-time', 'color: #00ffc8;');
+    }
+  }, err => console.error('Coupons listener error:', err));
+
+  // Foods listener
+  db.collection('foods').onSnapshot(snapshot => {
+    if (snapshot.metadata.hasPendingWrites) return;
+    const fireData = [];
+    snapshot.forEach(doc => fireData.push(doc.data()));
+    if (fireData.length > 0) {
+      foods = fireData;
+      localStorage.setItem('sa_foods', JSON.stringify(foods));
+      renderFoods();
+      console.log('%c🔄 Foods updated from Firebase real-time', 'color: #00ffc8;');
+    }
+  }, err => console.error('Foods listener error:', err));
+
+  // Items listener
+  db.collection('items').onSnapshot(snapshot => {
+    if (snapshot.metadata.hasPendingWrites) return;
+    const fireData = [];
+    snapshot.forEach(doc => fireData.push(doc.data()));
+    if (fireData.length > 0) {
+      items = fireData;
+      localStorage.setItem('sa_items', JSON.stringify(items));
+      renderItems();
+      console.log('%c🔄 Items updated from Firebase real-time', 'color: #00ffc8;');
+    }
+  }, err => console.error('Items listener error:', err));
+
+  console.log('%c👂 Firebase real-time listeners active for: coupons, foods, items', 'color: #00d4ff; font-weight: bold;');
+}
+
+// Sync all three collections to Firestore (push local → cloud)
+window.syncAllToFirestore = function() {
+  if (!window.db) {
+    showToast('error', 'Firebase not connected. Check your internet.');
+    return;
+  }
+  showToast('info', '☁️ Syncing all data to Firebase...');
+  Promise.all([
+    saveCollectionToFirestore('coupons', coupons),
+    saveCollectionToFirestore('foods', foods),
+    saveCollectionToFirestore('items', items)
+  ]).then(() => {
+    showToast('success', '✅ All data synced to Firebase successfully!');
+  }).catch(() => {
+    showToast('error', 'Some data failed to sync. Check console.');
+  });
+};
+
+// Load all three collections from Firestore (pull cloud → local)
+window.loadAllFromFirestore = async function() {
+  if (!window.db) {
+    showToast('error', 'Firebase not connected. Check your internet.');
+    return;
+  }
+  showToast('info', '📥 Loading data from Firebase...');
+  try {
+    const [fbCoupons, fbFoods, fbItems] = await Promise.all([
+      loadCollectionFromFirestore('coupons'),
+      loadCollectionFromFirestore('foods'),
+      loadCollectionFromFirestore('items')
+    ]);
+    if (fbCoupons.length > 0) { coupons = fbCoupons; localStorage.setItem('sa_coupons', JSON.stringify(coupons)); }
+    if (fbFoods.length > 0) { foods = fbFoods; localStorage.setItem('sa_foods', JSON.stringify(foods)); }
+    if (fbItems.length > 0) { items = fbItems; localStorage.setItem('sa_items', JSON.stringify(items)); }
+    renderCoupons(); renderFoods(); renderItems();
+    if (document.getElementById('cardTotalCoupons')) document.getElementById('cardTotalCoupons').textContent = coupons.length;
+    if (document.getElementById('cardActiveCoupons')) document.getElementById('cardActiveCoupons').textContent = coupons.filter(c => c.active).length;
+    showToast('success', `✅ Loaded: ${fbCoupons.length} coupons, ${fbFoods.length} foods, ${fbItems.length} items`);
+  } catch (err) {
+    console.error('Error loading from Firebase:', err);
+    showToast('error', 'Failed to load from Firebase.');
+  }
+};
 
 function initPortalState() {
   // Mock/Initial Data
@@ -494,6 +637,13 @@ function initPortalState() {
   document.getElementById('ordersCounter').textContent = orders.filter(o => o.status === 'pending').length;
   if(document.getElementById('cardTotalCoupons')) document.getElementById('cardTotalCoupons').textContent = coupons.length;
   if(document.getElementById('cardActiveCoupons')) document.getElementById('cardActiveCoupons').textContent = coupons.filter(c => c.active).length;
+
+  // Setup Firebase real-time listeners & initial cloud load
+  if (window.db && !firestoreListenersActive) {
+    setupFirestoreListeners();
+    // On first load, try to pull from Firebase if local data is defaults
+    loadAllFromFirestore();
+  }
 }
 
 function saveAllState() {
@@ -551,7 +701,10 @@ window.toggleCouponStatus = function(id) {
   if (c) {
     c.active = !c.active;
     saveAllState();
-    initPortalState(); // re-render and update counts
+    saveDocToFirestore('coupons', c.id, c);
+    renderCoupons();
+    if(document.getElementById('cardTotalCoupons')) document.getElementById('cardTotalCoupons').textContent = coupons.length;
+    if(document.getElementById('cardActiveCoupons')) document.getElementById('cardActiveCoupons').textContent = coupons.filter(cp => cp.active).length;
     showToast('info', `Coupon ${c.code} is now ${c.active ? 'Active' : 'Inactive'}`);
   }
 };
@@ -576,7 +729,10 @@ window.deleteCoupon = function(id) {
   if (c && confirm(`Delete coupon "${c.code}"?`)) {
     coupons = coupons.filter(coupon => coupon.id != id);
     saveAllState();
-    initPortalState();
+    deleteDocFromFirestore('coupons', id);
+    renderCoupons();
+    if(document.getElementById('cardTotalCoupons')) document.getElementById('cardTotalCoupons').textContent = coupons.length;
+    if(document.getElementById('cardActiveCoupons')) document.getElementById('cardActiveCoupons').textContent = coupons.filter(cp => cp.active).length;
     showToast('success', `Coupon "${c.code}" deleted.`);
   }
 };
@@ -757,6 +913,7 @@ window.deleteFood = function(id) {
   if (f && confirm(`Delete "${f.name}" from foods catalog?`)) {
     foods = foods.filter(food => food.id != id);
     saveAllState();
+    deleteDocFromFirestore('foods', id);
     renderFoods();
     showToast('success', `"${f.name}" removed from foods.`);
   }
@@ -811,6 +968,7 @@ window.deleteItem = function(id) {
   if (it && confirm(`Delete "${it.name}" from items catalog?`)) {
     items = items.filter(item => item.id != id);
     saveAllState();
+    deleteDocFromFirestore('items', id);
     renderItems();
     showToast('success', `"${it.name}" removed.`);
   }
@@ -1194,14 +1352,17 @@ function initFormSubmitHandlers() {
           f.name = name; f.type = type; f.suitable = suitable;
           f.price = price.startsWith('₹') || price.toLowerCase().includes('contact') ? price : '₹' + price;
           f.stock = stock; f.image = image; f.desc = desc;
+          saveDocToFirestore('foods', f.id, f);
           showToast('success', `${name} updated successfully!`);
         }
       } else {
         const newId = foods.length ? Math.max(...foods.map(f => f.id)) + 1 : 1;
-        foods.push({ id: newId, name, type, suitable,
+        const newFood = { id: newId, name, type, suitable,
           price: price.startsWith('₹') || price.toLowerCase().includes('contact') ? price : '₹' + price,
           stock, image, desc
-        });
+        };
+        foods.push(newFood);
+        saveDocToFirestore('foods', newId, newFood);
         showToast('success', `Food item '${name}' added to catalog!`);
       }
       saveAllState();
@@ -1244,14 +1405,17 @@ function initFormSubmitHandlers() {
           it.name = name;
           it.price = price.startsWith('₹') || price.toLowerCase().includes('contact') ? price : '₹' + price;
           it.stock = stock; it.image = image;
+          saveDocToFirestore('items', it.id, it);
           showToast('success', `${name} updated successfully!`);
         }
       } else {
         const newId = items.length ? Math.max(...items.map(item => item.id)) + 1 : 1;
-        items.push({ id: newId, name,
+        const newItem = { id: newId, name,
           price: price.startsWith('₹') || price.toLowerCase().includes('contact') ? price : '₹' + price,
           stock, image
-        });
+        };
+        items.push(newItem);
+        saveDocToFirestore('items', newId, newItem);
         showToast('success', `Item '${name}' added to catalog!`);
       }
       saveAllState();
@@ -1341,16 +1505,21 @@ function initFormSubmitHandlers() {
         if (c) { 
           c.code = code; c.type = type; c.value = value; 
           c.minOrder = minOrder; c.expiry = expiry; 
-          c.maxUsage = maxUsage; c.active = active; 
+          c.maxUsage = maxUsage; c.active = active;
+          saveDocToFirestore('coupons', c.id, c);
         }
         showToast('success', `Coupon "${code}" updated!`);
       } else {
         const newId = coupons.length ? Math.max(...coupons.map(c => c.id)) + 1 : 1;
-        coupons.push({ id: newId, code, type, value, minOrder, expiry, maxUsage, currentUsage: 0, active });
+        const newCoupon = { id: newId, code, type, value, minOrder, expiry, maxUsage, currentUsage: 0, active };
+        coupons.push(newCoupon);
+        saveDocToFirestore('coupons', newId, newCoupon);
         showToast('success', `Coupon "${code}" created!`);
       }
       saveAllState();
-      initPortalState();
+      renderCoupons();
+      if(document.getElementById('cardTotalCoupons')) document.getElementById('cardTotalCoupons').textContent = coupons.length;
+      if(document.getElementById('cardActiveCoupons')) document.getElementById('cardActiveCoupons').textContent = coupons.filter(c => c.active).length;
       couponModal.classList.remove('active');
     });
   }

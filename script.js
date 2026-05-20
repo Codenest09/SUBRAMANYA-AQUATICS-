@@ -939,6 +939,23 @@ function logoutClient() {
 
 // ========== MAIN INITIALIZATION ==========
 document.addEventListener('DOMContentLoaded', () => {
+  // Setup real-time Firebase sync for coupons if db is initialized
+  if (window.db) {
+    console.log('%c☁️ Client: Setting up real-time Firebase Coupons listener...', 'color: #00d4ff;');
+    window.db.collection('coupons').onSnapshot((snapshot) => {
+      const fbCoupons = [];
+      snapshot.forEach((doc) => {
+        fbCoupons.push(doc.data());
+      });
+      if (fbCoupons.length > 0) {
+        localStorage.setItem('sa_coupons', JSON.stringify(fbCoupons));
+        console.log('%c🔄 Client: Coupons synced from Firebase!', 'color: #00ffc8;');
+      }
+    }, (error) => {
+      console.warn('Client: Failed to sync coupons from Firebase:', error);
+    });
+  }
+
   // Initialize product buttons
   injectProductButtons();
   updateCartBadge();

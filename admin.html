@@ -322,7 +322,10 @@
       <section class="app-section" id="sec-foods">
         <div class="card-header">
           <h3>🍖 Fish Foods &amp; Nutrition</h3>
-          <button class="btn-primary" id="btnAddFood" style="width: auto; padding: 10px 20px;">➕ Add Food Item</button>
+          <div style="display:flex; gap:10px;">
+            <button class="btn-secondary" onclick="loadAllFromFirestore()" style="width: auto; padding: 10px 15px;">🔄 Sync Firebase</button>
+            <button class="btn-primary" id="btnAddFood" style="width: auto; padding: 10px 20px;">➕ Add Food Item</button>
+          </div>
         </div>
 
         <!-- Filter Bar -->
@@ -367,7 +370,10 @@
       <section class="app-section" id="sec-items">
         <div class="card-header">
           <h3>🛠️ Aquatic Items &amp; Accessories</h3>
-          <button class="btn-primary" id="btnAddItem" style="width: auto; padding: 10px 20px;">➕ Add Item</button>
+          <div style="display:flex; gap:10px;">
+            <button class="btn-secondary" onclick="loadAllFromFirestore()" style="width: auto; padding: 10px 15px;">🔄 Sync Firebase</button>
+            <button class="btn-primary" id="btnAddItem" style="width: auto; padding: 10px 20px;">➕ Add Item</button>
+          </div>
         </div>
 
         <!-- Filter Bar -->
@@ -559,7 +565,10 @@
         </div>
         <div class="card-header">
           <h3>🎟️ Promotional Coupons</h3>
-          <button class="btn-primary" id="btnAddNewCoupon" style="width: auto; padding: 10px 20px;">➕ Create Coupon</button>
+          <div style="display:flex; gap:10px;">
+            <button class="btn-secondary" onclick="loadAllFromFirestore()" style="width: auto; padding: 10px 15px;">🔄 Sync Firebase</button>
+            <button class="btn-primary" id="btnAddNewCoupon" style="width: auto; padding: 10px 20px;">➕ Create Coupon</button>
+          </div>
         </div>
 
         <!-- Filter Bar -->
