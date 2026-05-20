@@ -4,9 +4,13 @@ document.addEventListener('DOMContentLoaded', () => {
   initBubbleGenerator();
   initAuthSession();
   initNavigation();
-  initPortalState();
   initFormSubmitHandlers();
-  drawAnalyticsCharts();
+  // Only call initPortalState and drawAnalyticsCharts here if Firebase Auth is NOT active
+  // When Firebase Auth is active, onAuthStateChanged in initAuthSession handles this
+  if (!window.auth) {
+    initPortalState();
+    drawAnalyticsCharts();
+  }
 });
 
 // 1. Particle Generator for bubbles
@@ -27,37 +31,81 @@ function initBubbleGenerator() {
   }
 }
 
-// 2. Auth Session Guard
+// 2. Auth Session Guard (Firebase Auth)
 function initAuthSession() {
   const loginSec = document.getElementById('loginSection');
   const appSec = document.getElementById('appSection');
   const loginForm = document.getElementById('loginForm');
   const btnLogout = document.getElementById('btnLogout');
 
-  // Check existing session
-  if (localStorage.getItem('adminToken') === 'true') {
-    loginSec.style.display = 'none';
-    appSec.style.display = 'flex';
+  // Helper to safely show the admin dashboard
+  function showAdminDashboard() {
+    try {
+      loginSec.style.display = 'none';
+      appSec.style.display = 'flex';
+      initPortalState();
+      drawAnalyticsCharts();
+    } catch (err) {
+      console.error('Error initializing admin dashboard:', err);
+      // Still show the dashboard even if init fails
+      loginSec.style.display = 'none';
+      appSec.style.display = 'flex';
+    }
   }
 
-  // Handle Login
+  // Firebase Auth state observer
+  if (window.auth) {
+    window.auth.onAuthStateChanged((user) => {
+      if (user) {
+        showAdminDashboard();
+      } else {
+        loginSec.style.display = 'flex';
+        appSec.style.display = 'none';
+      }
+    });
+  } else {
+    // Fallback to localStorage if Firebase not initialized
+    if (localStorage.getItem('adminToken') === 'true') {
+      showAdminDashboard();
+    }
+  }
+
+  // Handle Login with Firebase Auth
   if (loginForm) {
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value;
       const pass = document.getElementById('loginPassword').value;
 
-      if (email === 'admin@subramanya.com' && pass === 'Aquatics@2025') {
-        localStorage.setItem('adminToken', 'true');
-        showToast('success', 'Access granted! Welcome back Admin.');
-        setTimeout(() => {
-          loginSec.style.display = 'none';
-          appSec.style.display = 'flex';
-          initPortalState();
-          drawAnalyticsCharts();
-        }, 1200);
+      if (window.auth) {
+        window.auth.signInWithEmailAndPassword(email, pass)
+          .then((userCredential) => {
+            showToast('success', 'Access granted! Welcome back Admin.');
+            // Also directly show the dashboard as a safety net
+            // (onAuthStateChanged should also fire, but this ensures it)
+            showAdminDashboard();
+          })
+          .catch((error) => {
+            let errorMsg = 'Access denied! Invalid credentials.';
+            if (error.code === 'auth/user-not-found') errorMsg = 'No admin account found with this email.';
+            else if (error.code === 'auth/wrong-password') errorMsg = 'Incorrect password.';
+            else if (error.code === 'auth/invalid-email') errorMsg = 'Invalid email format.';
+            else if (error.code === 'auth/invalid-credential') errorMsg = 'Invalid email or password.';
+            else if (error.code === 'auth/too-many-requests') errorMsg = 'Too many failed attempts. Try again later.';
+            showToast('error', errorMsg);
+            console.error('Firebase Auth error:', error);
+          });
       } else {
-        showToast('error', 'Access denied! Invalid credentials.');
+        // Fallback to hardcoded credentials
+        if (email === 'admin@subramanya.com' && pass === 'Aquatics@2025') {
+          localStorage.setItem('adminToken', 'true');
+          showToast('success', 'Access granted! Welcome back Admin.');
+          setTimeout(() => {
+            showAdminDashboard();
+          }, 1200);
+        } else {
+          showToast('error', 'Access denied! Invalid credentials.');
+        }
       }
     });
   }
@@ -65,12 +113,21 @@ function initAuthSession() {
   // Handle Logout
   if (btnLogout) {
     btnLogout.addEventListener('click', () => {
-      localStorage.removeItem('adminToken');
-      showToast('info', 'Logged out of portal securely.');
-      setTimeout(() => {
-        appSec.style.display = 'none';
-        loginSec.style.display = 'flex';
-      }, 800);
+      if (window.auth) {
+        window.auth.signOut().then(() => {
+          localStorage.removeItem('adminToken');
+          showToast('info', 'Logged out of portal securely.');
+        }).catch((error) => {
+          console.error('Logout error:', error);
+        });
+      } else {
+        localStorage.removeItem('adminToken');
+        showToast('info', 'Logged out of portal securely.');
+        setTimeout(() => {
+          appSec.style.display = 'none';
+          loginSec.style.display = 'flex';
+        }, 800);
+      }
     });
   }
 }
