@@ -127,25 +127,106 @@ let testimonials = [];
 let inquiries = [];
 
 function initPortalState() {
-  // Mock/Initial Data
   const defaultProducts = [
+    // Guppys
     { id: 1, name: 'Moon Tail Guppys', category: 'Guppys', price: '₹99', image: 'fishes/Sward tail guppy.jpeg', tag: 'Best Seller' },
+    { id: 2, name: 'Premium Mixed', category: 'Guppys', price: '₹99', image: 'fishes/Premium mixed guppys.jpeg', tag: 'Premium' },
+    { id: 3, name: 'Mixed Guppy', category: 'Guppys', price: '₹69', image: 'fishes/Mixed guppys.jpg', tag: 'Standard' },
+    { id: 4, name: 'Golden Guppys (24K)', category: 'Guppys', price: '₹249', image: 'fishes/Golden guppy.jpg', tag: 'Exotic' },
+    { id: 5, name: 'HB Blue', category: 'Guppys', price: '₹250', image: 'fishes/Hb blue guppys.jpg', tag: 'Popular' },
+    { id: 6, name: 'Koi Guppys', category: 'Guppys', price: '₹249', image: 'fishes/Albino Red eye guppy.jpg', tag: 'Exotic' },
+    { id: 7, name: 'Platinum Guppys', category: 'Guppys', price: '₹99', image: 'fishes/Platinum guppys.webp', tag: 'Regular' },
+    { id: 8, name: 'Platinum (Dumbo)', category: 'Guppys', price: '₹250', image: 'fishes/Platinum dumbo ear guppys.jpeg', tag: 'Premium' },
+    { id: 9, name: 'Dragon Tail', category: 'Guppys', price: '₹250', image: 'fishes/Dragon tail guppys.jpg', tag: 'Premium' },
+    { id: 10, name: "Guppy Baby's", category: 'Guppys', price: '₹7 / pc', image: 'fishes/Guppy babys.png', tag: 'Fry' },
     { id: 11, name: 'Guppy Semi Adults', category: 'Guppys', price: '₹40 / pair', image: 'fishes/Guppys semi adults.webp', tag: 'Semi Adult' },
-    { id: 111, name: 'Koi Texido', category: 'Guppys', price: '₹250', image: 'fishes/Koi texido.jpg', tag: 'Premium' },
-    { id: 112, name: 'Dark Knight Dragon', category: 'Guppys', price: '₹250', image: 'fishes/Dark knight dragon.jpg', tag: 'Premium' },
-    { id: 113, name: 'White Angel', category: 'Angels', price: '₹150', image: 'fishes/White angel.jpg', tag: 'Popular' },
-    { id: 114, name: 'Marbel Angel', category: 'Angels', price: '₹199', image: 'fishes/Marbel angel.jpg', tag: 'Popular' },
-    { id: 115, name: 'Angel', category: 'Angels', price: '₹100', image: 'fishes/Angel.jpg', tag: 'Standard' },
-    { id: 12, name: 'Mollys', category: 'Mollies', price: '₹49', image: 'fishes/mollies.webp', tag: 'Popular' },
-    { id: 4, name: 'Gourami', category: 'Oxy-less Fishes', price: '₹79', image: 'fishes/Gourami.jpg', tag: 'Healthy' },
-    { id: 5, name: 'OHM (Males)', category: "Betta's", price: '₹149', image: 'fishes/Beta ohm male.webp', tag: 'Exotic' },
-    { id: 6, name: 'Albino Oscar', category: 'Wild Oscars', price: '₹499', image: 'fishes/Albino oscar fish.webp', tag: 'Giant' },
-    { id: 7, name: 'SRD', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/Srd flowerhorn.jpg', tag: 'Show Grade' },
-    { id: 8, name: 'Polar Parrot Breeding Pair', category: 'Flowerhorns', price: '₹500', image: 'fishes/Polar parrots( zebra).jpg', tag: 'Breeding Pair' },
-    { id: 9, name: 'Polar Parrot Pair', category: 'Flowerhorns', price: '₹250', image: 'fishes/Polar parrots( zebra).jpg', tag: 'Pair' },
-    { id: 10, name: 'Silver Arowana', category: 'Arowana', price: 'Contact Us', image: 'fishes/Silver arwana.webp', tag: 'Luxury' },
-    { id: 11, name: 'Gold Fish', category: 'Gold Fish', price: '₹250', image: 'fishes/Gold fish.jpeg', tag: 'Classic' },
-    { id: 12, name: 'Black Moor Gold Fish', category: 'Gold Fish', price: '₹99', image: 'fishes/Black more gold fish.jpg', tag: 'Dark Accent' }
+    { id: 12, name: 'Koi Texido', category: 'Guppys', price: '₹250', image: 'fishes/Koi texido.jpg', tag: 'Premium' },
+    { id: 13, name: 'Dark Knight Dragon', category: 'Guppys', price: '₹250', image: 'fishes/Dark knight dragon.jpg', tag: 'Premium' },
+
+    // Angels
+    { id: 14, name: 'White Angel', category: 'Angels', price: '₹150', image: 'fishes/White angel.jpg', tag: 'Popular' },
+    { id: 15, name: 'Marbel Angel', category: 'Angels', price: '₹199', image: 'fishes/Marbel angel.jpg', tag: 'Popular' },
+    { id: 16, name: 'Angel', category: 'Angels', price: '₹100', image: 'fishes/Angel.jpg', tag: 'Standard' },
+
+    // Mollies
+    { id: 17, name: 'Mollys', category: 'Mollies', price: '₹49', image: 'fishes/mollies.webp', tag: 'Popular' },
+    { id: 18, name: 'Moontail Mollys', category: 'Mollies', price: '₹99', image: 'fishes/moon tail mollies.jpg', tag: 'Standard' },
+    { id: 19, name: 'Balloon Mollys', category: 'Mollies', price: '₹79', image: 'fishes/ballon mollies.jpeg', tag: 'Healthy' },
+    { id: 20, name: "Molly Baby's", category: 'Mollies', price: '₹5 / pc', image: 'fishes/Molly babyes.jpeg', tag: 'Fry' },
+
+    // Oxy-less Fishes
+    { id: 21, name: 'Gourami', category: 'Oxy-less Fishes', price: '₹79', image: 'fishes/Gourami.jpg', tag: 'Healthy' },
+    { id: 22, name: 'Plattys', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/Platy fish.webp', tag: 'Standard' },
+    { id: 23, name: 'Sword Tail Plattys', category: 'Oxy-less Fishes', price: '₹99', image: 'fishes/Sward tail platy.jpeg', tag: 'Popular' },
+    { id: 24, name: 'Zebra', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/Zebra fish.webp', tag: 'Active' },
+    { id: 25, name: 'Sharks (Small)', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/Shark small.webp', tag: 'Active' },
+    { id: 26, name: 'Sharks (Medium)', category: 'Oxy-less Fishes', price: '₹99', image: 'fishes/Shark medium.avif', tag: 'Active' },
+    { id: 27, name: 'Sharks (Large)', category: 'Oxy-less Fishes', price: 'Contact Us', image: 'fishes/Shark large.jpeg', tag: 'Giant' },
+    { id: 28, name: 'Vail Tail Zebra', category: 'Oxy-less Fishes', price: '₹150', image: 'fishes/Vail tail zebra green.jpg', tag: 'Exotic' },
+
+    // Betta's
+    { id: 29, name: 'OHM (Males)', category: "Betta's", price: '₹149', image: 'fishes/Beta ohm male.webp', tag: 'Exotic' },
+    { id: 30, name: 'OHM (Female)', category: "Betta's", price: '₹99', image: 'fishes/Beta ohm females.jpg', tag: 'Standard' },
+    { id: 31, name: 'HMPK Male', category: "Betta's", price: '₹250', image: 'fishes/Beta HMPK male.webp', tag: 'Popular' },
+    { id: 32, name: 'Placarts', category: "Betta's", price: '₹499', image: 'fishes/Beta placarts male.jpg', tag: 'Exotic' },
+    { id: 33, name: 'Candy Betta', category: "Betta's", price: 'Contact Us', image: 'fishes/Bata candy male.jpeg', tag: 'Show Grade' },
+    { id: 34, name: 'HMPK Female', category: "Betta's", price: 'Contact Us', image: 'fishes/Beta hmpk female.jpeg', tag: 'Standard' },
+
+    // Wild Oscars
+    { id: 35, name: 'Albino Oscar', category: 'Wild Oscars', price: '₹499', image: 'fishes/Albino oscar fish.webp', tag: 'Giant' },
+    { id: 36, name: 'Tiger Red Oscar', category: 'Wild Oscars', price: '₹499', image: 'fishes/Red tiger oscar.jpg', tag: 'Giant' },
+    { id: 37, name: 'Red Oscar', category: 'Wild Oscars', price: '₹599', image: 'fishes/Red oscar.jpg', tag: 'Premium' },
+    { id: 38, name: 'Lemon Oscar', category: 'Wild Oscars', price: '₹599', image: 'fishes/Lemon oscar.jpeg', tag: 'Premium' },
+    { id: 39, name: 'Mango Oscar', category: 'Wild Oscars', price: '₹599', image: 'fishes/Mango oscar.jpg', tag: 'Premium' },
+
+    // Flowerhorns
+    { id: 40, name: 'SRD', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/Srd flowerhorn.jpg', tag: 'Show Grade' },
+    { id: 41, name: 'KML', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/Kml flowerhorn.jpg', tag: 'Show Grade' },
+    { id: 42, name: 'F2 Kamfa', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/F2 kamfa.jpg', tag: 'Show Grade' },
+    { id: 43, name: 'Polar Parrot Breeding Pair', category: 'Flowerhorns', price: '₹500', image: 'fishes/Polar parrots( zebra).jpg', tag: 'Breeding Pair' },
+    { id: 44, name: 'Polar Parrot Pair', category: 'Flowerhorns', price: '₹250', image: 'fishes/Polar parrots( zebra).jpg', tag: 'Pair' },
+    { id: 45, name: 'Parrots', category: 'Flowerhorns', price: '₹999', image: 'fishes/Parrot (%20red).jpg', tag: 'Healthy' },
+
+    // Arowana
+    { id: 46, name: 'Silver Arowana', category: 'Arowana', price: 'Contact Us', image: 'fishes/Silver arwana.webp', tag: 'Luxury' },
+    { id: 47, name: 'Golden Arowana', category: 'Arowana', price: 'Contact Us', image: 'fishes/Gold arwana.jpg', tag: 'Luxury' },
+    { id: 48, name: 'Red Arowana', category: 'Arowana', price: 'Contact Us', image: 'fishes/Red Arwana.jpeg', tag: 'Luxury' },
+
+    // Gold Fish
+    { id: 49, name: 'Gold Fish', category: 'Gold Fish', price: '₹250', image: 'fishes/Gold fish.jpeg', tag: 'Classic' },
+    { id: 50, name: 'Black Moor Gold Fish', category: 'Gold Fish', price: '₹99', image: 'fishes/Black more gold fish.jpg', tag: 'Dark Accent' },
+
+    // Exotics & Giants
+    { id: 51, name: 'Alligator Gar (Small)', category: 'Exotics & Giants', price: '₹1000', image: 'fishes/Aligator gar.jpg', tag: 'Exotic' },
+    { id: 52, name: 'Cichlids', category: 'Exotics & Giants', price: '₹200', image: 'fishes/Chichilids.jpg', tag: 'Standard' },
+    { id: 53, name: 'Channa Fish', category: 'Exotics & Giants', price: '₹2000', image: 'fishes/Snake head fish.jpg', tag: 'Exotic' },
+    { id: 54, name: 'Japanese Koi', category: 'Exotics & Giants', price: '₹1000', image: 'fishes/Japanese koi fish.jpg', tag: 'Classic' },
+    { id: 55, name: 'Indian Koi', category: 'Exotics & Giants', price: 'Contact Us', image: 'fishes/Indian koi fish.jpeg', tag: 'Standard' },
+    { id: 56, name: 'Giant Gourami', category: 'Exotics & Giants', price: '₹1000', image: 'fishes/Giant gourami baby.jpg', tag: 'Giant' },
+
+    // Aquarium Items
+    { id: 57, name: 'Aquarium Heater (50W)', category: 'Aquarium Items', price: '₹300', image: 'items/50w aquarium heater.webp', tag: 'Heater' },
+    { id: 58, name: 'Aquarium Heater (100W)', category: 'Aquarium Items', price: '₹350', image: 'items/100 w aquarium heater.webp', tag: 'Heater' },
+    { id: 59, name: 'Aquarium Light Large', category: 'Aquarium Items', price: '₹400', image: 'items/Aquarium light (large ).jpg', tag: 'Light' },
+    { id: 60, name: 'Aquarium Light Small', category: 'Aquarium Items', price: '₹300', image: 'items/Aquarium light (small).jpg', tag: 'Light' },
+    { id: 61, name: 'Bubble Oxygen', category: 'Aquarium Items', price: '₹200', image: 'items/buble oxygen.webp', tag: 'Oxygen' },
+    { id: 62, name: 'Double Oxygen', category: 'Aquarium Items', price: '₹300', image: 'items/double oxygen.webp', tag: 'Oxygen' },
+    { id: 63, name: 'Internal Oxygen (Small)', category: 'Aquarium Items', price: '₹300', image: 'items/internal oxgyen (small).webp', tag: 'Oxygen' },
+    { id: 64, name: 'Internal Oxygen (Large)', category: 'Aquarium Items', price: '₹400', image: 'items/internal oxgyen (big).jpg', tag: 'Oxygen' },
+
+    // Aquarium Decorative Items
+    { id: 65, name: 'Plastic Plants Piece', category: 'Aquarium Decorative Items', price: '₹25', image: 'items/plastic plants (small).jpg', tag: 'Decor' },
+    { id: 66, name: 'Stones (1kg)', category: 'Aquarium Decorative Items', price: '₹50', image: 'items/stones.jpg', tag: 'Decor' },
+
+    // Fish Food
+    { id: 67, name: 'Dry Worms (10g)', category: 'Fish Food', price: '₹25', image: 'food/dry worms cubes.jpeg', tag: 'Food' },
+    { id: 68, name: 'Farm Food (100g)', category: 'Fish Food', price: '₹200', image: 'food/farm food.jpg', tag: 'Food' },
+    { id: 69, name: 'Okiko Black Pearl Flowerhorn Food', category: 'Fish Food', price: '₹300', image: 'food/okiko black pearl flowehorn food.webp', tag: 'Food' },
+    { id: 70, name: 'Okiko Head Power Flowerhorns Food', category: 'Fish Food', price: '₹300', image: 'food/Okiko head power flowerhorns food.jpeg', tag: 'Food' },
+    { id: 71, name: 'Okiko Red Diamond Flowerhorn Food', category: 'Fish Food', price: '₹300', image: 'food/Okoko red diamond fish food.jpg', tag: 'Food' },
+    { id: 72, name: 'Optimun 3 in 1 Fish Food', category: 'Fish Food', price: '₹160', image: 'food/Optimun 3 in 1 fish food.webp', tag: 'Food' },
+    { id: 73, name: 'Tiyo Fish Food (Small)', category: 'Fish Food', price: '₹20', image: 'food/Tiyo fish food (small).jpeg', tag: 'Food' },
+    { id: 74, name: 'Tiyo Fish Food', category: 'Fish Food', price: '₹30', image: 'food/Tiyo fish food(large).jpg', tag: 'Food' }
   ];
 
   const defaultCategories = [
@@ -155,9 +236,13 @@ function initPortalState() {
     { name: 'Oxy-less Fishes', count: 8, image: 'fishes/Gourami.jpg', status: 'Active' },
     { name: "Betta's", count: 6, image: 'fishes/Beta ohm male.webp', status: 'Active' },
     { name: 'Wild Oscars', count: 5, image: 'fishes/Albino oscar fish.webp', status: 'Active' },
-    { name: 'Flowerhorns', count: 5, image: 'fishes/Srd flowerhorn.jpg', status: 'Active' },
+    { name: 'Flowerhorns', count: 6, image: 'fishes/Srd flowerhorn.jpg', status: 'Active' },
     { name: 'Arowana', count: 3, image: 'fishes/Silver arwana.webp', status: 'Active' },
-    { name: 'Gold Fish', count: 2, image: 'fishes/Gold fish.jpeg', status: 'Active' }
+    { name: 'Gold Fish', count: 2, image: 'fishes/Gold fish.jpeg', status: 'Active' },
+    { name: 'Exotics & Giants', count: 6, image: 'fishes/Japanese koi fish.jpg', status: 'Active' },
+    { name: 'Aquarium Items', count: 8, image: 'items/50w aquarium heater.webp', status: 'Active' },
+    { name: 'Aquarium Decorative Items', count: 2, image: 'items/plastic plants (small).jpg', status: 'Active' },
+    { name: 'Fish Food', count: 8, image: 'food/Optimun 3 in 1 fish food.webp', status: 'Active' }
   ];
 
   const defaultOrders = [
@@ -414,6 +499,8 @@ function renderMediaLibrary() {
   const grid = document.getElementById('mediaLibraryGrid');
   if (!grid) return;
   grid.innerHTML = '';
+
+  // Show Product Images
   products.forEach(p => {
     const div = document.createElement('div');
     div.style.background = 'var(--glass-bg)';
@@ -421,11 +508,93 @@ function renderMediaLibrary() {
     div.style.borderRadius = '12px';
     div.style.padding = '8px';
     div.style.textAlign = 'center';
+    div.style.position = 'relative';
+
+    let displayName = p.image;
+    if (displayName.startsWith('data:')) {
+      displayName = p.name + ' (Data URL)';
+    } else {
+      displayName = displayName.replace('fishes/', '').replace('items/', '').replace('food/', '');
+    }
+
     div.innerHTML = `
-      <img src="${p.image}" style="width: 100%; height: 80px; object-fit: cover; border-radius: 8px;" alt="media">
-      <div style="font-size: 0.75rem; color: var(--color-text-muted); margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${p.image.replace('fishes/', '')}</div>
+      <img src="${p.image}" style="width: 100%; height: 80px; object-fit: cover; border-radius: 8px; cursor: pointer;" alt="${p.name}" title="Click to copy path / autofill" onclick="copyToClipboard('${p.image}', 'Product image source copied to clipboard!')">
+      <div style="font-size: 0.72rem; color: var(--color-text-muted); margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${displayName}">${displayName}</div>
+      <div style="font-size: 0.65rem; color: var(--color-primary); margin-top: 2px;">Product Source</div>
     `;
     grid.appendChild(div);
+  });
+
+  // Show Custom Media Images
+  const mediaList = JSON.parse(localStorage.getItem('sa_media')) || [];
+  mediaList.forEach(m => {
+    const div = document.createElement('div');
+    div.style.background = 'var(--glass-bg)';
+    div.style.border = '1px solid var(--glass-border)';
+    div.style.borderRadius = '12px';
+    div.style.padding = '8px';
+    div.style.textAlign = 'center';
+    div.style.position = 'relative';
+
+    div.innerHTML = `
+      <img src="${m.image}" style="width: 100%; height: 80px; object-fit: cover; border-radius: 8px; cursor: pointer;" alt="${m.name}" title="Click to copy Data URL / autofill" onclick="copyToClipboard('${m.image}', 'Custom media Data URL copied to clipboard!')">
+      <div style="font-size: 0.72rem; color: var(--color-text-muted); margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${m.name}">${m.name}</div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px; padding: 0 4px;">
+        <span style="font-size: 0.65rem; color: var(--color-secondary);">Uploaded</span>
+        <button onclick="deleteMediaItem('${m.id}')" style="background: none; border: none; color: var(--color-accent); cursor: pointer; font-size: 0.8rem; padding: 0; line-height: 1;" title="Delete Image">🗑️</button>
+      </div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+// Clipboard copying & Autofill functionality
+window.copyToClipboard = function(text, successMsg) {
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('success', successMsg);
+    // If product modal is open, auto-populate the input
+    const prodImageInput = document.getElementById('prodImage');
+    const modal = document.getElementById('productModal');
+    if (modal && modal.classList.contains('active') && prodImageInput) {
+      prodImageInput.value = text;
+      showToast('info', 'Autofilled product image field with selected source!');
+    }
+  }).catch(err => {
+    showToast('error', 'Failed to copy to clipboard.');
+  });
+};
+
+// Delete custom media item
+window.deleteMediaItem = function(id) {
+  if (confirm('Are you sure you want to delete this custom image from Media Library?')) {
+    let mediaList = JSON.parse(localStorage.getItem('sa_media')) || [];
+    mediaList = mediaList.filter(m => m.id !== id);
+    localStorage.setItem('sa_media', JSON.stringify(mediaList));
+    renderMediaLibrary();
+    showToast('info', 'Image removed from Media Library.');
+  }
+};
+
+// Asynchronously process custom media file uploads
+function processUploadedFiles(files) {
+  if (files.length === 0) return;
+  let processedCount = 0;
+  let mediaList = JSON.parse(localStorage.getItem('sa_media')) || [];
+
+  files.forEach(file => {
+    compressAndResizeImage(file, (dataUrl) => {
+      mediaList.push({
+        id: 'media_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        name: file.name,
+        image: dataUrl
+      });
+      processedCount++;
+      if (processedCount === files.length) {
+        localStorage.setItem('sa_media', JSON.stringify(mediaList));
+        renderMediaLibrary();
+        showToast('success', `${files.length} image(s) uploaded & optimized successfully!`);
+      }
+    });
   });
 }
 
@@ -444,9 +613,65 @@ function initFormSubmitHandlers() {
     btnAdd.addEventListener('click', () => {
       form.reset();
       document.getElementById('editProductId').value = '';
+      const imgFile = document.getElementById('prodImageFile');
+      if (imgFile) imgFile.value = '';
       document.getElementById('productModalTitle').textContent = 'Add New Fish Item';
       modal.classList.add('active');
     });
+  }
+
+  const fileInput = document.getElementById('prodImageFile');
+  if (fileInput) {
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        compressAndResizeImage(file, (dataUrl) => {
+          document.getElementById('prodImage').value = dataUrl;
+          showToast('success', 'Local image compressed & loaded successfully!');
+        });
+      }
+    });
+  }
+
+  // Media Library drag and drop / file input handlers
+  const mockUploadInput = document.getElementById('mockUploadInput');
+  if (mockUploadInput) {
+    mockUploadInput.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files).filter(file => file.type.startsWith('image/'));
+      processUploadedFiles(files);
+      mockUploadInput.value = '';
+    });
+  }
+
+  const dropZone = document.getElementById('mediaDropZone');
+  if (dropZone) {
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.style.borderColor = 'var(--color-secondary)';
+        dropZone.style.background = 'rgba(255, 255, 255, 0.05)';
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.style.borderColor = 'var(--color-primary)';
+        dropZone.style.background = 'transparent';
+      }, false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = Array.from(dt.files).filter(file => file.type.startsWith('image/'));
+      if (files.length > 0) {
+        processUploadedFiles(files);
+      } else {
+        showToast('error', 'Only images are supported for catalog uploads.');
+      }
+    }, false);
   }
 
   if (btnClose && modal) {
@@ -510,6 +735,8 @@ window.openEditProduct = function(id) {
     document.getElementById('prodPrice').value = p.price.replace('₹', '');
     document.getElementById('prodImage').value = p.image;
     document.getElementById('prodDesc').value = p.tag;
+    const imgFile = document.getElementById('prodImageFile');
+    if (imgFile) imgFile.value = '';
 
     document.getElementById('productModalTitle').textContent = 'Edit ' + p.name;
     document.getElementById('productModal').classList.add('active');
@@ -656,3 +883,37 @@ window.showToast = function(type, msg) {
     setTimeout(() => toast.remove(), 400);
   }, 4000);
 };
+
+// Helper to compress and resize images client-side before saving to localStorage
+function compressAndResizeImage(file, callback) {
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const max_size = 400; // 400px is perfect for thumbnails and fast loading
+      let width = img.width;
+      let height = img.height;
+      if (width > height) {
+        if (width > max_size) {
+          height *= max_size / width;
+          width = max_size;
+        }
+      } else {
+        if (height > max_size) {
+          width *= max_size / height;
+          height = max_size;
+        }
+      }
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      // Compress to JPEG with 0.7 quality to keep under 30KB
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+      callback(dataUrl);
+    };
+    img.src = event.target.result;
+  };
+  reader.readAsDataURL(file);
+}
