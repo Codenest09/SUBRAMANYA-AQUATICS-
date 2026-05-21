@@ -1604,6 +1604,53 @@ function renderMediaLibrary() {
   });
 }
 
+// Helper to compress and resize images client-side before uploading
+function compressAndResizeImage(file, callback) {
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const max_size = 400; // 400px is perfect for thumbnails and fast loading
+      let width = img.width;
+      let height = img.height;
+      if (width > height) {
+        if (width > max_size) {
+          height *= max_size / width;
+          width = max_size;
+        }
+      } else {
+        if (height > max_size) {
+          width *= max_size / height;
+          height = max_size;
+        }
+      }
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      // Compress to JPEG with 0.7 quality to keep under 30KB
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+      callback(dataUrl);
+    };
+    img.src = event.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// Convert dataURL to Blob for Firebase Storage uploading
+function dataURLtoBlob(dataurl) {
+  const arr = dataurl.split(',');
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new Blob([u8arr], { type: mime });
+}
+
 // Helper to upload images dynamically to Firebase Storage and update text input URL paths
 window.handleImageUpload = function(fileInputId, textInputId, progressSpanId, folderName) {
   const fileInput = document.getElementById(fileInputId);
@@ -1618,36 +1665,49 @@ window.handleImageUpload = function(fileInputId, textInputId, progressSpanId, fo
     return;
   }
   
-  // Create a storage ref
-  const filename = Date.now() + '_' + file.name;
-  const storageRef = window.storage.ref().child(`${folderName}/${filename}`);
-  
   progressSpan.style.display = 'inline-block';
-  progressSpan.textContent = 'Uploading: 0%';
+  progressSpan.textContent = 'Compressing...';
   progressSpan.style.color = 'var(--color-primary)';
   
-  const uploadTask = storageRef.put(file);
-  
-  uploadTask.on('state_changed', 
-    (snapshot) => {
-      const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-      progressSpan.textContent = `Uploading: ${progress}%`;
-    }, 
-    (error) => {
-      console.error('Upload failed:', error);
-      progressSpan.textContent = 'Failed!';
-      progressSpan.style.color = 'var(--color-accent)';
-      showToast('error', 'Image upload failed: ' + error.message);
-    }, 
-    () => {
-      uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-        textInput.value = downloadURL;
-        progressSpan.textContent = 'Success!';
-        progressSpan.style.color = 'var(--color-secondary)';
-        showToast('success', 'Image uploaded to Firebase successfully!');
-      });
+  compressAndResizeImage(file, (dataUrl) => {
+    const blob = dataURLtoBlob(dataUrl);
+    
+    // Create a storage ref using .jpg extension since we compressed it to jpeg
+    let originalName = file.name;
+    const dotIndex = originalName.lastIndexOf('.');
+    if (dotIndex !== -1) {
+      originalName = originalName.substring(0, dotIndex) + '.jpg';
+    } else {
+      originalName = originalName + '.jpg';
     }
-  );
+    const filename = Date.now() + '_' + originalName;
+    const storageRef = window.storage.ref().child(`${folderName}/${filename}`);
+    
+    progressSpan.textContent = 'Uploading: 0%';
+    
+    const uploadTask = storageRef.put(blob, { contentType: 'image/jpeg' });
+    
+    uploadTask.on('state_changed', 
+      (snapshot) => {
+        const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        progressSpan.textContent = `Uploading: ${progress}%`;
+      }, 
+      (error) => {
+        console.error('Upload failed:', error);
+        progressSpan.textContent = 'Failed!';
+        progressSpan.style.color = 'var(--color-accent)';
+        showToast('error', 'Image upload failed: ' + error.message);
+      }, 
+      () => {
+        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+          textInput.value = downloadURL;
+          progressSpan.textContent = 'Success!';
+          progressSpan.style.color = 'var(--color-secondary)';
+          showToast('success', 'Image uploaded & optimized to Firebase successfully!');
+        });
+      }
+    );
+  });
 };
 
 // 5. Form Submissions Handlers & Modal Controllers
