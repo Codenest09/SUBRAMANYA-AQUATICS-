@@ -632,7 +632,7 @@ window.seedDefaultDataIfEmpty = async function(force = false) {
       console.log('%c🌱 Seeding default payments config to Firebase...', 'color: #00ffc8;');
       await paymentsRef.set({
         upiId: 'subramanyaaquatics@ybl',
-        qrImage: 'qr_code.png',
+        qrImage: 'QR scan.jpeg',
         deliveryCharge: '150',
         packingCharge: '50'
       });
@@ -1410,7 +1410,10 @@ window.changeOrderStatus = function(id, val) {
 
   // Update Firebase Firestore if initialized
   if (window.db) {
-    db.collection('orders').doc(id).update({ 'Status': val })
+    db.collection('orders').doc(id).update({
+      'status': val,
+      'Status': val
+    })
       .then(() => {
         console.log('Order status updated in Firebase Firestore');
       })

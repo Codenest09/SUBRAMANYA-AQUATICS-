@@ -11,6 +11,198 @@ document.addEventListener('DOMContentLoaded', () => setTimeout(hideLoader, 500))
 window.addEventListener('load', () => setTimeout(hideLoader, 200));
 setTimeout(hideLoader, 2000);
 
+// ========== FALLBACK DATA & FIREBASE SYNC SETTINGS ==========
+const defaultProducts = [
+  { id: 1, name: 'Moon Tail Guppys', category: 'Guppys', price: '₹99', image: 'fishes/Sward tail guppy.jpeg', tag: 'Best Seller' },
+  { id: 2, name: 'Golden Guppys (24K)', category: 'Guppys', price: '₹249', image: 'fishes/Golden guppy.jpg', tag: 'Premium' },
+  { id: 3, name: 'Premium Mixed Guppys', category: 'Guppys', price: '₹99', image: 'fishes/Premium mixed guppys.jpeg', tag: 'Premium Mix' },
+  { id: 4, name: 'Mixed Guppys', category: 'Guppys', price: '₹69', image: 'fishes/Mixed guppys.jpg', tag: 'Mixed Variety' },
+  { id: 5, name: 'HB Blue Guppys', category: 'Guppys', price: '₹250', image: 'fishes/Hb blue guppys.jpg', tag: 'Half Black' },
+  { id: 6, name: 'Koi Guppys', category: 'Guppys', price: '₹249', image: 'fishes/Albino Red eye guppy.jpg', tag: 'Koi Pattern' },
+  { id: 7, name: 'Platinum Guppys', category: 'Guppys', price: '₹99', image: 'fishes/Platinum guppys.webp', tag: 'Platinum' },
+  { id: 8, name: 'Platinum Dumbo Ear Guppys', category: 'Guppys', price: '₹250', image: 'fishes/Platinum dumbo ear guppys.jpeg', tag: 'Dumbo Ear' },
+  { id: 9, name: 'Dragon Tail Guppys', category: 'Guppys', price: '₹250', image: 'fishes/Dragon tail guppys.jpg', tag: 'Dragon Tail' },
+  { id: 10, name: 'Guppy Babies', category: 'Guppys', price: '₹7 / pc', image: 'fishes/Guppy babys.png', tag: 'Babies' },
+  { id: 11, name: 'Guppy Semi Adults', category: 'Guppys', price: '₹40 / pair', image: 'fishes/Guppys semi adults.webp', tag: 'Semi Adult' },
+  { id: 111, name: 'Koi Texido', category: 'Guppys', price: '₹250', image: 'fishes/Koi texido.jpg', tag: 'Premium' },
+  { id: 112, name: 'Dark Knight Dragon', category: 'Guppys', price: '₹250', image: 'fishes/Dark knight dragon.jpg', tag: 'Premium' },
+  { id: 113, name: 'White Angel', category: 'Angels', price: '₹150', image: 'fishes/White angel.jpg', tag: 'Popular' },
+  { id: 114, name: 'Marbel Angel', category: 'Angels', price: '₹199', image: 'fishes/Marbel angel.jpg', tag: 'Popular' },
+  { id: 115, name: 'Angel', category: 'Angels', price: '₹100', image: 'fishes/Angel.jpg', tag: 'Standard' },
+  { id: 12, name: 'Mollys', category: 'Mollies', price: '₹49', image: 'fishes/mollies.webp', tag: 'Popular' },
+  { id: 22, name: 'Moon Tail Mollies', category: 'Mollies', price: '₹99', image: 'fishes/moon tail mollies.jpg', tag: 'Moon Tail' },
+  { id: 23, name: 'Balloon Mollies', category: 'Mollies', price: '₹79', image: 'fishes/ballon mollies.jpeg', tag: 'Balloon' },
+  { id: 24, name: 'Molly Babies', category: 'Mollies', price: '₹5 / pc', image: 'fishes/Molly babyes.jpeg', tag: 'Babies' },
+  { id: 13, name: 'Gourami', category: 'Oxy-less Fishes', price: '₹79', image: 'fishes/Gourami.jpg', tag: 'Healthy' },
+  { id: 25, name: 'Platys', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/Platy fish.webp', tag: 'Colorful' },
+  { id: 26, name: 'Sword Tail Platys', category: 'Oxy-less Fishes', price: '₹99', image: 'fishes/Sward tail platy.jpeg', tag: 'Sword Tail' },
+  { id: 27, name: 'Zebra', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/Zebra fish.webp', tag: 'Striped' },
+  { id: 28, name: 'Shark (Small)', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/Shark small.webp', tag: 'Small' },
+  { id: 14, name: 'Red Cap Oranda Gold Fish', category: 'Gold Fish', price: '₹150', image: 'fishes/Red cap oranda gold fish.jpeg', tag: 'Cute' },
+  { id: 29, name: 'Black Moor Gold Fish', category: 'Gold Fish', price: '₹99', image: 'fishes/Black moor gold fish.jpg', tag: 'Dark' },
+  { id: 30, name: 'Standard Gold Fish', category: 'Gold Fish', price: '₹79', image: 'fishes/standard gold fish.webp', tag: 'Standard' },
+  { id: 15, name: 'Arowana (Silver)', category: 'Exotic & Large Fishes', price: 'Contact Us', image: 'fishes/Arowana silver .webp', tag: 'Exotic Giant' },
+  { id: 31, name: 'Flowerhorn SRD', category: 'Exotic & Large Fishes', price: 'Contact Us', image: 'fishes/Flowerhorn srd.jpg', tag: 'Ultra Head' },
+  { id: 32, name: 'Oscar (Copper)', category: 'Exotic & Large Fishes', price: '₹200', image: 'fishes/Copper oscar.webp', tag: 'Aggressive' },
+  { id: 33, name: 'Oscar (Albino)', category: 'Exotic & Large Fishes', price: '₹250', image: 'fishes/Albino oscar.jpeg', tag: 'Aggressive' },
+  { id: 34, name: 'Oscar (White)', category: 'Exotic & Large Fishes', price: '₹250', image: 'fishes/White oscar.webp', tag: 'Beautiful' },
+  { id: 35, name: 'Parrot Fish', category: 'Exotic & Large Fishes', price: '₹250', image: 'fishes/Parrot fish.webp', tag: 'Premium' },
+  { id: 36, name: 'Polar Parrot Breeding Pair', category: 'Exotic & Large Fishes', price: '₹500', image: 'fishes/polar parrot breeding pair.jpg', tag: 'Breeder' },
+  { id: 37, name: 'Milky Carp', category: 'Carp & Koi', price: '₹150', image: 'fishes/milky carp.webp', tag: 'Stunning' },
+  { id: 38, name: 'Koi Carp', category: 'Carp & Koi', price: '₹99', image: 'fishes/koi carp.webp', tag: 'Active' }
+];
+
+const defaultCategories = [
+  { name: 'Guppys', count: 11, image: 'fishes/Golden guppy.jpg', status: 'Active' },
+  { name: 'Angels', count: 3, image: 'fishes/White angel.jpg', status: 'Active' },
+  { name: 'Mollies', count: 4, image: 'fishes/moon tail mollies.jpg', status: 'Active' },
+  { name: 'Oxy-less Fishes', count: 5, image: 'fishes/Gourami.jpg', status: 'Active' },
+  { name: 'Gold Fish', count: 3, image: 'fishes/Red cap oranda gold fish.jpeg', status: 'Active' },
+  { name: 'Exotic & Large Fishes', count: 7, image: 'fishes/Flowerhorn srd.jpg', status: 'Active' },
+  { name: 'Carp & Koi', count: 2, image: 'fishes/milky carp.webp', status: 'Active' }
+];
+
+const defaultFoods = [
+  { id: 1, name: 'Dry Worms (10g)', type: 'Dry Food', suitable: 'All Fishes', price: '₹25', stock: 'In Stock', image: 'food/dry worms cubes.jpeg', desc: 'High protein treat for all fish' },
+  { id: 2, name: 'Farm Food (100g)', type: 'Pellets', suitable: 'All Fishes', price: '₹200', stock: 'In Stock', image: 'food/farm food.jpg', desc: 'General farm food for fish' },
+  { id: 3, name: 'Okiko Black Pearl Flowerhorn Food', type: 'Pellets', suitable: 'Flowerhorns', price: '₹300', stock: 'In Stock', image: 'food/okiko black pearl flowehorn food.webp', desc: 'Enhances color and growth' },
+  { id: 4, name: 'Okiko Head Power Flowerhorns Food', type: 'Pellets', suitable: 'Flowerhorns', price: '₹300', stock: 'In Stock', image: 'food/Okiko head power flowerhorns food.jpeg', desc: 'Head booster for Flowerhorns' },
+  { id: 5, name: 'Okiko Red Diamond Flowerhorn Food', type: 'Pellets', suitable: 'Flowerhorns', price: '₹300', stock: 'In Stock', image: 'food/Okoko red diamond fish food.jpg', desc: 'Premium color enhancer' },
+  { id: 6, name: 'Optimun 3 in 1 Fish Food', type: 'Pellets', suitable: 'All Fishes', price: '₹160', stock: 'In Stock', image: 'food/Optimun 3 in 1 fish food.webp', desc: 'Balanced nutrition for tropical fish' },
+  { id: 7, name: 'Tiyo Fish Food (Small)', type: 'Pellets', suitable: 'Small Fishes', price: '₹20', stock: 'In Stock', image: 'food/Tiyo fish food (small).jpeg', desc: 'Daily nutrition for small fish' },
+  { id: 8, name: 'Tiyo Fish Food', type: 'Pellets', suitable: 'All Fishes', price: '₹30', stock: 'In Stock', image: 'food/Tiyo fish food(large).jpg', desc: 'Daily nutrition for all fish' }
+];
+
+const defaultItems = [
+  { id: 1, name: 'Aquarium Heater (50W)', price: '₹300', stock: 'In Stock', image: 'items/50w aquarium heater.webp' },
+  { id: 2, name: 'Aquarium Heater (100W)', price: '₹350', stock: 'In Stock', image: 'items/100 w aquarium heater.webp' },
+  { id: 3, name: 'Aquarium Light Large', price: '₹400', stock: 'In Stock', image: 'items/Aquarium light (large ).jpg' },
+  { id: 4, name: 'Aquarium Light Small', price: '₹300', stock: 'In Stock', image: 'items/Aquarium light (small).jpg' },
+  { id: 5, name: 'Bubble Oxygen', price: '₹200', stock: 'In Stock', image: 'items/buble oxygen.webp' },
+  { id: 6, name: 'Double Oxygen', price: '₹300', stock: 'In Stock', image: 'items/double oxygen.webp' },
+  { id: 7, name: 'Internal Oxygen (Small)', price: '₹300', stock: 'In Stock', image: 'items/internal oxgyen (small).webp' },
+  { id: 8, name: 'Internal Oxygen (Large)', price: '₹400', stock: 'In Stock', image: 'items/internal oxgyen (big).jpg' }
+];
+
+let deliveryCharge = 49;
+let packingCharge = 10;
+let merchantUpiId = '7995549922@ybl';
+let whatsAppNumber = '917995549922';
+
+function toggleWishlist(name, btn) {
+  let wishlist = JSON.parse(localStorage.getItem('sa_wishlist') || '[]');
+  const idx = wishlist.indexOf(name);
+  if (idx > -1) {
+    wishlist.splice(idx, 1);
+    if (btn) {
+      btn.classList.remove('active');
+      btn.innerHTML = '🤍';
+    }
+    showClientToast(`${name} removed from Wishlist`);
+  } else {
+    wishlist.push(name);
+    if (btn) {
+      btn.classList.add('active');
+      btn.innerHTML = '❤️';
+    }
+    showClientToast(`${name} added to Wishlist!`);
+  }
+  localStorage.setItem('sa_wishlist', JSON.stringify(wishlist));
+  updateWishlistUI();
+}
+
+function updateWishlistUI() {
+  const wishlist = JSON.parse(localStorage.getItem('sa_wishlist') || '[]');
+  const badges = document.querySelectorAll('#wishlistBadge');
+  badges.forEach(b => {
+    b.textContent = wishlist.length;
+  });
+  
+  const content = document.getElementById('accContent');
+  const activeTab = document.querySelector('.acc-tab.active');
+  if (content && activeTab && activeTab.getAttribute('onclick')?.includes('wishlist')) {
+    renderWishlistTabContent();
+  }
+  
+  document.querySelectorAll('.wishlist-btn').forEach(btn => {
+    const pName = btn.getAttribute('data-name');
+    if (wishlist.includes(pName)) {
+      btn.classList.add('active');
+      btn.innerHTML = '❤️';
+    } else {
+      btn.classList.remove('active');
+      btn.innerHTML = '🤍';
+    }
+  });
+}
+
+function renderWishlistTabContent() {
+  const content = document.getElementById('accContent');
+  if (!content) return;
+  
+  const wishlist = JSON.parse(localStorage.getItem('sa_wishlist') || '[]');
+  if (wishlist.length === 0) {
+    content.innerHTML = '<div class="empty-cart-msg">Your saved items will appear here once liked! ❤️</div>';
+    return;
+  }
+  
+  const allProds = [
+    ...JSON.parse(localStorage.getItem('sa_products') || '[]'),
+    ...JSON.parse(localStorage.getItem('sa_foods') || '[]'),
+    ...JSON.parse(localStorage.getItem('sa_items') || '[]')
+  ];
+  
+  const wishItems = allProds.filter(p => wishlist.includes(p.name));
+  
+  if (wishItems.length === 0) {
+    content.innerHTML = `
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        ${wishlist.map(name => `
+          <div class="acc-item-card" style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:rgba(255,255,255,0.03); border:1px solid rgba(0,212,255,0.1); border-radius:12px;">
+            <span style="font-weight:600; font-size:0.9rem;">🐟 ${name}</span>
+            <button class="btn-secondary" style="font-size:0.75rem; padding:4px 8px; border-color:var(--coral-pink); color:var(--coral-pink);" onclick="toggleWishlistDirect('${name}')">Remove</button>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    return;
+  }
+  
+  content.innerHTML = `
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      ${wishItems.map(item => {
+        const priceText = item.price || 'Contact Us';
+        const img = item.image || item.img || 'logo.jpeg';
+        let priceVal = null;
+        const priceMatch = priceText.match(/₹([\d,]+)/);
+        if (priceMatch) priceVal = parseInt(priceMatch[1].replace(/,/g, ''));
+        
+        const actionBtn = priceVal 
+          ? `<button class="btn-secondary" style="font-size:0.75rem; padding:4px 8px; border-color:var(--aqua-cyan); color:var(--aqua-cyan);" onclick="addToCart('${item.name}', ${priceVal}, '${img}')">🛒 Add</button>`
+          : `<a href="https://api.whatsapp.com/send?phone=${whatsAppNumber}&text=${encodeURIComponent(`Hi, I'm interested in ${item.name}`)}" target="_blank" class="btn-secondary" style="font-size:0.75rem; padding:4px 8px; border-color:var(--neon-teal); color:var(--neon-teal); text-decoration:none; text-align:center;">💬 Enquire</a>`;
+          
+        return `
+          <div class="acc-item-card" style="display:flex; gap:12px; align-items:center; padding:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(0,212,255,0.1); border-radius:12px; position:relative;">
+            <img src="${img}" style="width:50px; height:50px; object-fit:cover; border-radius:8px; border:1px solid rgba(0,212,255,0.2);">
+            <div style="flex-grow:1;">
+              <h4 style="font-size:0.85rem; font-weight:600; margin-bottom:2px; color:var(--white-glow);">${item.name}</h4>
+              <span style="font-size:0.8rem; color:var(--neon-teal); font-weight:bold;">${priceText}</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
+              ${actionBtn}
+              <button style="background:none; border:none; color:var(--coral-pink); font-size:0.75rem; cursor:pointer;" onclick="toggleWishlistDirect('${item.name}')">Remove</button>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+window.toggleWishlistDirect = function(name) {
+  toggleWishlist(name, null);
+};
+
 // ========== CUSTOM CURSOR (desktop only) ==========
 const cursorGlow = document.querySelector('.cursor-glow');
 const cursorRing = document.querySelector('.cursor-ring');
@@ -181,14 +373,28 @@ setTimeout(triggerLivePurchase, 10000);
 function initFlashSale() {
   const timerEl = document.getElementById('flashTimer');
   if (!timerEl) return;
-  let time = 3600 * 2 + 1800;
+  let fallbackTime = 3600 * 2 + 1800;
   setInterval(() => {
-    time--;
-    if (time < 0) time = 0;
-    const h = Math.floor(time / 3600).toString().padStart(2, '0');
-    const m = Math.floor((time % 3600) / 60).toString().padStart(2, '0');
-    const s = (time % 60).toString().padStart(2, '0');
-    timerEl.textContent = `${h}:${m}:${s}`;
+    if (window.offerExpiryTime) {
+      const now = Date.now();
+      const diff = window.offerExpiryTime - now;
+      if (diff <= 0) {
+        timerEl.textContent = '00:00:00';
+        return;
+      }
+      const time = Math.floor(diff / 1000);
+      const h = Math.floor(time / 3600).toString().padStart(2, '0');
+      const m = Math.floor((time % 3600) / 60).toString().padStart(2, '0');
+      const s = (time % 60).toString().padStart(2, '0');
+      timerEl.textContent = `${h}:${m}:${s}`;
+    } else {
+      fallbackTime--;
+      if (fallbackTime < 0) fallbackTime = 3600 * 2 + 1800;
+      const h = Math.floor(fallbackTime / 3600).toString().padStart(2, '0');
+      const m = Math.floor((fallbackTime % 3600) / 60).toString().padStart(2, '0');
+      const s = (fallbackTime % 60).toString().padStart(2, '0');
+      timerEl.textContent = `${h}:${m}:${s}`;
+    }
   }, 1000);
 }
 initFlashSale();
@@ -241,8 +447,8 @@ function updateQty(index, delta) {
 
 function getCartTotals() {
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-  const delivery = cart.length > 0 ? 49 : 0;
-  const packing = cart.length > 0 ? 10 : 0;
+  const delivery = cart.length > 0 ? deliveryCharge : 0;
+  const packing = cart.length > 0 ? packingCharge : 0;
   
   let discount = 0;
   if (appliedCoupon) {
@@ -345,34 +551,36 @@ function buyNow(name, price, img) {
 }
 
 // ========== CHECKOUT FLOW ==========
+function renderCheckoutSummary() {
+  const itemsDiv = document.getElementById('checkoutOrderItems');
+  if (!itemsDiv) return;
+  const t = getCartTotals();
+  let billHtml = '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(0,212,255,0.1);border-radius:12px;padding:14px;font-size:0.82rem;">';
+  
+  cart.forEach(item => {
+    billHtml += `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+      <span style="flex:1;color:rgba(255,255,255,0.7);">${item.name} <span style="color:rgba(255,255,255,0.35);">×${item.qty}</span></span>
+      <span style="color:var(--white-glow);font-weight:600;">₹${item.price * item.qty}</span>
+    </div>`;
+  });
+  
+  billHtml += `
+    <div style="margin-top:10px;padding-top:10px;border-top:1px dashed rgba(0,212,255,0.15);">
+      <div style="display:flex;justify-content:space-between;padding:4px 0;color:rgba(255,255,255,0.5);"><span>Subtotal</span><span>₹${t.subtotal}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;color:rgba(255,255,255,0.5);"><span>Delivery Charge</span><span>₹${t.delivery}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;color:rgba(255,255,255,0.5);"><span>Packing Charges</span><span>₹${t.packing}</span></div>
+      ${t.discount > 0 ? `<div style="display:flex;justify-content:space-between;padding:4px 0;color:var(--color-secondary);"><span>Discount (${appliedCoupon?.code})</span><span>-₹${t.discount}</span></div>` : ''}
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:10px 0 4px;margin-top:8px;border-top:2px solid rgba(0,212,255,0.2);font-size:1rem;font-weight:700;color:var(--neon-teal);">
+      <span>Total Amount</span><span>₹${t.total}</span>
+    </div>`;
+  billHtml += '</div>';
+  itemsDiv.innerHTML = billHtml;
+}
+
 function openCheckout() {
   closeCartSheet();
-  
-  const itemsDiv = document.getElementById('checkoutOrderItems');
-  if (itemsDiv) {
-    const t = getCartTotals();
-    let billHtml = '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(0,212,255,0.1);border-radius:12px;padding:14px;font-size:0.82rem;">';
-    
-    cart.forEach(item => {
-      billHtml += `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
-        <span style="flex:1;color:rgba(255,255,255,0.7);">${item.name} <span style="color:rgba(255,255,255,0.35);">×${item.qty}</span></span>
-        <span style="color:var(--white-glow);font-weight:600;">₹${item.price * item.qty}</span>
-      </div>`;
-    });
-    
-    billHtml += `
-      <div style="margin-top:10px;padding-top:10px;border-top:1px dashed rgba(0,212,255,0.15);">
-        <div style="display:flex;justify-content:space-between;padding:4px 0;color:rgba(255,255,255,0.5);"><span>Subtotal</span><span>₹${t.subtotal}</span></div>
-        <div style="display:flex;justify-content:space-between;padding:4px 0;color:rgba(255,255,255,0.5);"><span>Delivery Charge</span><span>₹${t.delivery}</span></div>
-        <div style="display:flex;justify-content:space-between;padding:4px 0;color:rgba(255,255,255,0.5);"><span>Packing Charges</span><span>₹${t.packing}</span></div>
-        ${t.discount > 0 ? `<div style="display:flex;justify-content:space-between;padding:4px 0;color:var(--color-secondary);"><span>Discount (${appliedCoupon?.code})</span><span>-₹${t.discount}</span></div>` : ''}
-      </div>
-      <div style="display:flex;justify-content:space-between;padding:10px 0 4px;margin-top:8px;border-top:2px solid rgba(0,212,255,0.2);font-size:1rem;font-weight:700;color:var(--neon-teal);">
-        <span>Total Amount</span><span>₹${t.total}</span>
-      </div>`;
-    billHtml += '</div>';
-    itemsDiv.innerHTML = billHtml;
-  }
+  renderCheckoutSummary();
   
   const savedPhone = localStorage.getItem('sa_user_phone');
   if (savedPhone) {
@@ -534,7 +742,7 @@ function placeOrder() {
           upiQrCode.onerror = null;
         }
       };
-      if (!upiQrCode.complete || upiQrCode.naturalWidth === 0) {
+      if (!upiQrCode.src) {
         upiQrCode.src = qrPaths[0];
       }
     }
@@ -546,6 +754,11 @@ function placeOrder() {
 
     const payUtrInput = document.getElementById('payUtr');
     if (payUtrInput) payUtrInput.value = '';
+
+    const fileInput = document.getElementById('coScreenshotFile');
+    if (fileInput) fileInput.value = '';
+    const progressSpan = document.getElementById('coScreenshotProgress');
+    if (progressSpan) progressSpan.style.display = 'none';
 
     const itemsContainer = document.getElementById('paymentSummaryItems');
     if (itemsContainer) {
@@ -602,7 +815,7 @@ function placeOrder() {
   }
 }
 
-function submitOrderData(orderId, name, address, city, pincode, state, phone, t, paymentMethod, cartItems, utr = '') {
+function submitOrderData(orderId, name, address, city, pincode, state, phone, t, paymentMethod, cartItems, utr = '', screenshotUrl = '') {
   const itemsToSave = cartItems || [...cart];
   const orders = JSON.parse(localStorage.getItem('sa_orders') || '[]');
   
@@ -620,7 +833,8 @@ function submitOrderData(orderId, name, address, city, pincode, state, phone, t,
     amount: '₹' + t.total,
     payment: paymentMethod,
     status: utr ? 'Pending Verification' : 'Confirmed',
-    utr: utr
+    utr: utr,
+    screenshot: screenshotUrl
   };
 
   orders.unshift(newOrder);
@@ -636,6 +850,7 @@ function submitOrderData(orderId, name, address, city, pincode, state, phone, t,
   }
 
   localStorage.setItem('sa_user_phone', phone);
+  setupOrdersRealtimeSync();
 
   const itemsSummary = itemsToSave.map(i => `${i.name} x${i.qty}`).join(', ');
   const orderPayload = {
@@ -643,11 +858,27 @@ function submitOrderData(orderId, name, address, city, pincode, state, phone, t,
     'Date': new Date().toLocaleDateString('en-IN') + ' ' + new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
     'Customer Name': name,
     'Phone': phone,
-    'Address': address,
+    'Address': `${address}, ${city}, ${state} - ${pincode}`,
     'Items': itemsSummary,
     'Total': '₹' + t.total,
     'Payment': paymentMethod + (utr ? ` (UTR: ${utr})` : ''),
-    'Status': utr ? 'Pending Verification' : 'Confirmed'
+    'Status': utr ? 'Pending Verification' : 'Confirmed',
+    
+    id: orderId,
+    customer: name,
+    phone: phone,
+    address: address,
+    city: city,
+    pincode: pincode,
+    state: state,
+    date: new Date().toLocaleDateString('en-IN') + ' ' + new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+    items: itemsToSave,
+    total: t.total,
+    amount: '₹' + t.total,
+    payment: paymentMethod,
+    status: utr ? 'Pending Verification' : 'Confirmed',
+    utr: utr,
+    screenshot: screenshotUrl
   };
 
   fetch(SHEETS_URL, {
@@ -689,6 +920,8 @@ function confirmUpiPayment() {
     const name = document.getElementById('payName')?.value.trim() || '';
     const phone = document.getElementById('payPhone')?.value.trim() || '';
     const utr = document.getElementById('payUtr')?.value.trim() || '';
+    const fileInput = document.getElementById('coScreenshotFile');
+    const progressSpan = document.getElementById('coScreenshotProgress');
     
     if (!name || phone.length < 10 || utr.length < 12) {
       showClientToast('Please fill all required fields correctly');
@@ -709,8 +942,8 @@ function confirmUpiPayment() {
     if (btnText) btnText.textContent = 'Verifying Transaction...';
     if (btn) btn.disabled = true;
 
-    setTimeout(() => {
-      submitOrderData(orderId, name, address, city, pincode, state, phone, t, selectedPayment, cartItems, utr);
+    function finalizeOrder(screenshotUrl = '') {
+      submitOrderData(orderId, name, address, city, pincode, state, phone, t, selectedPayment, cartItems, utr, screenshotUrl);
 
       playSuccessSound();
 
@@ -725,13 +958,54 @@ function confirmUpiPayment() {
 
       if (spinner) spinner.style.display = 'none';
       if (btnText) btnText.textContent = 'Verify & Place Order';
+      if (progressSpan) progressSpan.style.display = 'none';
 
       document.getElementById('successOrderId').textContent = `Order #${orderId}`;
       document.getElementById('orderSuccessOverlay')?.classList.add('active');
       showClientToast('Order placed successfully!');
 
       window.pendingOrderData = null;
-    }, 1500);
+    }
+
+    if (fileInput && fileInput.files && fileInput.files[0] && window.storage) {
+      const file = fileInput.files[0];
+      const extension = file.name.split('.').pop();
+      const fileName = `receipts/${orderId}_${Date.now()}.${extension}`;
+      const storageRef = window.storage.ref().child(fileName);
+      const uploadTask = storageRef.put(file);
+
+      if (progressSpan) {
+        progressSpan.style.display = 'block';
+        progressSpan.textContent = 'Uploading receipt: 0%';
+      }
+
+      uploadTask.on('state_changed', 
+        (snapshot) => {
+          const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+          if (progressSpan) {
+            progressSpan.textContent = `Uploading receipt: ${progress}%`;
+          }
+        }, 
+        (error) => {
+          console.error('Storage upload failed:', error);
+          showClientToast('Receipt upload failed, placing order without receipt...');
+          finalizeOrder('');
+        }, 
+        () => {
+          uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+            console.log('File available at:', downloadURL);
+            finalizeOrder(downloadURL);
+          }).catch((err) => {
+            console.error('Failed to get download URL:', err);
+            finalizeOrder('');
+          });
+        }
+      );
+    } else {
+      setTimeout(() => {
+        finalizeOrder('');
+      }, 1200);
+    }
   }
 }
 
@@ -746,22 +1020,100 @@ function closePanel(id) {
   document.getElementById(id)?.classList.remove('active');
 }
 
-function openOrdersPanel() {
+let ordersListenerUnsubscribe = null;
+
+function setupOrdersRealtimeSync() {
+  if (ordersListenerUnsubscribe) {
+    ordersListenerUnsubscribe();
+    ordersListenerUnsubscribe = null;
+  }
+
+  const phone = localStorage.getItem('sa_user_phone');
+  if (!phone || !window.db) {
+    renderOrdersPanelBody(JSON.parse(localStorage.getItem('sa_orders') || '[]'));
+    return;
+  }
+
+  console.log(`%c☁️ Client: Setting up real-time listener for customer phone: ${phone}`, 'color: #00d4ff;');
+
+  ordersListenerUnsubscribe = db.collection('orders')
+    .onSnapshot((snapshot) => {
+      const fbOrders = [];
+      snapshot.forEach((doc) => {
+        const d = doc.data();
+        if (d.phone === phone || d['Phone'] === phone) {
+          fbOrders.push({
+            id: doc.id,
+            date: d.date || d['Date'] || '',
+            total: d.total || (d['Total'] ? parseFloat(d['Total'].replace('₹', '').replace(/,/g, '')) : 0),
+            status: d.status || d['Status'] || 'Pending Verification'
+          });
+        }
+      });
+      
+      console.log(`%c🔄 Client: Customer orders synced! Found ${fbOrders.length} orders.`, 'color: #00ffc8;');
+      localStorage.setItem('sa_orders', JSON.stringify(fbOrders));
+      renderOrdersPanelBody(fbOrders);
+    }, (error) => {
+      console.warn('Client: Failed to sync customer orders from Firebase:', error);
+      renderOrdersPanelBody(JSON.parse(localStorage.getItem('sa_orders') || '[]'));
+    });
+}
+
+function renderOrdersPanelBody(ordersList) {
   const body = document.getElementById('ordersPanelBody');
-  const orders = JSON.parse(localStorage.getItem('sa_orders') || '[]');
   if (!body) return;
 
-  if (orders.length === 0) {
+  if (!ordersList || ordersList.length === 0) {
     body.innerHTML = '<div class="panel-empty"><span class="empty-icon">📦</span>No orders yet<br>Start shopping to see your orders here!</div>';
-  } else {
-    body.innerHTML = orders.map(o => `
-      <div class="order-history-card">
-        <div class="ohc-top"><span class="ohc-id">${o.id}</span><span class="ohc-date">${o.date}</span></div>
-        <div class="ohc-total">₹${o.total}</div>
-        <span class="ohc-status">${o.status}</span>
-      </div>
-    `).join('');
+    return;
   }
+
+  const sortedOrders = [...ordersList].sort((a, b) => b.id.localeCompare(a.id));
+
+  body.innerHTML = sortedOrders.map(o => {
+    let badgeColor = 'rgba(255, 255, 255, 0.1)';
+    let textColor = '#ffffff';
+    let borderColor = 'rgba(255, 255, 255, 0.2)';
+    
+    const statusLower = (o.status || '').toLowerCase();
+    if (statusLower.includes('pending verification') || statusLower === 'pending') {
+      badgeColor = 'rgba(255, 170, 0, 0.1)';
+      textColor = '#ffaa00';
+      borderColor = 'rgba(255, 170, 0, 0.25)';
+    } else if (statusLower.includes('confirm') || statusLower.includes('paid')) {
+      badgeColor = 'rgba(0, 255, 200, 0.1)';
+      textColor = '#00ffc8';
+      borderColor = 'rgba(0, 255, 200, 0.25)';
+    } else if (statusLower.includes('ship')) {
+      badgeColor = 'rgba(0, 212, 255, 0.1)';
+      textColor = '#00d4ff';
+      borderColor = 'rgba(0, 212, 255, 0.25)';
+    } else if (statusLower.includes('deliv')) {
+      badgeColor = 'rgba(40, 167, 69, 0.1)';
+      textColor = '#28a745';
+      borderColor = 'rgba(40, 167, 69, 0.25)';
+    } else if (statusLower.includes('cancel')) {
+      badgeColor = 'rgba(220, 53, 69, 0.1)';
+      textColor = '#dc3545';
+      borderColor = 'rgba(220, 53, 69, 0.25)';
+    }
+    
+    return `
+      <div class="order-history-card">
+        <div class="ohc-top">
+          <span class="ohc-id">${o.id}</span>
+          <span class="ohc-date">${o.date}</span>
+        </div>
+        <div class="ohc-total">₹${o.total}</div>
+        <span class="ohc-status" style="display:inline-block; padding:4px 10px; border-radius:20px; font-size:0.75rem; font-weight:600; text-transform:uppercase; background:${badgeColor}; color:${textColor}; border:1px solid ${borderColor}; margin-top:8px; box-shadow:0 0 10px ${badgeColor};">${o.status}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function openOrdersPanel() {
+  setupOrdersRealtimeSync();
   document.getElementById('ordersPanel')?.classList.add('active');
 }
 
@@ -769,20 +1121,299 @@ function openProfilePanel() {
   const body = document.getElementById('profilePanelBody');
   if (!body) return;
   const phone = localStorage.getItem('sa_user_phone') || 'Not set';
-  const orders = JSON.parse(localStorage.getItem('sa_orders') || '[]');
+  const ordersList = JSON.parse(localStorage.getItem('sa_orders') || '[]');
   body.innerHTML = `
     <div class="order-history-card" style="text-align:center;">
       <div style="font-size:3rem;margin-bottom:12px;">👤</div>
       <h4 style="margin-bottom:8px;color:var(--aqua-cyan);">My Account</h4>
       <p style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:4px;">Phone: ${phone}</p>
-      <p style="font-size:0.85rem;color:rgba(255,255,255,0.5);">Orders: ${orders.length}</p>
+      <p style="font-size:0.85rem;color:rgba(255,255,255,0.5);">Orders: ${ordersList.length}</p>
     </div>
     <div class="order-history-card">
       <h4 style="margin-bottom:10px;font-size:0.85rem;">Contact Subramanya Aquatics</h4>
-      <a href="https://api.whatsapp.com/send?phone=917995549922" target="_blank" style="color:var(--neon-teal);font-size:0.85rem;">💬 WhatsApp: +91 79955 49922</a>
+      <a href="https://api.whatsapp.com/send?phone=${whatsAppNumber}" target="_blank" style="color:var(--neon-teal);font-size:0.85rem;">💬 WhatsApp: +91 79955 49922</a>
     </div>
   `;
   document.getElementById('profilePanel')?.classList.add('active');
+}
+
+// ========== CATALOG COMPILATION & REAL-TIME SYNC ==========
+function renderProductCard(p) {
+  const name = p.name;
+  const priceText = p.price || 'Contact Us';
+  const img = p.image || p.img || 'logo.jpeg';
+  const tag = p.tag || '';
+  
+  const wishlist = JSON.parse(localStorage.getItem('sa_wishlist') || '[]');
+  const isWishlisted = wishlist.includes(name);
+
+  let priceVal = null;
+  const priceMatch = priceText.match(/₹([\d,]+)/);
+  if (priceMatch) {
+    priceVal = parseInt(priceMatch[1].replace(/,/g, ''));
+  }
+
+  let actionsHtml = '';
+  if (priceVal !== null) {
+    actionsHtml = `
+      <div class="card-actions" style="display: flex; gap: 8px; margin-top: 10px;">
+        <button class="btn-enquire btn-add-cart-btn" data-name="${name}" data-price="${priceVal}" data-img="${img}" data-action="add-cart" style="flex: 1; font-size: 0.78rem; padding: 8px 0;">🛒 Add</button>
+        <button class="btn-enquire btn-buy-now-btn" data-name="${name}" data-price="${priceVal}" data-img="${img}" data-action="buy-now" style="flex: 1; font-size: 0.78rem; padding: 8px 0; background: linear-gradient(135deg, #00d4ff, #00ffc8) !important; color: #020c1b !important;">⚡ Buy</button>
+      </div>
+    `;
+  } else {
+    const textMsg = encodeURIComponent(`Hello! I'm interested in "${name}". Is it available? 🐠`);
+    const waUrl = `https://api.whatsapp.com/send?phone=${whatsAppNumber}&text=${textMsg}`;
+    actionsHtml = `
+      <div class="card-actions" style="display: flex; gap: 8px; margin-top: 10px;">
+        <a href="${waUrl}" target="_blank" class="btn-enquire" style="flex: 1; font-size: 0.78rem; padding: 8px 0; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center;">💬 Enquire</a>
+      </div>
+    `;
+  }
+
+  let badgeHtml = '';
+  if (tag) {
+    badgeHtml = `<span class="card-badge" style="position: absolute; top: 12px; left: 12px; background: rgba(0, 212, 255, 0.25); border: 1px solid var(--aqua-cyan); color: white; padding: 4px 8px; border-radius: 8px; font-size: 0.65rem; font-weight: bold; text-transform: uppercase; z-index: 2; backdrop-filter: blur(5px);">${tag}</span>`;
+  }
+
+  return `
+    <div class="fish-card" data-name="${name}">
+      <div class="fish-img-container" style="position: relative; height: 200px; overflow: hidden;">
+        ${badgeHtml}
+        <img src="${img}" alt="${name}" style="width: 100%; height: 100%; object-fit: cover;">
+        <button class="wishlist-btn ${isWishlisted ? 'active' : ''}" data-action="wishlist" data-name="${name}" style="position: absolute; top: 12px; right: 12px; background: rgba(2, 12, 27, 0.6); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50%; width: 32px; height: 32px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 3; transition: 0.3s; color: white;">
+          ${isWishlisted ? '❤️' : '🤍'}
+        </button>
+      </div>
+      <div class="fish-info" style="padding: 1.5rem 1.2rem; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; background: linear-gradient(180deg, transparent, rgba(2,12,27,0.8));">
+        <div>
+          <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.8rem; color: var(--white-glow);">${name}</h4>
+          <div class="price ${priceVal === null ? 'inquire' : ''}">${priceText}</div>
+          ${p.desc ? `<p style="font-size: 0.75rem; color: rgba(224,247,255,0.4); margin-top: 5px; line-height: 1.3;">${p.desc}</p>` : ''}
+          ${p.suitable ? `<p style="font-size: 0.7rem; color: var(--aqua-cyan); margin-top: 3px;">Suitable: ${p.suitable}</p>` : ''}
+        </div>
+        ${actionsHtml}
+      </div>
+    </div>
+  `;
+}
+
+function renderCatalog(cats, prods, foodsList, itemsList) {
+  const container = document.getElementById('dynamicCatalogContainer');
+  if (!container) return;
+
+  const categoriesList = cats && cats.length > 0 ? cats : defaultCategories;
+  const productsList = prods && prods.length > 0 ? prods : defaultProducts;
+  const foodsToRender = foodsList && foodsList.length > 0 ? foodsList : defaultFoods;
+  const itemsToRender = itemsList && itemsList.length > 0 ? itemsList : defaultItems;
+
+  let html = '';
+
+  // 1. Render fish categories
+  categoriesList.forEach((cat) => {
+    const catProds = productsList.filter(p => p.category === cat.name);
+    if (catProds.length === 0) return;
+
+    html += `
+      <div class="category-section reveal active">
+        <h3 class="category-title">🐠 ${cat.name}</h3>
+        <div class="fish-slider">
+          ${catProds.map(p => renderProductCard(p)).join('')}
+        </div>
+      </div>
+    `;
+  });
+
+  // 2. Render Fish Foods slider
+  if (foodsToRender.length > 0) {
+    html += `
+      <div class="category-section reveal active">
+        <h3 class="category-title">🍪 Fish Food</h3>
+        <div class="fish-slider">
+          ${foodsToRender.map(f => renderProductCard(f)).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // 3. Render Aquarium Items/Accessories slider
+  if (itemsToRender.length > 0) {
+    html += `
+      <div class="category-section reveal active">
+        <h3 class="category-title">🛠️ Aquarium Items</h3>
+        <div class="fish-slider">
+          ${itemsToRender.map(i => renderProductCard(i)).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  container.innerHTML = html;
+  revealOnScroll();
+  updateWishlistUI();
+}
+
+function updateBannersUI(banners) {
+  if (!banners) return;
+  const heroTitle = document.getElementById('heroTitle');
+  const heroSubtitle = document.getElementById('heroSubtitle');
+  const heroSec = document.getElementById('home');
+  const flashTitle = document.getElementById('flashTitle');
+  const flashCode = document.getElementById('flashCode');
+
+  if (heroTitle && banners.heroTitle) heroTitle.textContent = banners.heroTitle;
+  if (heroSubtitle && banners.heroSubtitle) heroSubtitle.textContent = banners.heroSubtitle;
+  if (heroSec && banners.heroBg) {
+    heroSec.style.backgroundImage = `linear-gradient(rgba(10, 25, 47, 0.6), rgba(10, 25, 47, 0.85)), url('${banners.heroBg}')`;
+    heroSec.style.backgroundSize = 'cover';
+    heroSec.style.backgroundPosition = 'center';
+  }
+  if (flashTitle && banners.offerTitle) flashTitle.textContent = banners.offerTitle;
+  if (flashCode && banners.offerCode) flashCode.textContent = banners.offerCode;
+  
+  if (banners.offerTimer) {
+    window.offerExpiryTime = new Date(banners.offerTimer).getTime();
+  }
+}
+
+function updatePaymentsUI(paySettings) {
+  if (!paySettings) return;
+  if (paySettings.deliveryCharge !== undefined) deliveryCharge = parseFloat(paySettings.deliveryCharge);
+  if (paySettings.packingCharge !== undefined) packingCharge = parseFloat(paySettings.packingCharge);
+  
+  if (paySettings.upiId) {
+    merchantUpiId = paySettings.upiId.trim();
+    const upiIdLabel = document.querySelector('.upi-id-text strong');
+    if (upiIdLabel) upiIdLabel.textContent = merchantUpiId;
+  }
+  
+  if (paySettings.qrImage) {
+    const upiQrCode = document.getElementById('upiQrCode');
+    if (upiQrCode) upiQrCode.src = paySettings.qrImage;
+  }
+}
+
+function updateConfigUI(config) {
+  if (!config) return;
+  if (config.whatsApp) {
+    whatsAppNumber = config.whatsApp.replace(/\D/g, '');
+    if (!whatsAppNumber.startsWith('91') && whatsAppNumber.length === 10) {
+      whatsAppNumber = '91' + whatsAppNumber;
+    }
+    
+    const waLink = document.getElementById('whatsapp-link');
+    if (waLink) waLink.href = `https://api.whatsapp.com/send?phone=${whatsAppNumber}`;
+    
+    const upiWaSupport = document.querySelector('.btn-whatsapp-support');
+    if (upiWaSupport) {
+      upiWaSupport.href = `https://wa.me/${whatsAppNumber}?text=Hi%20Subramanya%20Aquatics,%20I%20have%20completed%20the%20UPI%20payment%20and%20need%20help%20with%20order%20verification.`;
+    }
+
+    document.querySelectorAll('a[href*="whatsapp.com/send"], a[href*="wa.me"]').forEach(el => {
+      try {
+        const url = new URL(el.href);
+        const textParam = url.searchParams.get('text') || '';
+        el.href = `https://api.whatsapp.com/send?phone=${whatsAppNumber}${textParam ? '&text=' + encodeURIComponent(textParam) : ''}`;
+      } catch (err) {
+        el.href = `https://api.whatsapp.com/send?phone=${whatsAppNumber}`;
+      }
+    });
+  }
+  
+  if (config.address) {
+    const locItem = document.querySelector('#location-item p');
+    if (locItem) locItem.textContent = config.address;
+  }
+}
+
+function setupRealtimeFirebaseCatalogSync() {
+  if (!window.db) {
+    console.warn('Firebase Firestore not initialized. Storefront running in local mode.');
+    const localCategories = JSON.parse(localStorage.getItem('sa_categories') || '[]');
+    const localProducts = JSON.parse(localStorage.getItem('sa_products') || '[]');
+    const localFoods = JSON.parse(localStorage.getItem('sa_foods') || '[]');
+    const localItems = JSON.parse(localStorage.getItem('sa_items') || '[]');
+    renderCatalog(localCategories, localProducts, localFoods, localItems);
+    return;
+  }
+
+  console.log('%c☁️ Client: Setting up real-time Firebase Catalog listeners...', 'color: #00d4ff;');
+
+  let activeCategories = [];
+  let activeProducts = [];
+  let activeFoods = [];
+  let activeItems = [];
+
+  function triggerCatalogRender() {
+    renderCatalog(activeCategories, activeProducts, activeFoods, activeItems);
+  }
+
+  db.collection('categories').onSnapshot((snapshot) => {
+    const list = [];
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.status === 'Active') {
+        list.push(data);
+      }
+    });
+    activeCategories = list;
+    localStorage.setItem('sa_categories', JSON.stringify(list));
+    triggerCatalogRender();
+  }, (err) => console.error('Error fetching categories:', err));
+
+  db.collection('products').onSnapshot((snapshot) => {
+    const list = [];
+    snapshot.forEach(doc => {
+      list.push(doc.data());
+    });
+    activeProducts = list;
+    localStorage.setItem('sa_products', JSON.stringify(list));
+    triggerCatalogRender();
+  }, (err) => console.error('Error fetching products:', err));
+
+  db.collection('foods').onSnapshot((snapshot) => {
+    const list = [];
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.stock !== 'Out of Stock') {
+        list.push(data);
+      }
+    });
+    activeFoods = list;
+    localStorage.setItem('sa_foods', JSON.stringify(list));
+    triggerCatalogRender();
+  }, (err) => console.error('Error fetching foods:', err));
+
+  db.collection('items').onSnapshot((snapshot) => {
+    const list = [];
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.stock !== 'Out of Stock') {
+        list.push(data);
+      }
+    });
+    activeItems = list;
+    localStorage.setItem('sa_items', JSON.stringify(list));
+    triggerCatalogRender();
+  }, (err) => console.error('Error fetching items:', err));
+
+  db.collection('settings').doc('banners').onSnapshot((doc) => {
+    if (doc.exists) {
+      updateBannersUI(doc.data());
+    }
+  });
+
+  db.collection('settings').doc('payments').onSnapshot((doc) => {
+    if (doc.exists) {
+      updatePaymentsUI(doc.data());
+    }
+  });
+
+  db.collection('settings').doc('config').onSnapshot((doc) => {
+    if (doc.exists) {
+      updateConfigUI(doc.data());
+    }
+  });
 }
 
 // ========== BOTTOM NAVIGATION ==========
@@ -937,6 +1568,7 @@ function verifyOTP() {
   localStorage.setItem('sa_user_phone', document.getElementById('authPhone').value);
   document.getElementById('authModal').classList.remove('active');
   showClientToast('Logged in successfully!');
+  setupOrdersRealtimeSync();
   document.getElementById('accountDrawer')?.classList.add('active');
   switchAccTab('wishlist');
 }
@@ -948,7 +1580,7 @@ function switchAccTab(tab) {
   const content = document.getElementById('accContent');
   if (!content) return;
   if (tab === 'wishlist') {
-    content.innerHTML = '<div class="empty-cart-msg">Your saved items will appear here once liked! ❤️</div>';
+    renderWishlistTabContent();
   } else if (tab === 'profile') {
     const phone = localStorage.getItem('sa_user_phone') || 'Unknown';
     content.innerHTML = `<div class="acc-item-card"><h4 style="margin-bottom:10px;">User Profile</h4><p>Phone: ${phone}</p><button class="btn-secondary" style="margin-top:15px;border-color:var(--coral-pink);color:var(--coral-pink);" onclick="logoutClient()">Logout</button></div>`;
@@ -957,8 +1589,14 @@ function switchAccTab(tab) {
 
 function logoutClient() {
   localStorage.removeItem('sa_user_logged_in');
+  localStorage.removeItem('sa_user_phone');
+  if (ordersListenerUnsubscribe) {
+    ordersListenerUnsubscribe();
+    ordersListenerUnsubscribe = null;
+  }
   document.getElementById('accountDrawer')?.classList.remove('active');
   showClientToast('Logged out successfully');
+  updateWishlistUI();
 }
 
 // ========== MAIN INITIALIZATION ==========
@@ -979,6 +1617,11 @@ document.addEventListener('DOMContentLoaded', () => {
       console.warn('Client: Failed to sync coupons from Firebase:', error);
     });
   }
+
+  // Set up dynamic firebase sync
+  setupRealtimeFirebaseCatalogSync();
+  setupOrdersRealtimeSync();
+  updateWishlistUI();
 
   // Initialize product buttons
   injectProductButtons();
@@ -1048,6 +1691,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ========== AUTH MODAL CONTROLS ==========
   const floatingAuthBtn = document.getElementById('floatingAuthBtn');
+  const floatingWishlistBtn = document.getElementById('floatingWishlistBtn');
   const authModal = document.getElementById('authModal');
   const closeAuthBtn = document.getElementById('closeAuthBtn');
   const accountDrawer = document.getElementById('accountDrawer');
@@ -1057,6 +1701,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (floatingAuthBtn) {
     floatingAuthBtn.addEventListener('click', () => {
+      if (localStorage.getItem('sa_user_logged_in') === 'true') {
+        accountDrawer?.classList.add('active');
+        switchAccTab('wishlist');
+      } else {
+        authModal?.classList.add('active');
+      }
+    });
+  }
+
+  if (floatingWishlistBtn) {
+    floatingWishlistBtn.addEventListener('click', () => {
       if (localStorage.getItem('sa_user_logged_in') === 'true') {
         accountDrawer?.classList.add('active');
         switchAccTab('wishlist');
@@ -1174,8 +1829,8 @@ document.addEventListener('DOMContentLoaded', () => {
         break;
 
       case 'wishlist':
-        target.classList.toggle('active');
-        target.innerHTML = target.classList.contains('active') ? '❤️' : '🤍';
+        const wName = target.getAttribute('data-name');
+        toggleWishlist(wName, target);
         break;
 
       case 'qty-minus':
