@@ -1,39 +1,63 @@
 // ========== CLIENT-SIDE IMAGE RESOLUTION ==========
 function resolveProductImage(p) {
   if (!p) return 'logo.jpeg';
-  const name = (p.name || '').trim();
-  const lowerName = name.toLowerCase();
-  const category = (p.category || '').trim().toLowerCase();
+  const imgPath = p.image || '';
+  if (imgPath.startsWith('data:') || imgPath === 'logo.jpeg' || imgPath === 'qr-code.png') {
+    return imgPath;
+  }
 
-  if (category.includes('food') || category.includes('fish food')) return 'images/guppies.png';
-  if (category.includes('item') || category.includes('equipment') || category.includes('decorative')) return 'logo.jpeg';
+  // Construct a beautiful dynamic inline SVG with linear gradient and category emoji
+  const category = (p.category || 'Aquarium Items').trim();
+  const emojis = {
+    'Guppys': '🐠',
+    'Angels': '👼',
+    'Mollies': '🐟',
+    'Oxy-less Fishes': '💧',
+    "Betta's": '🔥',
+    'Wild Oscars': '🦁',
+    'Discus': '🐠',
+    'Flowerhorns': '🌺',
+    'Arowana': '🐉',
+    'Gold Fish': '🪙',
+    'Exotics & Giants': '🦖',
+    'Aquarium Items': '🛠️',
+    'Aquarium Decorative Items': '🪸',
+    'Fish Food': '🍽️'
+  };
+  const emoji = emojis[category] || '🐠';
 
-  if (category.includes('guppy') || category.includes('guppies')) return 'images/guppies.png';
-  if (category.includes('molly') || category.includes('mollies')) return 'images/guppies.png';
-  if (category.includes('oxy-less') || category.includes('oxyless')) return 'images/discus.png';
-  if (category.includes('betta')) return 'images/betta.png';
-  if (category.includes('oscar')) return 'images/oscar.png';
-  if (category.includes('flowerhorn') || category.includes('flower horn')) return 'images/flowerhorn.png';
-  if (category.includes('arowana') || category.includes('arwana')) return 'images/arowana.png';
-  if (category.includes('gold fish') || category.includes('goldfish')) return 'images/goldfish.png';
-  if (category.includes('exotics') || category.includes('giant')) return 'images/koi.png';
-  if (category.includes('angel')) return 'images/betta.png';
+  // Generate a unique gradient pair based on category name hashing
+  let hash = 0;
+  for (let i = 0; i < category.length; i++) {
+    hash = category.charCodeAt(i) + ((hash << 5) - hash);
+  }
 
-  if (lowerName.includes('guppy') || lowerName.includes('guppies')) return 'images/guppies.png';
-  if (lowerName.includes('molly') || lowerName.includes('mollies')) return 'images/guppies.png';
-  if (lowerName.includes('betta') || lowerName.includes('bata') || lowerName.includes('beta')) return 'images/betta.png';
-  if (lowerName.includes('oscar')) return 'images/oscar.png';
-  if (lowerName.includes('flowerhorn') || lowerName.includes('flower horn') || lowerName.includes('kamfa')) return 'images/flowerhorn.png';
-  if (lowerName.includes('arowana') || lowerName.includes('arwana')) return 'images/arowana.png';
-  if (lowerName.includes('gold fish') || lowerName.includes('goldfish')) return 'images/goldfish.png';
-  if (lowerName.includes('koi')) return 'images/koi.png';
-  if (lowerName.includes('discus')) return 'images/discus.png';
-  if (lowerName.includes('platy') || lowerName.includes('platies') || lowerName.includes('shark') || lowerName.includes('zebra')) return 'images/discus.png';
-  if (lowerName.includes('parrot') || lowerName.includes('gourami') || lowerName.includes('gurami')) return 'images/flowerhorn.png';
-  if (lowerName.includes('gar') || lowerName.includes('aligator') || lowerName.includes('snake head') || lowerName.includes('cichlid')) return 'images/koi.png';
-  if (lowerName.includes('angel')) return 'images/betta.png';
+  const colors = [
+    ['#00c6ff', '#0072ff'], // blue-blue
+    ['#f857a6', '#ff5858'], // pink-orange
+    ['#11998e', '#38ef7d'], // teal-green
+    ['#FF8008', '#FFC837'], // orange-yellow
+    ['#8A2387', '#E94057'], // purple-red
+    ['#1AD6FD', '#1D62F0'], // neon-blue
+    ['#8e2de2', '#4a00e0']  // violet
+  ];
 
-  return 'logo.jpeg';
+  const colorIndex = Math.abs(hash) % colors.length;
+  const gradient = colors[colorIndex];
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+    <defs>
+      <linearGradient id="grad-${colorIndex}" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:${gradient[0]};stop-opacity:1" />
+        <stop offset="100%" style="stop-color:${gradient[1]};stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    <rect width="200" height="200" rx="20" fill="url(#grad-${colorIndex})" />
+    <circle cx="100" cy="100" r="55" fill="rgba(255, 255, 255, 0.15)" />
+    <text x="100" y="105" font-size="80" text-anchor="middle" dominant-baseline="middle">${emoji}</text>
+  </svg>`;
+
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
 }
 
 // Subramanya Aquatics Admin Portal State Logic
@@ -354,10 +378,6 @@ function initPortalState() {
   document.getElementById('cardActiveOrders').textContent = orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length;
   document.getElementById('ordersCounter').textContent = orders.filter(o => o.status === 'pending').length;
 
-  // Sync products to server (ensures server always has latest data)
-  if (typeof saveProductsToServer === 'function') {
-    saveProductsToServer();
-  }
 }
 
 function saveAllState() {
@@ -371,32 +391,9 @@ function saveAllState() {
   } catch (e) {
     console.error('localStorage save failed:', e.message);
     if (e.name === 'QuotaExceededError' || e.code === 22) {
-      showToast('error', 'Storage full! Image data is too large for browser storage. Saving to server instead...');
+      showToast('error', 'Storage full! Custom image data is too large for browser storage.');
     }
   }
-}
-
-// Save products to server-side JSON file for reliable persistence
-function saveProductsToServer() {
-  return fetch('/api/products', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(products)
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      console.log('Products saved to server successfully (' + data.count + ' items)');
-      return true;
-    } else {
-      console.error('Server save error:', data.error);
-      return false;
-    }
-  })
-  .catch(err => {
-    console.error('Failed to save to server:', err.message);
-    return false;
-  });
 }
 
 // Render Products Table
@@ -674,6 +671,40 @@ function initFormSubmitHandlers() {
   const btnClose = document.getElementById('btnCloseProductModal');
   const form = document.getElementById('productForm');
 
+  const fileInput = document.getElementById('prodImageFile');
+  const base64Input = document.getElementById('prodImageBase64');
+  const imgPreview = document.getElementById('prodImagePreview');
+  const imgPlaceholder = document.getElementById('prodImagePlaceholder');
+
+  // File reader change event listener
+  fileInput?.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const base64Str = evt.target.result;
+        base64Input.value = base64Str;
+        if (imgPreview) {
+          imgPreview.src = base64Str;
+          imgPreview.style.display = 'block';
+        }
+        if (imgPlaceholder) {
+          imgPlaceholder.style.display = 'none';
+        }
+      };
+      reader.readAsDataURL(file);
+    } else {
+      base64Input.value = '';
+      if (imgPreview) {
+        imgPreview.src = '';
+        imgPreview.style.display = 'none';
+      }
+      if (imgPlaceholder) {
+        imgPlaceholder.style.display = 'block';
+      }
+    }
+  });
+
   // Search & filter live updates
   document.getElementById('searchProducts')?.addEventListener('input', renderProducts);
   document.getElementById('filterCategory')?.addEventListener('change', renderProducts);
@@ -683,6 +714,17 @@ function initFormSubmitHandlers() {
       form.reset();
       document.getElementById('editProductId').value = '';
       document.getElementById('productModalTitle').textContent = 'Add New Fish Item';
+      
+      // Reset image preview state
+      if (base64Input) base64Input.value = '';
+      if (imgPreview) {
+        imgPreview.src = '';
+        imgPreview.style.display = 'none';
+      }
+      if (imgPlaceholder) {
+        imgPlaceholder.style.display = 'block';
+      }
+      
       modal.classList.add('active');
     });
   }
@@ -698,7 +740,7 @@ function initFormSubmitHandlers() {
       const name = document.getElementById('prodName').value;
       const category = document.getElementById('prodCategory').value;
       const price = document.getElementById('prodPrice').value;
-      const image = resolveProductImage({ category: category, name: name });
+      const image = base64Input.value || ''; // Custom Base64 if uploaded, otherwise empty
       const desc = document.getElementById('prodDesc').value;
       let actionLabel = '';
 
@@ -727,17 +769,9 @@ function initFormSubmitHandlers() {
         actionLabel = `New fish '${name}' added`;
       }
 
-      // Save to localStorage (with error handling)
+      // Save state to localStorage
       saveAllState();
-
-      // Save to server for reliable persistence, then show result
-      saveProductsToServer().then(success => {
-        if (success) {
-          showToast('success', `${actionLabel} & synced to server! Changes will appear on the website.`);
-        } else {
-          showToast('error', `${actionLabel} in browser only — server sync failed. Changes may not appear on the website.`);
-        }
-      });
+      showToast('success', `${actionLabel} successfully! Changes are updated on the website.`);
 
       initPortalState();
       modal.classList.remove('active');
@@ -758,8 +792,32 @@ window.openEditProduct = function(id) {
     document.getElementById('prodName').value = p.name;
     document.getElementById('prodCategory').value = p.category;
     document.getElementById('prodPrice').value = p.price.replace('₹', '');
-    document.getElementById('prodImage').value = 'Built-in default';
     document.getElementById('prodDesc').value = p.tag;
+
+    // Reset file input
+    const fileInput = document.getElementById('prodImageFile');
+    if (fileInput) fileInput.value = '';
+
+    const base64Input = document.getElementById('prodImageBase64');
+    const imgPreview = document.getElementById('prodImagePreview');
+    const imgPlaceholder = document.getElementById('prodImagePlaceholder');
+
+    const resolvedImg = resolveProductImage(p);
+    if (p.image && p.image.startsWith('data:')) {
+      if (base64Input) base64Input.value = p.image;
+      if (imgPreview) {
+        imgPreview.src = p.image;
+        imgPreview.style.display = 'block';
+      }
+      if (imgPlaceholder) imgPlaceholder.style.display = 'none';
+    } else {
+      if (base64Input) base64Input.value = '';
+      if (imgPreview) {
+        imgPreview.src = resolvedImg;
+        imgPreview.style.display = 'block';
+      }
+      if (imgPlaceholder) imgPlaceholder.style.display = 'none';
+    }
 
     document.getElementById('productModalTitle').textContent = 'Edit ' + p.name;
     document.getElementById('productModal').classList.add('active');
@@ -772,13 +830,7 @@ window.deleteProduct = function(id) {
   if (p && confirm(`Are you sure you want to delete ${p.name} from catalog?`)) {
     products = products.filter(prod => prod.id != id);
     saveAllState();
-    saveProductsToServer().then(success => {
-      if (success) {
-        showToast('success', 'Product deleted & synced to server.');
-      } else {
-        showToast('info', 'Product deleted locally. Server sync failed.');
-      }
-    });
+    showToast('success', 'Product deleted successfully.');
     initPortalState();
   }
 };

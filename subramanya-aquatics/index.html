@@ -39,7 +39,6 @@
     <ul class="nav-links" id="navLinks">
       <li><a href="#home">Home</a></li>
       <li><a href="#collection">Collection</a></li>
-      <li><a href="#gallery">Gallery</a></li>
       <li><a href="#why-us">Why Us</a></li>
       <li><a href="#reviews">Reviews</a></li>
       <li><a href="#contact">Contact</a></li>
@@ -778,15 +777,6 @@
     </div>
   </section>
 
-
-  <!-- Gallery Section -->
-  <section class="section" id="gallery">
-    <h2 class="section-title reveal">Our Gallery</h2>
-    <p class="section-subtitle reveal">A glimpse of our premium aquatic setups and exotic species</p>
-    <div class="gallery-grid reveal" id="galleryGrid"></div>
-  </section>
-
-
   <!-- Why Choose Us -->
   <section class="section" id="why-us">
     <h2 class="section-title reveal">Why Choose Us</h2>
@@ -1011,8 +1001,8 @@
         <div id="qrCodeSection" class="qr-section">
           <h4 style="margin: 20px 0 10px; color: var(--aqua-cyan);">Scan to Pay via UPI</h4>
           <div class="qr-wrapper">
-            <img src="./images/qr-code.png" alt="UPI QR Code" class="qr-image" id="qrImage"
-              onerror="this.onerror=null;this.src='./images/qr.jpeg';">
+            <img src="./qr-code.png" alt="UPI QR Code" class="qr-image" id="qrImage"
+              onerror="this.onerror=null;this.src='./logo.jpeg';">
           </div>
           <p style="font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 8px;">UPI ID: subramanyaaquatics@upi
           </p>
@@ -1189,7 +1179,6 @@
         <ul>
           <li><a href="#home">Home</a></li>
           <li><a href="#collection">Fish Collection</a></li>
-          <li><a href="#gallery">Gallery</a></li>
           <li><a href="#why-us">Why Choose Us</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
@@ -1220,14 +1209,6 @@
       <p>&copy; 2025 SUBRAMANYA AQUATICS. All Rights Reserved. | Crafted with 💙</p>
     </div>
   </footer>
-
-  <!-- Gallery Lightbox Modal -->
-  <div id="galleryLightbox" class="gallery-lightbox" onclick="closeGalleryLightbox()">
-    <div class="gallery-lightbox-content" onclick="event.stopPropagation()">
-      <button class="gallery-lightbox-close" onclick="closeGalleryLightbox()">✕</button>
-      <img id="galleryLightboxImg" src="" alt="">
-    </div>
-  </div>
 
   <script src="script.js"></script>
 </body>

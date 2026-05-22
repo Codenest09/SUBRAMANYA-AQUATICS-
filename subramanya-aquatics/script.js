@@ -1,39 +1,63 @@
 // ========== CLIENT-SIDE IMAGE RESOLUTION ==========
 function resolveProductImage(p) {
   if (!p) return 'logo.jpeg';
-  const name = (p.name || '').trim();
-  const lowerName = name.toLowerCase();
-  const category = (p.category || '').trim().toLowerCase();
+  const imgPath = p.image || '';
+  if (imgPath.startsWith('data:') || imgPath === 'logo.jpeg' || imgPath === 'qr-code.png') {
+    return imgPath;
+  }
 
-  if (category.includes('food') || category.includes('fish food')) return 'images/guppies.png';
-  if (category.includes('item') || category.includes('equipment') || category.includes('decorative')) return 'logo.jpeg';
+  // Construct a beautiful dynamic inline SVG with linear gradient and category emoji
+  const category = (p.category || 'Aquarium Items').trim();
+  const emojis = {
+    'Guppys': '🐠',
+    'Angels': '👼',
+    'Mollies': '🐟',
+    'Oxy-less Fishes': '💧',
+    "Betta's": '🔥',
+    'Wild Oscars': '🦁',
+    'Discus': '🐠',
+    'Flowerhorns': '🌺',
+    'Arowana': '🐉',
+    'Gold Fish': '🪙',
+    'Exotics & Giants': '🦖',
+    'Aquarium Items': '🛠️',
+    'Aquarium Decorative Items': '🪸',
+    'Fish Food': '🍽️'
+  };
+  const emoji = emojis[category] || '🐠';
 
-  if (category.includes('guppy') || category.includes('guppies')) return 'images/guppies.png';
-  if (category.includes('molly') || category.includes('mollies')) return 'images/guppies.png';
-  if (category.includes('oxy-less') || category.includes('oxyless')) return 'images/discus.png';
-  if (category.includes('betta')) return 'images/betta.png';
-  if (category.includes('oscar')) return 'images/oscar.png';
-  if (category.includes('flowerhorn') || category.includes('flower horn')) return 'images/flowerhorn.png';
-  if (category.includes('arowana') || category.includes('arwana')) return 'images/arowana.png';
-  if (category.includes('gold fish') || category.includes('goldfish')) return 'images/goldfish.png';
-  if (category.includes('exotics') || category.includes('giant')) return 'images/koi.png';
-  if (category.includes('angel')) return 'images/betta.png';
+  // Generate a unique gradient pair based on category name hashing
+  let hash = 0;
+  for (let i = 0; i < category.length; i++) {
+    hash = category.charCodeAt(i) + ((hash << 5) - hash);
+  }
 
-  if (lowerName.includes('guppy') || lowerName.includes('guppies')) return 'images/guppies.png';
-  if (lowerName.includes('molly') || lowerName.includes('mollies')) return 'images/guppies.png';
-  if (lowerName.includes('betta') || lowerName.includes('bata') || lowerName.includes('beta')) return 'images/betta.png';
-  if (lowerName.includes('oscar')) return 'images/oscar.png';
-  if (lowerName.includes('flowerhorn') || lowerName.includes('flower horn') || lowerName.includes('kamfa')) return 'images/flowerhorn.png';
-  if (lowerName.includes('arowana') || lowerName.includes('arwana')) return 'images/arowana.png';
-  if (lowerName.includes('gold fish') || lowerName.includes('goldfish')) return 'images/goldfish.png';
-  if (lowerName.includes('koi')) return 'images/koi.png';
-  if (lowerName.includes('discus')) return 'images/discus.png';
-  if (lowerName.includes('platy') || lowerName.includes('platies') || lowerName.includes('shark') || lowerName.includes('zebra')) return 'images/discus.png';
-  if (lowerName.includes('parrot') || lowerName.includes('gourami') || lowerName.includes('gurami')) return 'images/flowerhorn.png';
-  if (lowerName.includes('gar') || lowerName.includes('aligator') || lowerName.includes('snake head') || lowerName.includes('cichlid')) return 'images/koi.png';
-  if (lowerName.includes('angel')) return 'images/betta.png';
+  const colors = [
+    ['#00c6ff', '#0072ff'], // blue-blue
+    ['#f857a6', '#ff5858'], // pink-orange
+    ['#11998e', '#38ef7d'], // teal-green
+    ['#FF8008', '#FFC837'], // orange-yellow
+    ['#8A2387', '#E94057'], // purple-red
+    ['#1AD6FD', '#1D62F0'], // neon-blue
+    ['#8e2de2', '#4a00e0']  // violet
+  ];
 
-  return 'logo.jpeg';
+  const colorIndex = Math.abs(hash) % colors.length;
+  const gradient = colors[colorIndex];
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+    <defs>
+      <linearGradient id="grad-${colorIndex}" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:${gradient[0]};stop-opacity:1" />
+        <stop offset="100%" style="stop-color:${gradient[1]};stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    <rect width="200" height="200" rx="20" fill="url(#grad-${colorIndex})" />
+    <circle cx="100" cy="100" r="55" fill="rgba(255, 255, 255, 0.15)" />
+    <text x="100" y="105" font-size="80" text-anchor="middle" dominant-baseline="middle">${emoji}</text>
+  </svg>`;
+
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
 }
 
 // Loading Screen
@@ -53,7 +77,7 @@ if (cursorGlow && cursorRing) {
     cursorRing.style.left = e.clientX - 20 + 'px';
     cursorRing.style.top = e.clientY - 20 + 'px';
   });
-  document.querySelectorAll('a, button, .fish-card, .gallery-item').forEach(el => {
+  document.querySelectorAll('a, button, .fish-card').forEach(el => {
     el.addEventListener('mouseenter', () => {
       cursorRing.style.transform = 'scale(1.5)';
       cursorRing.style.borderColor = 'rgba(0,255,200,0.5)';
@@ -343,8 +367,6 @@ document.addEventListener('DOMContentLoaded', () => {
   injectPremiumButtons();
   renderCart();
 
-  initGallery();
-  
   const cartOverlay = document.getElementById('cartOverlay');
   const cartDrawer = document.getElementById('cartDrawer');
   const closeCartBtn = document.getElementById('closeCartBtn');
@@ -801,30 +823,7 @@ const categoryEmojis = {
 function renderDynamicCatalog() {
   const container = document.getElementById('catalogContainer');
   if (!container) return;
-
-  // Try fetching from server first (most reliable), fallback to localStorage
-  fetch('/api/products')
-    .then(res => {
-      if (!res.ok) throw new Error('Server returned ' + res.status);
-      return res.json();
-    })
-    .then(serverProducts => {
-      if (Array.isArray(serverProducts) && serverProducts.length > 0) {
-        console.log('Catalog loaded from server (' + serverProducts.length + ' products)');
-        // Update localStorage cache with server data
-        try { localStorage.setItem('sa_products', JSON.stringify(serverProducts)); } catch(e) {}
-        buildCatalogCards(container, serverProducts);
-      } else {
-        // Server has no data, fall back to localStorage or defaults
-        console.log('Server has no products, falling back to localStorage/defaults');
-        loadCatalogFromLocalOrDefaults(container);
-      }
-    })
-    .catch(err => {
-      // Server unavailable (e.g. opened as file://), fall back to localStorage
-      console.warn('Could not fetch from server:', err.message, '— using localStorage/defaults');
-      loadCatalogFromLocalOrDefaults(container);
-    });
+  loadCatalogFromLocalOrDefaults(container);
 }
 
 function loadCatalogFromLocalOrDefaults(container) {
@@ -924,64 +923,5 @@ function toggleQRCode() {
   qrSection.style.display = upiSelected ? 'block' : 'none';
 }
 
-// ========== GALLERY DATA (localStorage-powered) ==========
-const defaultGallery = [
-  { src: 'images/gallery1.png', alt: 'Gallery Setup 1', caption: 'Premium Aquarium Layout' },
-  { src: 'images/gallery2.png', alt: 'Gallery Setup 2', caption: 'Exotic Species Display' },
-  { src: 'images/gallery3.png', alt: 'Gallery Setup 3', caption: 'Custom Planted Aquascape' },
-  { src: 'images/gallery4.png', alt: 'Gallery Setup 4', caption: 'Marine Habitat Setup' },
-  { src: 'images/gallery5.png', alt: 'Gallery Setup 5', caption: 'Bespoke Living Room Aquariums' },
-  { src: 'images/gallery6.png', alt: 'Gallery Setup 6', caption: 'Imported Discus Breeding Care' }
-];
 
-function getGalleryData() {
-  const stored = localStorage.getItem('sa_gallery');
-  if (stored) {
-    try { return JSON.parse(stored); } catch (e) {}
-  }
-  localStorage.setItem('sa_gallery', JSON.stringify(defaultGallery));
-  return defaultGallery;
-}
-
-function initGallery() {
-  const grid = document.getElementById('galleryGrid');
-  if (!grid) return;
-
-  const items = getGalleryData();
-
-  grid.innerHTML = items.map(item => `
-    <div class="gallery-item">
-      <img src="${item.src}" alt="${item.alt}" loading="lazy" onerror="this.onerror=null;this.src='logo.jpeg'">
-      <div class="gallery-overlay"><span>${item.caption}</span></div>
-    </div>
-  `).join('');
-
-  grid.querySelectorAll('.gallery-item').forEach(el => {
-    el.addEventListener('click', () => openGalleryLightbox(el));
-  });
-}
-
-// ========== GALLERY LIGHTBOX ==========
-function openGalleryLightbox(item) {
-  const img = item.querySelector('img');
-  if (!img) return;
-  const lb = document.getElementById('galleryLightbox');
-  const lbImg = document.getElementById('galleryLightboxImg');
-  if (!lb || !lbImg) return;
-  lbImg.src = img.src;
-  lbImg.alt = img.alt;
-  lb.classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeGalleryLightbox() {
-  const lb = document.getElementById('galleryLightbox');
-  if (lb) lb.classList.remove('active');
-  document.body.style.overflow = '';
-}
-
-// Close lightbox on Escape key
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeGalleryLightbox();
-});
 
