@@ -11,6 +11,310 @@ document.addEventListener('DOMContentLoaded', () => setTimeout(hideLoader, 500))
 window.addEventListener('load', () => setTimeout(hideLoader, 200));
 setTimeout(hideLoader, 2000);
 
+// ========== CLIENT-SIDE IMAGE RESOLUTION ==========
+function resolveProductImage(p) {
+  if (!p) return 'logo.jpeg';
+  const name = (p.name || '').trim();
+  const lowerName = name.toLowerCase();
+  const category = (p.category || '').trim().toLowerCase();
+
+  const img = p.image || p.img;
+  if (img && (img.startsWith('fishes/') || img.startsWith('food/') || img.startsWith('items/') || img.startsWith('images/'))) {
+    return img.includes('%20') ? img : encodeURI(img);
+  }
+
+  // --- 1. FOOD MAPPING ---
+  if (category.includes('food') || lowerName.includes('food') || lowerName.includes('worms')) {
+    if (lowerName.includes('head power') || lowerName.includes('okiko head')) {
+      return 'food/Okiko%20head%20power%20flowerhorns%20food.jpeg';
+    }
+    if (lowerName.includes('red diamond')) {
+      return 'food/Okoko%20red%20diamond%20fish%20food.jpg';
+    }
+    if (lowerName.includes('black pearl')) {
+      return 'food/okiko%20black%20pearl%20flowehorn%20food.webp';
+    }
+    if (lowerName.includes('optimun') || lowerName.includes('optimum') || lowerName.includes('3 in 1')) {
+      return 'food/Optimun%203%20in%201%20fish%20food.webp';
+    }
+    if (lowerName.includes('tiyo') && lowerName.includes('small')) {
+      return 'food/Tiyo%20fish%20food%20(small).jpeg';
+    }
+    if (lowerName.includes('tiyo') && (lowerName.includes('large') || lowerName.includes('big'))) {
+      return 'food/Tiyo%20fish%20food(large).jpg';
+    }
+    if (lowerName.includes('tiyo')) {
+      return 'food/Tiyo%20fish%20food(large).jpg';
+    }
+    if (lowerName.includes('worms') || lowerName.includes('dry worm')) {
+      return 'food/dry%20worms%20cubes.jpeg';
+    }
+    if (lowerName.includes('farm')) {
+      return 'food/farm%20food.jpg';
+    }
+    return 'food/Optimun%203%20in%201%20fish%20food.webp';
+  }
+
+  // --- 2. AQUARIUM ITEMS MAPPING ---
+  if (category.includes('item') || category.includes('equipment') || lowerName.includes('heater') || lowerName.includes('light') || lowerName.includes('oxygen') || lowerName.includes('plants') || lowerName.includes('stones') || lowerName.includes('filter')) {
+    if (lowerName.includes('100w') || lowerName.includes('100 w') || lowerName.includes('100-w')) {
+      return 'items/100%20w%20aquarium%20heater.webp';
+    }
+    if (lowerName.includes('50w') || lowerName.includes('50 w') || lowerName.includes('50-w')) {
+      return 'items/50w%20aquarium%20heater.webp';
+    }
+    if (lowerName.includes('heater')) {
+      return 'items/100%20w%20aquarium%20heater.webp';
+    }
+    if (lowerName.includes('light') && (lowerName.includes('small') || lowerName.includes('mini'))) {
+      return 'items/Aquarium%20light%20(small).jpg';
+    }
+    if (lowerName.includes('light') && (lowerName.includes('large') || lowerName.includes('big'))) {
+      return 'items/Aquarium%20light%20(large%20).jpg';
+    }
+    if (lowerName.includes('light')) {
+      return 'items/Aquarium%20light%20(small).jpg';
+    }
+    if (lowerName.includes('buble') || lowerName.includes('bubble')) {
+      return 'items/buble%20oxygen.webp';
+    }
+    if (lowerName.includes('double oxygen') || lowerName.includes('double oxgyen')) {
+      return 'items/double%20oxygen.webp';
+    }
+    if (lowerName.includes('internal') && (lowerName.includes('big') || lowerName.includes('large'))) {
+      return 'items/internal%20oxgyen%20(big).jpg';
+    }
+    if (lowerName.includes('internal') && (lowerName.includes('small') || lowerName.includes('mini'))) {
+      return 'items/internal%20oxgyen%20(small).webp';
+    }
+    if (lowerName.includes('oxygen') || lowerName.includes('oxgyen')) {
+      return 'items/double%20oxygen.webp';
+    }
+    if (lowerName.includes('plants') || lowerName.includes('plastic plant')) {
+      return 'items/plastic%20plants%20(small).jpg';
+    }
+    if (lowerName.includes('stones') || lowerName.includes('stone') || lowerName.includes('sand') || lowerName.includes('gravel')) {
+      return 'items/stones.jpg';
+    }
+    return 'items/100%20w%20aquarium%20heater.webp';
+  }
+
+  // --- 3. FISH MAPPING ---
+  if (lowerName.includes('guppy') || lowerName.includes('guppies')) {
+    if (lowerName.includes('albino red eye') || lowerName.includes('red eye')) {
+      return 'fishes/Albino%20Red%20eye%20guppy.jpg';
+    }
+    if (lowerName.includes('albino black eye') || lowerName.includes('black eye')) {
+      return 'fishes/Albino%20black%20eye%20guppys.jpeg';
+    }
+    if (lowerName.includes('dragon tail')) {
+      return 'fishes/Dragon%20tail%20guppys.jpg';
+    }
+    if (lowerName.includes('golden')) {
+      return 'fishes/Golden%20guppy.jpg';
+    }
+    if (lowerName.includes('baby') || lowerName.includes('babies') || lowerName.includes('babys')) {
+      return 'fishes/Guppy%20babys.png';
+    }
+    if (lowerName.includes('semi adult')) {
+      return 'fishes/Guppys%20semi%20adults.webp';
+    }
+    if (lowerName.includes('hb blue') || lowerName.includes('half black blue') || lowerName.includes('blue guppy')) {
+      return 'fishes/Hb%20blue%20guppys.jpg';
+    }
+    if (lowerName.includes('platinum dumbo') || lowerName.includes('dumbo ear')) {
+      return 'fishes/Platinum%20dumbo%20ear%20guppys.jpeg';
+    }
+    if (lowerName.includes('platinum')) {
+      return 'fishes/Platinum%20guppys.webp';
+    }
+    if (lowerName.includes('premium mixed')) {
+      return 'fishes/Premium%20mixed%20guppys.jpeg';
+    }
+    if (lowerName.includes('sward tail') || lowerName.includes('sword tail')) {
+      return 'fishes/Sward%20tail%20guppy.jpeg';
+    }
+    return 'fishes/Mixed%20guppys.jpg';
+  }
+
+  if (lowerName.includes('betta') || lowerName.includes('bata') || lowerName.includes('beta')) {
+    if (lowerName.includes('candy')) {
+      return 'fishes/Bata%20candy%20male.jpeg';
+    }
+    if (lowerName.includes('hmpk') && (lowerName.includes('female') || lowerName.includes('girl'))) {
+      return 'fishes/Beta%20hmpk%20female.jpeg';
+    }
+    if (lowerName.includes('hmpk')) {
+      return 'fishes/Beta%20HMPK%20male.webp';
+    }
+    if (lowerName.includes('ohm') && (lowerName.includes('female') || lowerName.includes('girl') || lowerName.includes('females'))) {
+      return 'fishes/Beta%20ohm%20females.jpg';
+    }
+    if (lowerName.includes('ohm')) {
+      return 'fishes/Beta%20ohm%20male.webp';
+    }
+    if (lowerName.includes('placart') || lowerName.includes('plakat')) {
+      return 'fishes/Beta%20placarts%20male.jpg';
+    }
+    return 'images/betta.png';
+  }
+
+  if (lowerName.includes('oscar')) {
+    if (lowerName.includes('albino')) {
+      return 'fishes/Albino%20oscar%20fish.webp';
+    }
+    if (lowerName.includes('lemon')) {
+      return 'fishes/Lemon%20oscar.jpeg';
+    }
+    if (lowerName.includes('mango')) {
+      return 'fishes/Mango%20oscar.jpg';
+    }
+    if (lowerName.includes('red tiger') || lowerName.includes('tiger oscar')) {
+      return 'fishes/Red%20tiger%20oscar.jpg';
+    }
+    if (lowerName.includes('red')) {
+      return 'fishes/Red%20oscar.jpg';
+    }
+    return 'images/oscar.png';
+  }
+
+  if (lowerName.includes('flowerhorn') || lowerName.includes('flower horn') || lowerName.includes('kamfa')) {
+    if (lowerName.includes('f2 kamfa') || lowerName.includes('kamfa')) {
+      return 'fishes/F2%20kamfa.jpg';
+    }
+    if (lowerName.includes('kml')) {
+      return 'fishes/Kml%20flowerhorn.jpg';
+    }
+    if (lowerName.includes('srd')) {
+      return 'fishes/Srd%20flowerhorn.jpg';
+    }
+    if (lowerName.includes('thai silk') || lowerName.includes('thaisilk')) {
+      return 'fishes/Thai%20silk%20flowerhorn.jpeg';
+    }
+    return 'images/flowerhorn.png';
+  }
+
+  if (lowerName.includes('arowana') || lowerName.includes('arwana')) {
+    if (lowerName.includes('gold')) {
+      return 'fishes/Gold%20arwana.jpg';
+    }
+    if (lowerName.includes('red')) {
+      return 'fishes/Red%20Arwana.jpeg';
+    }
+    if (lowerName.includes('silver')) {
+      return 'fishes/Silver%20arwana.webp';
+    }
+    return 'images/arowana.png';
+  }
+
+  if (lowerName.includes('gold fish') || lowerName.includes('goldfish')) {
+    if (lowerName.includes('black more') || lowerName.includes('black moor')) {
+      return 'fishes/Black%20more%20gold%20fish.jpg';
+    }
+    return 'fishes/Gold%20fish.jpeg';
+  }
+
+  if (lowerName.includes('koi')) {
+    if (lowerName.includes('indian')) {
+      return 'fishes/Indian%20koi%20fish.jpeg';
+    }
+    if (lowerName.includes('japanese')) {
+      return 'fishes/Japanese%20koi%20fish.jpg';
+    }
+    return 'images/koi.png';
+  }
+
+  if (lowerName.includes('molly') || lowerName.includes('mollies') || lowerName.includes('mollie')) {
+    if (lowerName.includes('baby') || lowerName.includes('babies')) {
+      return 'fishes/Molly%20babyes.jpeg';
+    }
+    if (lowerName.includes('ballon') || lowerName.includes('balloon')) {
+      return 'fishes/ballon%20mollies.jpeg';
+    }
+    if (lowerName.includes('moon tail')) {
+      return 'fishes/moon%20tail%20mollies.jpg';
+    }
+    return 'fishes/mollies.webp';
+  }
+
+  if (lowerName.includes('platy') || lowerName.includes('platies')) {
+    if (lowerName.includes('sword tail') || lowerName.includes('sward tail')) {
+      return 'fishes/Sward%20tail%20platy.jpeg';
+    }
+    return 'fishes/Platy%20fish.webp';
+  }
+
+  if (lowerName.includes('shark')) {
+    if (lowerName.includes('large')) {
+      return 'fishes/Shark%20large.jpeg';
+    }
+    if (lowerName.includes('medium')) {
+      return 'fishes/Shark%20medium.avif';
+    }
+    if (lowerName.includes('small')) {
+      return 'fishes/Shark%20small.webp';
+    }
+    return 'fishes/Shark%20small.webp';
+  }
+
+  if (lowerName.includes('parrot')) {
+    if (lowerName.includes('polar') && lowerName.includes('white')) {
+      return 'fishes/Polar%20parrots%20(%20white).jpg';
+    }
+    if (lowerName.includes('polar') && (lowerName.includes('zebra') || lowerName.includes('stripe'))) {
+      return 'fishes/Polar%20parrots(%20zebra).jpg';
+    }
+    if (lowerName.includes('red')) {
+      return 'fishes/Parrot%20(%20red).jpg';
+    }
+    if (lowerName.includes('yellow')) {
+      return 'fishes/Parrot%20(%20yellow).webp';
+    }
+    return 'fishes/Parrot%20(%20red).jpg';
+  }
+
+  if (lowerName.includes('gourami') || lowerName.includes('gurami')) {
+    if (lowerName.includes('giant') || lowerName.includes('baby')) {
+      return 'fishes/Giant%20gourami%20baby.jpg';
+    }
+    return 'fishes/Gourami.jpg';
+  }
+
+  if (lowerName.includes('zebra') && lowerName.includes('green')) {
+    return 'fishes/Vail%20tail%20zebra%20green.jpg';
+  }
+  if (lowerName.includes('zebra') && (lowerName.includes('yellow') || lowerName.includes('gold'))) {
+    return 'fishes/Vail%20tail%20zebra%20yellow.webp';
+  }
+  if (lowerName.includes('zebra')) {
+    return 'fishes/Zebra%20fish.webp';
+  }
+
+  if (lowerName.includes('gar') || lowerName.includes('aligator')) {
+    return 'fishes/Aligator%20gar.jpg';
+  }
+  if (lowerName.includes('chichilid') || lowerName.includes('cichlid')) {
+    return 'fishes/Chichilids.jpg';
+  }
+  if (lowerName.includes('mickey')) {
+    return 'fishes/Mickey%20fish.jpg';
+  }
+  if (lowerName.includes('snake head') || lowerName.includes('snakehead')) {
+    return 'fishes/Snake%20head%20fish.jpg';
+  }
+
+  if (category.includes('arowana') || category.includes('arwana')) return 'images/arowana.png';
+  if (category.includes('betta')) return 'images/betta.png';
+  if (category.includes('discus')) return 'images/discus.png';
+  if (category.includes('flowerhorn')) return 'images/flowerhorn.png';
+  if (category.includes('goldfish') || category.includes('gold fish')) return 'images/goldfish.png';
+  if (category.includes('guppy') || category.includes('guppies')) return 'images/guppies.png';
+  if (category.includes('koi')) return 'images/koi.png';
+  if (category.includes('oscar')) return 'images/oscar.png';
+
+  return 'logo.jpeg';
+}
+
 // ========== FALLBACK DATA & FIREBASE SYNC SETTINGS ==========
 const defaultProducts = [
   { id: 1, name: 'Moon Tail Guppys', category: 'Guppys', price: '₹99', image: 'fishes/Sward tail guppy.jpeg', tag: 'Best Seller' },
@@ -1141,7 +1445,7 @@ function openProfilePanel() {
 function renderProductCard(p) {
   const name = p.name;
   const priceText = p.price || 'Contact Us';
-  const img = p.image || p.img || 'logo.jpeg';
+  const img = resolveProductImage(p);
   const tag = p.tag || '';
   
   const wishlist = JSON.parse(localStorage.getItem('sa_wishlist') || '[]');
@@ -1627,6 +1931,13 @@ document.addEventListener('DOMContentLoaded', () => {
   injectProductButtons();
   updateCartBadge();
   renderCartSheet();
+
+  // Initialize Gallery Lightbox
+  document.querySelectorAll('.gallery-item').forEach(item => {
+    item.addEventListener('click', () => {
+      openGalleryLightbox(item);
+    });
+  });
 
   // ========== HAMBURGER MENU ==========
   const hamburger = document.getElementById('hamburger');
