@@ -343,12 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
   injectPremiumButtons();
   renderCart();
 
-  // Initialize Gallery Lightbox
-  document.querySelectorAll('.gallery-item').forEach(item => {
-    item.addEventListener('click', () => {
-      openGalleryLightbox(item);
-    });
-  });
+  initGallery();
   
   const cartOverlay = document.getElementById('cartOverlay');
   const cartDrawer = document.getElementById('cartDrawer');
@@ -929,6 +924,43 @@ function toggleQRCode() {
   qrSection.style.display = upiSelected ? 'block' : 'none';
 }
 
+// ========== GALLERY DATA (localStorage-powered) ==========
+const defaultGallery = [
+  { src: 'images/gallery1.png', alt: 'Gallery Setup 1', caption: 'Premium Aquarium Layout' },
+  { src: 'images/gallery2.png', alt: 'Gallery Setup 2', caption: 'Exotic Species Display' },
+  { src: 'images/gallery3.png', alt: 'Gallery Setup 3', caption: 'Custom Planted Aquascape' },
+  { src: 'images/gallery4.png', alt: 'Gallery Setup 4', caption: 'Marine Habitat Setup' },
+  { src: 'images/gallery5.png', alt: 'Gallery Setup 5', caption: 'Bespoke Living Room Aquariums' },
+  { src: 'images/gallery6.png', alt: 'Gallery Setup 6', caption: 'Imported Discus Breeding Care' }
+];
+
+function getGalleryData() {
+  const stored = localStorage.getItem('sa_gallery');
+  if (stored) {
+    try { return JSON.parse(stored); } catch (e) {}
+  }
+  localStorage.setItem('sa_gallery', JSON.stringify(defaultGallery));
+  return defaultGallery;
+}
+
+function initGallery() {
+  const grid = document.getElementById('galleryGrid');
+  if (!grid) return;
+
+  const items = getGalleryData();
+
+  grid.innerHTML = items.map(item => `
+    <div class="gallery-item">
+      <img src="${item.src}" alt="${item.alt}" loading="lazy" onerror="this.onerror=null;this.src='logo.jpeg'">
+      <div class="gallery-overlay"><span>${item.caption}</span></div>
+    </div>
+  `).join('');
+
+  grid.querySelectorAll('.gallery-item').forEach(el => {
+    el.addEventListener('click', () => openGalleryLightbox(el));
+  });
+}
+
 // ========== GALLERY LIGHTBOX ==========
 function openGalleryLightbox(item) {
   const img = item.querySelector('img');
@@ -938,13 +970,13 @@ function openGalleryLightbox(item) {
   if (!lb || !lbImg) return;
   lbImg.src = img.src;
   lbImg.alt = img.alt;
-  lb.style.display = 'flex';
+  lb.classList.add('active');
   document.body.style.overflow = 'hidden';
 }
 
 function closeGalleryLightbox() {
   const lb = document.getElementById('galleryLightbox');
-  if (lb) lb.style.display = 'none';
+  if (lb) lb.classList.remove('active');
   document.body.style.overflow = '';
 }
 
