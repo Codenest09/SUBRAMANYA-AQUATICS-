@@ -633,19 +633,19 @@ function downloadInvoice() {
 // 7. Dynamic Catalog Render Engine
 const defaultProducts = [
   // Guppys
-  { id: 1, name: 'Moon Tail Guppys', category: 'Guppys', price: '₹99', image: 'fishes/Sward tail guppy.jpeg', tag: 'Best Seller' },
-  { id: 2, name: 'Premium Mixed', category: 'Guppys', price: '₹99', image: 'fishes/Premium mixed guppys.jpeg', tag: 'Premium' },
-  { id: 3, name: 'Mixed Guppy', category: 'Guppys', price: '₹69', image: 'fishes/Mixed guppys.jpg', tag: 'Standard' },
-  { id: 4, name: 'Golden Guppys (24K)', category: 'Guppys', price: '₹249', image: 'fishes/Golden guppy.jpg', tag: 'Exotic' },
-  { id: 5, name: 'HB Blue', category: 'Guppys', price: '₹250', image: 'fishes/Hb blue guppys.jpg', tag: 'Popular' },
-  { id: 6, name: 'Koi Guppys', category: 'Guppys', price: '₹249', image: 'fishes/Albino Red eye guppy.jpg', tag: 'Exotic' },
-  { id: 7, name: 'Platinum Guppys', category: 'Guppys', price: '₹99', image: 'fishes/Platinum guppys.webp', tag: 'Regular' },
-  { id: 8, name: 'Platinum (Dumbo)', category: 'Guppys', price: '₹250', image: 'fishes/Platinum dumbo ear guppys.jpeg', tag: 'Premium' },
-  { id: 9, name: 'Dragon Tail', category: 'Guppys', price: '₹250', image: 'fishes/Dragon tail guppys.jpg', tag: 'Premium' },
-  { id: 10, name: "Guppy Baby's", category: 'Guppys', price: '₹7 / pc', image: 'fishes/Guppy babys.png', tag: 'Fry' },
-  { id: 11, name: 'Guppy Semi Adults', category: 'Guppys', price: '₹40 / pair', image: 'fishes/Guppys semi adults.webp', tag: 'Semi Adult' },
-  { id: 12, name: 'Koi Texido', category: 'Guppys', price: '₹250', image: 'fishes/Koi texido.jpg', tag: 'Premium' },
-  { id: 13, name: 'Dark Knight Dragon', category: 'Guppys', price: '₹250', image: 'fishes/Dark knight dragon.jpg', tag: 'Premium' },
+  { id: 1, name: 'Moon Tail Guppys', category: 'Guppys', price: '₹99', image: 'images/guppies.png', tag: 'Best Seller' },
+  { id: 2, name: 'Premium Mixed', category: 'Guppys', price: '₹99', image: 'images/guppies.png', tag: 'Premium' },
+  { id: 3, name: 'Mixed Guppy', category: 'Guppys', price: '₹69', image: 'images/guppies.png', tag: 'Standard' },
+  { id: 4, name: 'Golden Guppys (24K)', category: 'Guppys', price: '₹249', image: 'images/guppies.png', tag: 'Exotic' },
+  { id: 5, name: 'HB Blue', category: 'Guppys', price: '₹250', image: 'images/guppies.png', tag: 'Popular' },
+  { id: 6, name: 'Koi Guppys', category: 'Guppys', price: '₹249', image: 'images/guppies.png', tag: 'Exotic' },
+  { id: 7, name: 'Platinum Guppys', category: 'Guppys', price: '₹99', image: 'images/guppies.png', tag: 'Regular' },
+  { id: 8, name: 'Platinum (Dumbo)', category: 'Guppys', price: '₹250', image: 'images/guppies.png', tag: 'Premium' },
+  { id: 9, name: 'Dragon Tail', category: 'Guppys', price: '₹250', image: 'images/guppies.png', tag: 'Premium' },
+  { id: 10, name: "Guppy Baby's", category: 'Guppys', price: '₹7 / pc', image: 'images/guppies.png', tag: 'Fry' },
+  { id: 11, name: 'Guppy Semi Adults', category: 'Guppys', price: '₹40 / pair', image: 'images/guppies.png', tag: 'Semi Adult' },
+  { id: 12, name: 'Koi Texido', category: 'Guppys', price: '₹250', image: 'images/guppies.png', tag: 'Premium' },
+  { id: 13, name: 'Dark Knight Dragon', category: 'Guppys', price: '₹250', image: 'images/guppies.png', tag: 'Premium' },
 
   // Angels
   { id: 14, name: 'White Angel', category: 'Angels', price: '₹150', image: 'fishes/White angel.jpg', tag: 'Popular' },
@@ -669,43 +669,46 @@ const defaultProducts = [
   { id: 28, name: 'Vail Tail Zebra', category: 'Oxy-less Fishes', price: '₹150', image: 'fishes/Vail tail zebra green.jpg', tag: 'Exotic' },
 
   // Betta's
-  { id: 29, name: 'OHM (Males)', category: "Betta's", price: '₹149', image: 'fishes/Beta ohm male.webp', tag: 'Exotic' },
-  { id: 30, name: 'OHM (Female)', category: "Betta's", price: '₹99', image: 'fishes/Beta ohm females.jpg', tag: 'Standard' },
-  { id: 31, name: 'HMPK Male', category: "Betta's", price: '₹250', image: 'fishes/Beta HMPK male.webp', tag: 'Popular' },
-  { id: 32, name: 'Placarts', category: "Betta's", price: '₹499', image: 'fishes/Beta placarts male.jpg', tag: 'Exotic' },
-  { id: 33, name: 'Candy Betta', category: "Betta's", price: 'Contact Us', image: 'fishes/Bata candy male.jpeg', tag: 'Show Grade' },
-  { id: 34, name: 'HMPK Female', category: "Betta's", price: 'Contact Us', image: 'fishes/Beta hmpk female.jpeg', tag: 'Standard' },
+  { id: 29, name: 'OHM (Males)', category: "Betta's", price: '₹149', image: 'images/betta.png', tag: 'Exotic' },
+  { id: 30, name: 'OHM (Female)', category: "Betta's", price: '₹99', image: 'images/betta.png', tag: 'Standard' },
+  { id: 31, name: 'HMPK Male', category: "Betta's", price: '₹250', image: 'images/betta.png', tag: 'Popular' },
+  { id: 32, name: 'Placarts', category: "Betta's", price: '₹499', image: 'images/betta.png', tag: 'Exotic' },
+  { id: 33, name: 'Candy Betta', category: "Betta's", price: 'Contact Us', image: 'images/betta.png', tag: 'Show Grade' },
+  { id: 34, name: 'HMPK Female', category: "Betta's", price: 'Contact Us', image: 'images/betta.png', tag: 'Standard' },
 
   // Wild Oscars
-  { id: 35, name: 'Albino Oscar', category: 'Wild Oscars', price: '₹499', image: 'fishes/Albino oscar fish.webp', tag: 'Giant' },
-  { id: 36, name: 'Tiger Red Oscar', category: 'Wild Oscars', price: '₹499', image: 'fishes/Red tiger oscar.jpg', tag: 'Giant' },
-  { id: 37, name: 'Red Oscar', category: 'Wild Oscars', price: '₹599', image: 'fishes/Red oscar.jpg', tag: 'Premium' },
-  { id: 38, name: 'Lemon Oscar', category: 'Wild Oscars', price: '₹599', image: 'fishes/Lemon oscar.jpeg', tag: 'Premium' },
-  { id: 39, name: 'Mango Oscar', category: 'Wild Oscars', price: '₹599', image: 'fishes/Mango oscar.jpg', tag: 'Premium' },
+  { id: 35, name: 'Albino Oscar', category: 'Wild Oscars', price: '₹499', image: 'images/oscar.png', tag: 'Giant' },
+  { id: 36, name: 'Tiger Red Oscar', category: 'Wild Oscars', price: '₹499', image: 'images/oscar.png', tag: 'Giant' },
+  { id: 37, name: 'Red Oscar', category: 'Wild Oscars', price: '₹599', image: 'images/oscar.png', tag: 'Premium' },
+  { id: 38, name: 'Lemon Oscar', category: 'Wild Oscars', price: '₹599', image: 'images/oscar.png', tag: 'Premium' },
+  { id: 39, name: 'Mango Oscar', category: 'Wild Oscars', price: '₹599', image: 'images/oscar.png', tag: 'Premium' },
+
+  // Discus
+  { id: 75, name: 'Premium Discus Fish', category: 'Discus', price: '₹499', image: 'images/discus.png', tag: 'Exotic' },
 
   // Flowerhorns
-  { id: 40, name: 'SRD', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/Srd flowerhorn.jpg', tag: 'Show Grade' },
-  { id: 41, name: 'KML', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/Kml flowerhorn.jpg', tag: 'Show Grade' },
-  { id: 42, name: 'F2 Kamfa', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/F2 kamfa.jpg', tag: 'Show Grade' },
-  { id: 43, name: 'Polar Parrot Breeding Pair', category: 'Flowerhorns', price: '₹500', image: 'fishes/Polar parrots( zebra).jpg', tag: 'Breeding Pair' },
-  { id: 44, name: 'Polar Parrot Pair', category: 'Flowerhorns', price: '₹250', image: 'fishes/Polar parrots( zebra).jpg', tag: 'Pair' },
-  { id: 45, name: 'Parrots', category: 'Flowerhorns', price: '₹999', image: 'fishes/Parrot (%20red).jpg', tag: 'Healthy' },
+  { id: 40, name: 'SRD', category: 'Flowerhorns', price: 'Contact Us', image: 'images/flowerhorn.png', tag: 'Show Grade' },
+  { id: 41, name: 'KML', category: 'Flowerhorns', price: 'Contact Us', image: 'images/flowerhorn.png', tag: 'Show Grade' },
+  { id: 42, name: 'F2 Kamfa', category: 'Flowerhorns', price: 'Contact Us', image: 'images/flowerhorn.png', tag: 'Show Grade' },
+  { id: 43, name: 'Polar Parrot Breeding Pair', category: 'Flowerhorns', price: '₹500', image: 'images/flowerhorn.png', tag: 'Breeding Pair' },
+  { id: 44, name: 'Polar Parrot Pair', category: 'Flowerhorns', price: '₹250', image: 'images/flowerhorn.png', tag: 'Pair' },
+  { id: 45, name: 'Parrots', category: 'Flowerhorns', price: '₹999', image: 'images/flowerhorn.png', tag: 'Healthy' },
 
   // Arowana
-  { id: 46, name: 'Silver Arowana', category: 'Arowana', price: 'Contact Us', image: 'fishes/Silver arwana.webp', tag: 'Luxury' },
-  { id: 47, name: 'Golden Arowana', category: 'Arowana', price: 'Contact Us', image: 'fishes/Gold arwana.jpg', tag: 'Luxury' },
-  { id: 48, name: 'Red Arowana', category: 'Arowana', price: 'Contact Us', image: 'fishes/Red Arwana.jpeg', tag: 'Luxury' },
+  { id: 46, name: 'Silver Arowana', category: 'Arowana', price: 'Contact Us', image: 'images/arowana.png', tag: 'Luxury' },
+  { id: 47, name: 'Golden Arowana', category: 'Arowana', price: 'Contact Us', image: 'images/arowana.png', tag: 'Luxury' },
+  { id: 48, name: 'Red Arowana', category: 'Arowana', price: 'Contact Us', image: 'images/arowana.png', tag: 'Luxury' },
 
   // Gold Fish
-  { id: 49, name: 'Gold Fish', category: 'Gold Fish', price: '₹250', image: 'fishes/Gold fish.jpeg', tag: 'Classic' },
-  { id: 50, name: 'Black Moor Gold Fish', category: 'Gold Fish', price: '₹99', image: 'fishes/Black more gold fish.jpg', tag: 'Dark Accent' },
+  { id: 49, name: 'Gold Fish', category: 'Gold Fish', price: '₹250', image: 'images/goldfish.png', tag: 'Classic' },
+  { id: 50, name: 'Black Moor Gold Fish', category: 'Gold Fish', price: '₹99', image: 'images/goldfish.png', tag: 'Dark Accent' },
 
   // Exotics & Giants
   { id: 51, name: 'Alligator Gar (Small)', category: 'Exotics & Giants', price: '₹1000', image: 'fishes/Aligator gar.jpg', tag: 'Exotic' },
   { id: 52, name: 'Cichlids', category: 'Exotics & Giants', price: '₹200', image: 'fishes/Chichilids.jpg', tag: 'Standard' },
   { id: 53, name: 'Channa Fish', category: 'Exotics & Giants', price: '₹2000', image: 'fishes/Snake head fish.jpg', tag: 'Exotic' },
-  { id: 54, name: 'Japanese Koi', category: 'Exotics & Giants', price: '₹1000', image: 'fishes/Japanese koi fish.jpg', tag: 'Classic' },
-  { id: 55, name: 'Indian Koi', category: 'Exotics & Giants', price: 'Contact Us', image: 'fishes/Indian koi fish.jpeg', tag: 'Standard' },
+  { id: 54, name: 'Japanese Koi', category: 'Exotics & Giants', price: '₹1000', image: 'images/koi.png', tag: 'Classic' },
+  { id: 55, name: 'Indian Koi', category: 'Exotics & Giants', price: 'Contact Us', image: 'images/koi.png', tag: 'Standard' },
   { id: 56, name: 'Giant Gourami', category: 'Exotics & Giants', price: '₹1000', image: 'fishes/Giant gourami baby.jpg', tag: 'Giant' },
 
   // Aquarium Items
@@ -740,6 +743,7 @@ const categoryEmojis = {
   'Oxy-less Fishes': '💧',
   "Betta's": '🔥',
   'Wild Oscars': '🦁',
+  'Discus': '🐠',
   'Flowerhorns': '🌺',
   'Arowana': '🐉',
   'Gold Fish': '🪙',
@@ -753,15 +757,48 @@ function renderDynamicCatalog() {
   const container = document.getElementById('catalogContainer');
   if (!container) return;
 
-  const storedProducts = localStorage.getItem('sa_products');
+  // Try fetching from server first (most reliable), fallback to localStorage
+  fetch('/api/products')
+    .then(res => {
+      if (!res.ok) throw new Error('Server returned ' + res.status);
+      return res.json();
+    })
+    .then(serverProducts => {
+      if (Array.isArray(serverProducts) && serverProducts.length > 0) {
+        console.log('Catalog loaded from server (' + serverProducts.length + ' products)');
+        // Update localStorage cache with server data
+        try { localStorage.setItem('sa_products', JSON.stringify(serverProducts)); } catch(e) {}
+        buildCatalogCards(container, serverProducts);
+      } else {
+        // Server has no data, fall back to localStorage or defaults
+        console.log('Server has no products, falling back to localStorage/defaults');
+        loadCatalogFromLocalOrDefaults(container);
+      }
+    })
+    .catch(err => {
+      // Server unavailable (e.g. opened as file://), fall back to localStorage
+      console.warn('Could not fetch from server:', err.message, '— using localStorage/defaults');
+      loadCatalogFromLocalOrDefaults(container);
+    });
+}
+
+function loadCatalogFromLocalOrDefaults(container) {
+  let storedProducts = localStorage.getItem('sa_products');
+  if (storedProducts && storedProducts.includes('fishes/Silver arwana.webp')) {
+    localStorage.removeItem('sa_products');
+    storedProducts = null;
+  }
   let productsList = storedProducts ? JSON.parse(storedProducts) : defaultProducts;
   if (!storedProducts) {
     localStorage.setItem('sa_products', JSON.stringify(defaultProducts));
   }
+  buildCatalogCards(container, productsList);
+}
 
+function buildCatalogCards(container, productsList) {
   const categoryOrder = [
     'Guppys', 'Angels', 'Mollies', 'Oxy-less Fishes', "Betta's", 'Wild Oscars',
-    'Flowerhorns', 'Arowana', 'Gold Fish', 'Exotics & Giants', 'Aquarium Items',
+    'Discus', 'Flowerhorns', 'Arowana', 'Gold Fish', 'Exotics & Giants', 'Aquarium Items',
     'Aquarium Decorative Items', 'Fish Food'
   ];
 
@@ -811,6 +848,11 @@ function renderDynamicCatalog() {
       container.appendChild(sec);
     }
   });
+
+  // Also re-inject premium buttons for the new dynamic cards
+  if (typeof injectPremiumButtons === 'function') {
+    injectPremiumButtons();
+  }
 
   if (typeof revealOnScroll === 'function') {
     revealOnScroll();
