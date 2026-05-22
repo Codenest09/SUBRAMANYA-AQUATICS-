@@ -372,16 +372,9 @@
       <section class="app-section" id="sec-media">
         <div class="card-header">
           <h3>Visual Media Library</h3>
-          <button class="btn-primary" onclick="document.getElementById('mockUploadInput').click()" style="width: auto; padding: 10px 20px;">📤 Drag & Drop Upload</button>
-          <input type="file" id="mockUploadInput" style="display: none;" multiple>
-        </div>
-        <div class="data-card" id="mediaDropZone" style="padding: 30px; border-style: dashed; border-color: var(--color-primary); text-align: center; cursor: pointer;" onclick="document.getElementById('mockUploadInput').click()">
-          <span style="font-size: 3rem;">☁️</span>
-          <h4>Drag and drop multiple fish photos / videos here to upload instantly</h4>
-          <p style="color: var(--color-text-muted); font-size: 0.85rem; margin-top: 5px;">Supports JPEG, PNG, WEBP, AVIF and MP4 up to 50MB</p>
         </div>
         <div class="dashboard-grid" id="mediaLibraryGrid" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));">
-          <!-- Images loaded from fishes/ folder dynamically -->
+          <!-- Images loaded from images/ folder dynamically -->
         </div>
       </section>
 
@@ -483,12 +476,9 @@
             <input type="text" class="form-input" id="prodPrice" required placeholder="e.g. 250 or Contact Us">
           </div>
           <div class="form-group form-full">
-            <label class="form-label">Image Filename Path</label>
-            <input type="text" class="form-input" id="prodImage" required placeholder="e.g. fishes/Sward tail guppy.jpeg">
-          </div>
-          <div class="form-group form-full">
-            <label class="form-label">Or Upload Local Image</label>
-            <input type="file" class="form-input" id="prodImageFile" accept="image/*" style="padding: 6px;">
+            <label class="form-label">Image</label>
+            <input type="text" class="form-input" id="prodImage" readonly value="Auto-set from category">
+            <small style="color: var(--color-text-muted); font-size: 0.75rem;">Images are fixed to built-in defaults</small>
           </div>
           <div class="form-group form-full">
             <label class="form-label">Description</label>

@@ -108,7 +108,7 @@
     "name": "White Angel",
     "category": "Angels",
     "price": "₹150",
-    "image": "fishes/White angel.jpg",
+    "image": "images/betta.png",
     "tag": "Popular"
   },
   {
@@ -116,7 +116,7 @@
     "name": "Marbel Angel",
     "category": "Angels",
     "price": "₹199",
-    "image": "fishes/Marbel angel.jpg",
+    "image": "images/betta.png",
     "tag": "Popular"
   },
   {
@@ -124,7 +124,7 @@
     "name": "Angel",
     "category": "Angels",
     "price": "₹100",
-    "image": "fishes/Angel.jpg",
+    "image": "images/betta.png",
     "tag": "Standard"
   },
   {
@@ -132,7 +132,7 @@
     "name": "Mollys",
     "category": "Mollies",
     "price": "₹49",
-    "image": "fishes/mollies.webp",
+    "image": "images/guppies.png",
     "tag": "Popular"
   },
   {
@@ -140,7 +140,7 @@
     "name": "Moontail Mollys",
     "category": "Mollies",
     "price": "₹99",
-    "image": "fishes/moon tail mollies.jpg",
+    "image": "images/guppies.png",
     "tag": "Standard"
   },
   {
@@ -148,7 +148,7 @@
     "name": "Balloon Mollys",
     "category": "Mollies",
     "price": "₹79",
-    "image": "fishes/ballon mollies.jpeg",
+    "image": "images/guppies.png",
     "tag": "Healthy"
   },
   {
@@ -156,7 +156,7 @@
     "name": "Molly Baby's",
     "category": "Mollies",
     "price": "₹5 / pc",
-    "image": "fishes/Molly babyes.jpeg",
+    "image": "images/guppies.png",
     "tag": "Fry"
   },
   {
@@ -164,7 +164,7 @@
     "name": "Gourami",
     "category": "Oxy-less Fishes",
     "price": "₹79",
-    "image": "fishes/Gourami.jpg",
+    "image": "images/discus.png",
     "tag": "Healthy"
   },
   {
@@ -172,7 +172,7 @@
     "name": "Plattys",
     "category": "Oxy-less Fishes",
     "price": "₹59",
-    "image": "fishes/Platy fish.webp",
+    "image": "images/discus.png",
     "tag": "Standard"
   },
   {
@@ -180,7 +180,7 @@
     "name": "Sword Tail Plattys",
     "category": "Oxy-less Fishes",
     "price": "₹99",
-    "image": "fishes/Sward tail platy.jpeg",
+    "image": "images/discus.png",
     "tag": "Popular"
   },
   {
@@ -188,7 +188,7 @@
     "name": "Zebra",
     "category": "Oxy-less Fishes",
     "price": "₹59",
-    "image": "fishes/Zebra fish.webp",
+    "image": "images/discus.png",
     "tag": "Active"
   },
   {
@@ -196,7 +196,7 @@
     "name": "Sharks (Small)",
     "category": "Oxy-less Fishes",
     "price": "₹59",
-    "image": "fishes/Shark small.webp",
+    "image": "images/discus.png",
     "tag": "Active"
   },
   {
@@ -204,7 +204,7 @@
     "name": "Sharks (Medium)",
     "category": "Oxy-less Fishes",
     "price": "₹99",
-    "image": "fishes/Shark medium.avif",
+    "image": "images/discus.png",
     "tag": "Active"
   },
   {
@@ -212,7 +212,7 @@
     "name": "Sharks (Large)",
     "category": "Oxy-less Fishes",
     "price": "Contact Us",
-    "image": "fishes/Shark large.jpeg",
+    "image": "images/discus.png",
     "tag": "Giant"
   },
   {
@@ -220,7 +220,7 @@
     "name": "Vail Tail Zebra",
     "category": "Oxy-less Fishes",
     "price": "₹150",
-    "image": "fishes/Vail tail zebra green.jpg",
+    "image": "images/discus.png",
     "tag": "Exotic"
   },
   {
@@ -412,7 +412,7 @@
     "name": "Alligator Gar (Small)",
     "category": "Exotics & Giants",
     "price": "₹1000",
-    "image": "fishes/Aligator gar.jpg",
+    "image": "images/koi.png",
     "tag": "Exotic"
   },
   {
@@ -420,7 +420,7 @@
     "name": "Cichlids",
     "category": "Exotics & Giants",
     "price": "₹200",
-    "image": "fishes/Chichilids.jpg",
+    "image": "images/koi.png",
     "tag": "Standard"
   },
   {
@@ -428,7 +428,7 @@
     "name": "Channa Fish",
     "category": "Exotics & Giants",
     "price": "₹2000",
-    "image": "fishes/Snake head fish.jpg",
+    "image": "images/koi.png",
     "tag": "Exotic"
   },
   {
@@ -452,7 +452,7 @@
     "name": "Giant Gourami",
     "category": "Exotics & Giants",
     "price": "₹1000",
-    "image": "fishes/Giant gourami baby.jpg",
+    "image": "images/koi.png",
     "tag": "Giant"
   },
   {
@@ -460,7 +460,7 @@
     "name": "Aquarium Heater (50W)",
     "category": "Aquarium Items",
     "price": "₹300",
-    "image": "items/50w aquarium heater.webp",
+    "image": "logo.jpeg",
     "tag": "Heater"
   },
   {
@@ -468,7 +468,7 @@
     "name": "Aquarium Heater (100W)",
     "category": "Aquarium Items",
     "price": "₹350",
-    "image": "items/100 w aquarium heater.webp",
+    "image": "logo.jpeg",
     "tag": "Heater"
   },
   {
@@ -476,7 +476,7 @@
     "name": "Aquarium Light Large",
     "category": "Aquarium Items",
     "price": "₹400",
-    "image": "items/Aquarium light (large ).jpg",
+    "image": "logo.jpeg",
     "tag": "Light"
   },
   {
@@ -484,7 +484,7 @@
     "name": "Aquarium Light Small",
     "category": "Aquarium Items",
     "price": "₹300",
-    "image": "items/Aquarium light (small).jpg",
+    "image": "logo.jpeg",
     "tag": "Light"
   },
   {
@@ -492,7 +492,7 @@
     "name": "Bubble Oxygen",
     "category": "Aquarium Items",
     "price": "₹200",
-    "image": "items/buble oxygen.webp",
+    "image": "logo.jpeg",
     "tag": "Oxygen"
   },
   {
@@ -500,7 +500,7 @@
     "name": "Double Oxygen",
     "category": "Aquarium Items",
     "price": "₹300",
-    "image": "items/double oxygen.webp",
+    "image": "logo.jpeg",
     "tag": "Oxygen"
   },
   {
@@ -508,7 +508,7 @@
     "name": "Internal Oxygen (Small)",
     "category": "Aquarium Items",
     "price": "₹300",
-    "image": "items/internal oxgyen (small).webp",
+    "image": "logo.jpeg",
     "tag": "Oxygen"
   },
   {
@@ -516,7 +516,7 @@
     "name": "Internal Oxygen (Large)",
     "category": "Aquarium Items",
     "price": "₹400",
-    "image": "items/internal oxgyen (big).jpg",
+    "image": "logo.jpeg",
     "tag": "Oxygen"
   },
   {
@@ -524,7 +524,7 @@
     "name": "Plastic Plants Piece",
     "category": "Aquarium Decorative Items",
     "price": "₹25",
-    "image": "items/plastic plants (small).jpg",
+    "image": "logo.jpeg",
     "tag": "Decor"
   },
   {
@@ -532,7 +532,7 @@
     "name": "Stones (1kg)",
     "category": "Aquarium Decorative Items",
     "price": "₹50",
-    "image": "items/stones.jpg",
+    "image": "logo.jpeg",
     "tag": "Decor"
   },
   {
@@ -540,7 +540,7 @@
     "name": "Dry Worms (10g)",
     "category": "Fish Food",
     "price": "₹25",
-    "image": "food/dry worms cubes.jpeg",
+    "image": "images/guppies.png",
     "tag": "Food"
   },
   {
@@ -548,7 +548,7 @@
     "name": "Farm Food (100g)",
     "category": "Fish Food",
     "price": "₹200",
-    "image": "food/farm food.jpg",
+    "image": "images/guppies.png",
     "tag": "Food"
   },
   {
@@ -556,7 +556,7 @@
     "name": "Okiko Black Pearl Flowerhorn Food",
     "category": "Fish Food",
     "price": "₹300",
-    "image": "food/okiko black pearl flowehorn food.webp",
+    "image": "images/guppies.png",
     "tag": "Food"
   },
   {
@@ -564,7 +564,7 @@
     "name": "Okiko Head Power Flowerhorns Food",
     "category": "Fish Food",
     "price": "₹300",
-    "image": "food/Okiko head power flowerhorns food.jpeg",
+    "image": "images/guppies.png",
     "tag": "Food"
   },
   {
@@ -572,7 +572,7 @@
     "name": "Okiko Red Diamond Flowerhorn Food",
     "category": "Fish Food",
     "price": "₹300",
-    "image": "food/Okoko red diamond fish food.jpg",
+    "image": "images/guppies.png",
     "tag": "Food"
   },
   {
@@ -580,7 +580,7 @@
     "name": "Optimun 3 in 1 Fish Food",
     "category": "Fish Food",
     "price": "₹160",
-    "image": "food/Optimun 3 in 1 fish food.webp",
+    "image": "images/guppies.png",
     "tag": "Food"
   },
   {
@@ -588,7 +588,7 @@
     "name": "Tiyo Fish Food (Small)",
     "category": "Fish Food",
     "price": "₹20",
-    "image": "food/Tiyo fish food (small).jpeg",
+    "image": "images/guppies.png",
     "tag": "Food"
   },
   {
@@ -596,7 +596,7 @@
     "name": "Tiyo Fish Food",
     "category": "Fish Food",
     "price": "₹30",
-    "image": "food/Tiyo fish food(large).jpg",
+    "image": "images/guppies.png",
     "tag": "Food"
   }
 ]
