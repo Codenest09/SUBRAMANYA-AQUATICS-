@@ -419,6 +419,11 @@ function nextCheckoutStep(step) {
   
   document.querySelectorAll('.checkout-step-content').forEach(el => el.classList.remove('active'));
   document.getElementById('checkoutStep'+step).classList.add('active');
+  
+  // Show QR code when payment step is reached
+  if (step === 2 && typeof toggleQRCode === 'function') {
+    toggleQRCode();
+  }
 }
 
 // 5. Payment Simulation & Admin Order Sync
@@ -829,6 +834,22 @@ function renderDynamicCatalog() {
 
 function loadCatalogFromLocalOrDefaults(container) {
   let storedProducts = localStorage.getItem('sa_products');
+  // Clear bad paths from localStorage (spaces, uppercase, wrong dirs)
+  if (storedProducts) {
+    try {
+      const parsed = JSON.parse(storedProducts);
+      const hasBadPaths = parsed.some(p => 
+        p.image && (p.image.includes(' ') || p.image !== p.image.toLowerCase() || p.image.startsWith('fishes/') || p.image.startsWith('items/') || p.image.startsWith('food/'))
+      );
+      if (hasBadPaths) {
+        localStorage.removeItem('sa_products');
+        storedProducts = null;
+      }
+    } catch(e) {
+      localStorage.removeItem('sa_products');
+      storedProducts = null;
+    }
+  }
   let productsList = storedProducts ? JSON.parse(storedProducts) : defaultProducts;
   if (!storedProducts) {
     localStorage.setItem('sa_products', JSON.stringify(defaultProducts));
@@ -898,6 +919,14 @@ function buildCatalogCards(container, productsList) {
   if (typeof revealOnScroll === 'function') {
     revealOnScroll();
   }
+}
+
+// Toggle QR Code visibility based on payment method
+function toggleQRCode() {
+  const qrSection = document.getElementById('qrCodeSection');
+  if (!qrSection) return;
+  const upiSelected = document.querySelector('input[name="payment"]:checked')?.value === 'UPI';
+  qrSection.style.display = upiSelected ? 'block' : 'none';
 }
 
 // ========== GALLERY LIGHTBOX ==========
