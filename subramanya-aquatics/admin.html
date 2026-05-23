@@ -23,11 +23,23 @@
       <form id="loginForm">
         <div class="form-group">
           <label class="form-label">Admin Email</label>
-          <input type="email" class="form-input" id="loginEmail" placeholder="admin@subramanya.com" required value="admin@subramanya.com">
+          <input type="email" class="form-input" id="loginEmail" placeholder="admin@subramanya.com" required>
         </div>
         <div class="form-group">
           <label class="form-label">Secret Password</label>
-          <input type="password" class="form-input" id="loginPassword" placeholder="••••••••" required value="password">
+          <div class="password-input-wrapper">
+            <input type="password" class="form-input password-input" id="loginPassword" placeholder="••••••••" required>
+            <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password visibility">
+              <svg class="eye-icon eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+              <svg class="eye-icon eye-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
         </div>
         <div class="login-options">
           <label class="remember-me">
@@ -51,13 +63,18 @@
       </div>
       <ul class="sidebar-menu">
         <li class="sidebar-item"><a href="#" class="sidebar-link active" data-target="overview">📊 Dashboard Overview</a></li>
-        <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="products">🐠 Fish & Products</a></li>
+        <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="products">🐠 Fish Items</a></li>
+        <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="foods">🍖 Foods & Nutrition</a></li>
+        <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="items">🛠️ Aquatic Items</a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="categories">📂 Categories</a></li>
+        <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="coupons">🎟️ Coupons</a></li>
+        <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="payments">💳 Payment &amp; QR Control</a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="orders">🛒 Orders Inbox <span class="badge badge-cancelled" style="padding: 1px 6px; font-size: 0.7rem;" id="ordersCounter">5</span></a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="customers">👥 Customers List</a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="messages">💬 Inquiries Inbox</a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="testimonials">⭐ Testimonials</a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="media">🖼️ Media Library</a></li>
+        <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="banners">✨ Homepage Banners</a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="seo">🔍 SEO Settings</a></li>
         <li class="sidebar-item"><a href="#" class="sidebar-link" data-target="settings">⚙️ Portal Settings</a></li>
       </ul>
@@ -77,9 +94,11 @@
     <nav class="mobile-nav">
       <a href="#" class="mobile-nav-item active" data-target="overview"><span class="mobile-nav-icon">📊</span>Overview</a>
       <a href="#" class="mobile-nav-item" data-target="products"><span class="mobile-nav-icon">🐠</span>Fishes</a>
+      <a href="#" class="mobile-nav-item" data-target="foods"><span class="mobile-nav-icon">🍖</span>Foods</a>
+      <a href="#" class="mobile-nav-item" data-target="items"><span class="mobile-nav-icon">🛠️</span>Items</a>
+      <a href="#" class="mobile-nav-item" data-target="coupons"><span class="mobile-nav-icon">🎟️</span>Coupons</a>
       <a href="#" class="mobile-nav-item" data-target="orders"><span class="mobile-nav-icon">🛒</span>Orders</a>
       <a href="#" class="mobile-nav-item" data-target="messages"><span class="mobile-nav-icon">💬</span>Inbox</a>
-      <a href="#" class="mobile-nav-item" data-target="settings"><span class="mobile-nav-icon">⚙️</span>Settings</a>
     </nav>
 
     <!-- Main Content Area -->
@@ -93,6 +112,7 @@
         </div>
         <div class="header-actions">
           <button class="btn-secondary" onclick="window.open('/', '_blank')">🌐 View Website</button>
+          <button class="btn-secondary" id="btnAutoSeed" style="border-color: var(--color-secondary); color: var(--color-secondary); display: none;">🌱 Seed Supabase</button>
           <div class="notification-bell" onclick="showToast('info', 'All systems online!')">
             🔔<span class="badge-dot"></span>
           </div>
@@ -254,7 +274,7 @@
       <section class="app-section" id="sec-categories">
         <div class="card-header">
           <h3>Manage Store Categories</h3>
-          <button class="btn-primary" onclick="showToast('info', 'Custom categories added in dynamic JSON!')" style="width: auto; padding: 10px 20px;">➕ Create Category</button>
+          <button class="btn-primary" id="btnAddCategory" style="width: auto; padding: 10px 20px;">➕ Create Category</button>
         </div>
         <div class="data-card">
           <div class="table-responsive">
@@ -274,13 +294,127 @@
             </table>
           </div>
         </div>
+
+        <!-- Category Items Inline View -->
+        <div id="categoryItemsPanel" style="display:none; margin-top: 20px;">
+          <div class="card-header">
+            <h3 id="categoryItemsTitle">🐠 Items in Category</h3>
+            <button class="btn-secondary" onclick="closeCategoryItems()">✕ Close</button>
+          </div>
+          <div class="data-card">
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Image</th>
+                    <th>Fish Name</th>
+                    <th>Price</th>
+                    <th>Tag</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="categoryItemsTableBody">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3b. FOODS & NUTRITION MANAGEMENT -->
+      <section class="app-section" id="sec-foods">
+        <div class="card-header">
+          <h3>🍖 Fish Foods &amp; Nutrition</h3>
+          <div style="display:flex; gap:10px;">
+            <button class="btn-secondary" onclick="loadAllFromFirestore()" style="width: auto; padding: 10px 15px;">🔄 Sync Firebase</button>
+            <button class="btn-primary" id="btnAddFood" style="width: auto; padding: 10px 20px;">➕ Add Food Item</button>
+          </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+          <div class="search-input-wrapper">
+            <span class="search-icon-inside">🔍</span>
+            <input type="text" class="form-input search-input" id="searchFoods" placeholder="Search foods by name or type...">
+          </div>
+          <select class="select-filter" id="filterFoodType">
+            <option value="all">All Types</option>
+            <option value="Pellets">Pellets</option>
+            <option value="Flakes">Flakes</option>
+            <option value="Live Food">Live Food</option>
+            <option value="Frozen Food">Frozen Food</option>
+            <option value="Supplements">Supplements</option>
+          </select>
+        </div>
+
+        <div class="data-card">
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Food Name</th>
+                  <th>Type</th>
+                  <th>Suitable For</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="foodsTableBody">
+                <!-- Foods dynamically load here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3c. AQUATIC ITEMS MANAGEMENT -->
+      <section class="app-section" id="sec-items">
+        <div class="card-header">
+          <h3>🛠️ Aquatic Items &amp; Accessories</h3>
+          <div style="display:flex; gap:10px;">
+            <button class="btn-secondary" onclick="loadAllFromFirestore()" style="width: auto; padding: 10px 15px;">🔄 Sync Firebase</button>
+            <button class="btn-primary" id="btnAddItem" style="width: auto; padding: 10px 20px;">➕ Add Item</button>
+          </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+          <div class="search-input-wrapper">
+            <span class="search-icon-inside">🔍</span>
+            <input type="text" class="form-input search-input" id="searchItems" placeholder="Search items by name...">
+          </div>
+        </div>
+
+        <div class="data-card">
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Item Name</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="itemsTableBody">
+                <!-- Items dynamically load here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
       </section>
 
       <!-- 4. ORDER MANAGEMENT -->
       <section class="app-section" id="sec-orders">
         <div class="card-header">
           <h3>Active Customer Orders</h3>
-          <button class="btn-secondary" onclick="showToast('success', 'Invoices compiled!')">Export PDF Invoice</button>
+          <div style="display:flex;gap:10px;">
+            <button class="btn-primary" style="width:auto;padding:10px 18px;" onclick="syncOrdersFromSheets()">🔄 Sync Orders</button>
+            <button class="btn-secondary" onclick="showToast('success', 'Invoices compiled!')">Export PDF Invoice</button>
+          </div>
         </div>
         <div class="data-card">
           <div class="table-responsive">
@@ -289,8 +423,11 @@
                 <tr>
                   <th>OrderID</th>
                   <th>Customer Name</th>
-                  <th>Product Purchased</th>
-                  <th>Amount</th>
+                  <th>Phone</th>
+                  <th>Products Purchased</th>
+                  <th>Total Amount</th>
+                  <th>UTR Number</th>
+                  <th>Screenshot</th>
                   <th>Status</th>
                   <th>Date</th>
                   <th>Actions</th>
@@ -372,9 +509,16 @@
       <section class="app-section" id="sec-media">
         <div class="card-header">
           <h3>Visual Media Library</h3>
+          <button class="btn-primary" onclick="document.getElementById('mockUploadInput').click()" style="width: auto; padding: 10px 20px;">📤 Drag & Drop Upload</button>
+          <input type="file" id="mockUploadInput" style="display: none;" onchange="showToast('success', 'Bulk images uploaded successfully!')" multiple>
+        </div>
+        <div class="data-card" style="padding: 30px; border-style: dashed; border-color: var(--color-primary); text-align: center; cursor: pointer;" onclick="document.getElementById('mockUploadInput').click()">
+          <span style="font-size: 3rem;">☁️</span>
+          <h4>Drag and drop multiple fish photos / videos here to upload instantly</h4>
+          <p style="color: var(--color-text-muted); font-size: 0.85rem; margin-top: 5px;">Supports JPEG, PNG, WEBP, AVIF and MP4 up to 50MB</p>
         </div>
         <div class="dashboard-grid" id="mediaLibraryGrid" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));">
-          <!-- Images loaded from images/ folder dynamically -->
+          <!-- Images loaded from fishes/ folder dynamically -->
         </div>
       </section>
 
@@ -382,7 +526,7 @@
       <section class="app-section" id="sec-seo">
         <div class="card-header">
           <h3>Search Engine Optimization (SEO)</h3>
-          <button class="btn-primary" onclick="showToast('success', 'Sitemap and Robots.txt generated!')" style="width: auto; padding: 10px 20px;">⚡ Save SEO Meta</button>
+          <button class="btn-primary" id="btnSaveSEO" style="width: auto; padding: 10px 20px;">⚡ Save SEO Meta</button>
         </div>
         <div class="data-card form-grid" style="display: grid;">
           <div class="form-group form-full">
@@ -400,6 +544,62 @@
           <div class="form-group">
             <label class="form-label">Google Analytics ID</label>
             <input type="text" class="form-input" placeholder="G-XXXXXXXXXX" value="G-SAQUATICS2025">
+          </div>
+        </div>
+      </section>
+
+      <!-- 9b. COUPONS MANAGEMENT -->
+      <section class="app-section" id="sec-coupons">
+        <div class="dashboard-grid" style="margin-bottom: 20px;">
+          <div class="stat-card" style="padding: 15px 20px;">
+            <div class="stat-info">
+              <h3>Total Coupons</h3>
+              <h2 id="cardTotalCoupons">0</h2>
+            </div>
+            <div class="stat-icon" style="width: 40px; height: 40px; font-size: 1.2rem;">🎟️</div>
+          </div>
+          <div class="stat-card" style="padding: 15px 20px;">
+            <div class="stat-info">
+              <h3>Active Coupons</h3>
+              <h2 id="cardActiveCoupons">0</h2>
+            </div>
+            <div class="stat-icon" style="width: 40px; height: 40px; font-size: 1.2rem; color: #00ffc8;">✅</div>
+          </div>
+        </div>
+        <div class="card-header">
+          <h3>🎟️ Promotional Coupons</h3>
+          <div style="display:flex; gap:10px;">
+            <button class="btn-secondary" onclick="loadAllFromFirestore()" style="width: auto; padding: 10px 15px;">🔄 Sync Firebase</button>
+            <button class="btn-primary" id="btnAddNewCoupon" style="width: auto; padding: 10px 20px;">➕ Create Coupon</button>
+          </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+          <div class="search-input-wrapper">
+            <span class="search-icon-inside">🔍</span>
+            <input type="text" class="form-input search-input" id="searchCoupons" placeholder="Search by coupon code...">
+          </div>
+        </div>
+
+        <div class="data-card">
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Coupon Code</th>
+                  <th>Discount</th>
+                  <th>Min Order</th>
+                  <th>Expiry Date</th>
+                  <th>Usage Limit</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="couponsTableBody">
+                <!-- Coupons dynamically load here -->
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
@@ -437,7 +637,295 @@
         </div>
       </section>
 
+      <!-- 11. HOMEPAGE BANNERS SECTION -->
+      <section class="app-section" id="sec-banners">
+        <div class="card-header">
+          <h3>Homepage Hero Banner &amp; Promotion Settings</h3>
+          <button class="btn-primary" id="btnSaveBanners" style="width: auto; padding: 10px 20px;">💾 Save Banner Settings</button>
+        </div>
+        <div class="data-card form-grid" style="display: grid;">
+          <div class="form-group form-full">
+            <h4 style="color:var(--color-primary); margin-bottom:10px; border-bottom:1px solid var(--glass-border); padding-bottom:5px;">Hero Section Config</h4>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Hero Title Text</label>
+            <input type="text" class="form-input" id="cfgHeroTitle" placeholder="e.g. SUBRAMANYA AQUATICS">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Hero Subtitle Text</label>
+            <input type="text" class="form-input" id="cfgHeroSubtitle" placeholder="e.g. Premium Exotic Fishes &amp; Aquariums">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Hero Background Image Path / URL</label>
+            <input type="text" class="form-input" id="cfgHeroBg" placeholder="e.g. logo.jpeg">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Or Upload Hero Background</label>
+            <div style="display:flex; gap:10px;">
+              <input type="file" class="form-input" id="cfgHeroBgFile" accept="image/*">
+              <span id="cfgHeroBgProgress" style="display:none; align-self:center; font-size:0.85rem; color:var(--color-secondary);">0%</span>
+            </div>
+          </div>
+
+          <div class="form-group form-full" style="margin-top:20px;">
+            <h4 style="color:var(--color-primary); margin-bottom:10px; border-bottom:1px solid var(--glass-border); padding-bottom:5px;">Promotion Offer Timer Bar</h4>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Offer Title / Banner Text</label>
+            <input type="text" class="form-input" id="cfgOfferTitle" placeholder="e.g. Special Summer Splash Discount!">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Associated Coupon Code</label>
+            <input type="text" class="form-input" id="cfgOfferCode" placeholder="e.g. AQUA10">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Offer Expiry Date (Countdown Timer)</label>
+            <input type="date" class="form-input" id="cfgOfferTimer">
+          </div>
+        </div>
+      </section>
+
+      <!-- 12. PAYMENTS & QR CONTROL SECTION -->
+      <section class="app-section" id="sec-payments">
+        <div class="card-header">
+          <h3>Payment Gateway &amp; Charges Configuration</h3>
+          <button class="btn-primary" id="btnSavePayments" style="width: auto; padding: 10px 20px;">💾 Save Payment Settings</button>
+        </div>
+        <div class="data-card form-grid" style="display: grid;">
+          <div class="form-group form-full">
+            <h4 style="color:var(--color-primary); margin-bottom:10px; border-bottom:1px solid var(--glass-border); padding-bottom:5px;">Store UPI Details</h4>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Primary UPI ID</label>
+            <input type="text" class="form-input" id="cfgUpiId" placeholder="e.g. subramanyaaquatics@ybl">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Payment QR Code Image URL</label>
+            <input type="text" class="form-input" id="cfgQrImage" placeholder="e.g. QR scan.jpeg">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Or Upload New Payment QR Image</label>
+            <div style="display:flex; gap:10px;">
+              <input type="file" class="form-input" id="cfgQrImageFile" accept="image/*">
+              <span id="cfgQrImageProgress" style="display:none; align-self:center; font-size:0.85rem; color:var(--color-secondary);">0%</span>
+            </div>
+          </div>
+
+          <div class="form-group form-full" style="margin-top:20px;">
+            <h4 style="color:var(--color-primary); margin-bottom:10px; border-bottom:1px solid var(--glass-border); padding-bottom:5px;">Shipping &amp; Handling Charges</h4>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Flat Delivery Charge (₹)</label>
+            <input type="number" class="form-input" id="cfgDeliveryCharge" placeholder="e.g. 150">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Packing Box Charge (₹)</label>
+            <input type="number" class="form-input" id="cfgPackingCharge" placeholder="e.g. 50">
+          </div>
+        </div>
+      </section>
+
     </main>
+  </div>
+
+  <!-- ADD / EDIT FOOD MODAL OVERLAY -->
+  <div class="modal-overlay" id="foodModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="foodModalTitle">Add Food Item</h3>
+        <button class="btn-close" id="btnCloseFoodModal">&times;</button>
+      </div>
+      <form id="foodForm">
+        <input type="hidden" id="editFoodId">
+        <div class="form-grid">
+          <div class="form-group form-full">
+            <label class="form-label">Food / Product Name</label>
+            <input type="text" class="form-input" id="foodName" required placeholder="e.g. Hikari Cichlid Gold Pellets">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Food Type</label>
+            <select class="select-filter" style="width: 100%;" id="foodType" required>
+              <option value="Pellets">Pellets</option>
+              <option value="Flakes">Flakes</option>
+              <option value="Live Food">Live Food</option>
+              <option value="Frozen Food">Frozen Food</option>
+              <option value="Supplements">Supplements</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Suitable For</label>
+            <input type="text" class="form-input" id="foodSuitable" required placeholder="e.g. All Fishes, Guppys, Bettas">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Price (₹)</label>
+            <input type="text" class="form-input" id="foodPrice" required placeholder="e.g. 150 or Contact Us">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Stock Status</label>
+            <select class="select-filter" style="width: 100%;" id="foodStock">
+              <option value="In Stock">In Stock</option>
+              <option value="Low Stock">Low Stock</option>
+              <option value="Out of Stock">Out of Stock</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Image Filename Path</label>
+            <input type="text" class="form-input" id="foodImage" placeholder="e.g. foods/hikari-pellets.jpg">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Or Upload Image</label>
+            <div style="display:flex; gap:10px;">
+              <input type="file" class="form-input" id="foodImageFile" accept="image/*">
+              <span id="foodImageUploadProgress" style="display:none; align-self:center; font-size:0.85rem; color:var(--color-secondary);">0%</span>
+            </div>
+          </div>
+          <div class="form-group form-full">
+            <label class="form-label">Description / Notes</label>
+            <textarea class="form-input" id="foodDesc" style="height: 80px; resize: none;" placeholder="Brand, weight, feeding instructions..."></textarea>
+          </div>
+          <div class="form-group form-full">
+            <button type="submit" class="btn-primary" id="btnSubmitFood">Save Food Item</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADD / EDIT ITEM MODAL OVERLAY -->
+  <div class="modal-overlay" id="itemModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="itemModalTitle">Add Aquatic Item</h3>
+        <button class="btn-close" id="btnCloseItemModal">&times;</button>
+      </div>
+      <form id="itemForm">
+        <input type="hidden" id="editItemId">
+        <div class="form-grid">
+          <div class="form-group form-full">
+            <label class="form-label">Item Name</label>
+            <input type="text" class="form-input" id="itemName" required placeholder="e.g. Aquarium Heater (50W)">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Price (₹)</label>
+            <input type="text" class="form-input" id="itemPrice" required placeholder="e.g. 300">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Stock Status</label>
+            <select class="select-filter" style="width: 100%;" id="itemStock">
+              <option value="In Stock">In Stock</option>
+              <option value="Low Stock">Low Stock</option>
+              <option value="Out of Stock">Out of Stock</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Image Filename Path</label>
+            <input type="text" class="form-input" id="itemImage" placeholder="e.g. items/50w aquarium heater.webp">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Or Upload Image</label>
+            <div style="display:flex; gap:10px;">
+              <input type="file" class="form-input" id="itemImageFile" accept="image/*">
+              <span id="itemImageUploadProgress" style="display:none; align-self:center; font-size:0.85rem; color:var(--color-secondary);">0%</span>
+            </div>
+          </div>
+          <div class="form-group form-full">
+            <button type="submit" class="btn-primary" id="btnSubmitItem">Save Item</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADD CATEGORY MODAL -->
+  <div class="modal-overlay" id="categoryModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="categoryModalTitle">Create New Category</h3>
+        <button class="btn-close" id="btnCloseCategoryModal">&times;</button>
+      </div>
+      <form id="categoryForm">
+        <input type="hidden" id="editCategoryName">
+        <div class="form-grid">
+          <div class="form-group form-full">
+            <label class="form-label">Category Name</label>
+            <input type="text" class="form-input" id="catName" required placeholder="e.g. Discus Fish">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Banner Image Path</label>
+            <input type="text" class="form-input" id="catImage" placeholder="e.g. fishes/discus.jpg">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Or Upload Image</label>
+            <div style="display:flex; gap:10px;">
+              <input type="file" class="form-input" id="catImageFile" accept="image/*">
+              <span id="catImageUploadProgress" style="display:none; align-self:center; font-size:0.85rem; color:var(--color-secondary);">0%</span>
+            </div>
+          </div>
+          <div class="form-group form-full">
+            <label class="form-label">Status</label>
+            <select class="select-filter" style="width: 100%;" id="catStatus">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="form-group form-full">
+            <button type="submit" class="btn-primary">Save Category</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADD / EDIT COUPON MODAL OVERLAY -->
+  <div class="modal-overlay" id="couponModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="couponModalTitle">Create New Coupon</h3>
+        <button class="btn-close" id="btnCloseCouponModal">&times;</button>
+      </div>
+      <form id="couponForm">
+        <input type="hidden" id="editCouponId">
+        <div class="form-grid">
+          <div class="form-group form-full">
+            <label class="form-label">Coupon Code (e.g. AQUA10)</label>
+            <input type="text" class="form-input" id="couponCode" required style="text-transform: uppercase;" placeholder="Enter promo code">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Discount Type</label>
+            <select class="select-filter" style="width: 100%;" id="couponType" required>
+              <option value="percentage">Percentage (%)</option>
+              <option value="fixed">Fixed Amount (₹)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Discount Value</label>
+            <input type="number" class="form-input" id="couponValue" required placeholder="e.g. 10 or 150">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Minimum Order Amount (₹)</label>
+            <input type="number" class="form-input" id="couponMinOrder" required placeholder="e.g. 500">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Expiry Date</label>
+            <input type="date" class="form-input" id="couponExpiry" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Max Total Usage Limit</label>
+            <input type="number" class="form-input" id="couponMaxUsage" placeholder="Leave empty for unlimited">
+          </div>
+          <div class="form-group" style="display:flex; align-items:center;">
+            <label class="toggle-switch">
+              <input type="checkbox" id="couponActiveToggle" checked>
+              <span class="slider"></span>
+            </label>
+            <span style="margin-left:10px; color:var(--color-text-main);">Coupon is Active</span>
+          </div>
+          <div class="form-group form-full">
+            <button type="submit" class="btn-primary" id="btnSubmitCoupon">Save Coupon</button>
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
 
   <!-- TOAST NOTIFICATION CONTAINER -->
@@ -475,18 +963,15 @@
             <label class="form-label">Price / Rate (₹)</label>
             <input type="text" class="form-input" id="prodPrice" required placeholder="e.g. 250 or Contact Us">
           </div>
-          <div class="form-group form-full">
-            <label class="form-label">Product Image</label>
-            <div style="display: flex; gap: 15px; align-items: center; margin-top: 5px;">
-              <div id="prodImagePreviewWrapper" style="width: 80px; height: 80px; border-radius: 8px; border: 2px dashed rgba(255,255,255,0.2); overflow: hidden; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2);">
-                <img id="prodImagePreview" src="" alt="Preview" style="max-width: 100%; max-height: 100%; object-fit: cover; display: none;">
-                <span id="prodImagePlaceholder" style="font-size: 1.5rem;">🐠</span>
-              </div>
-              <div style="flex-grow: 1;">
-                <input type="file" id="prodImageFile" accept="image/*" class="form-input" style="padding: 6px; width: 100%; box-sizing: border-box; background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px;">
-                <input type="hidden" id="prodImageBase64">
-                <small style="color: var(--color-text-muted); font-size: 0.75rem; display: block; margin-top: 6px;">Upload custom JPEG/PNG or leave blank for dynamic category SVG</small>
-              </div>
+          <div class="form-group">
+            <label class="form-label">Image Filename Path</label>
+            <input type="text" class="form-input" id="prodImage" required placeholder="e.g. fishes/Sward tail guppy.jpeg">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Or Upload Image</label>
+            <div style="display:flex; gap:10px;">
+              <input type="file" class="form-input" id="prodImageFile" accept="image/*">
+              <span id="prodImageUploadProgress" style="display:none; align-self:center; font-size:0.85rem; color:var(--color-secondary);">0%</span>
             </div>
           </div>
           <div class="form-group form-full">
@@ -514,6 +999,25 @@
       <button class="btn-primary" onclick="window.print(); showToast('success', 'Sending invoice to printer!')">🖨️ Print Invoice</button>
     </div>
   </div>
+
+  <!-- PAYMENT SCREENSHOT VIEWER MODAL OVERLAY -->
+  <div class="modal-overlay" id="screenshotModal">
+    <div class="modal-card" style="max-width: 500px; background: #0c1b33; color: #fff; text-align: center;">
+      <div class="modal-header">
+        <h3 id="screenshotModalTitle">🔍 Payment Screenshot Proof</h3>
+        <button class="btn-close" onclick="closeModal('screenshotModal')">&times;</button>
+      </div>
+      <div style="padding: 10px;">
+        <img id="screenshotViewerImg" src="" alt="Payment Screenshot" style="max-width: 100%; max-height: 400px; border-radius: 8px; border: 2px solid var(--color-primary); box-shadow: 0 0 20px rgba(0,212,255,0.4); object-fit: contain;">
+      </div>
+      <button class="btn-secondary" style="margin-top: 10px; padding: 8px 18px;" onclick="closeModal('screenshotModal')">Close View</button>
+    </div>
+  </div>
+
+  <!-- Supabase JS Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Custom Supabase Config -->
+  <script src="supabase-config.js"></script>
 
   <script src="admin.js"></script>
 </body>

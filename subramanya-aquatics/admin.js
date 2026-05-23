@@ -478,6 +478,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function initBubbleGenerator() {
   const container = document.getElementById('bubblesContainer');
   if (!container) return;
+  container.innerHTML = '';
   for (let i = 0; i < 20; i++) {
     const b = document.createElement('div');
     b.classList.add('bubble');
@@ -550,14 +551,19 @@ function initNavigation() {
   const headersMap = {
     overview: { title: 'Dashboard Overview', desc: 'Real-time business performance analytics' },
     products: { title: 'Fish & Products', desc: 'Manage aquatic catalog items, rates, and badges' },
+    foods: { title: 'Foods & Nutrition', desc: 'Manage fish food packages and brands' },
+    items: { title: 'Aquatic Items', desc: 'Manage filters, heaters, pumps, and decor' },
     categories: { title: 'Store Categories', desc: 'Manage freshwater, saltwater, and gear catalog classes' },
+    coupons: { title: 'Promotional Coupons', desc: 'Manage discount codes and active coupons' },
     orders: { title: 'Orders Management', desc: 'Process customer purchase requests, track deliveries and invoices' },
     customers: { title: 'Customers List', desc: 'View, search, filter, or ban registered customers' },
     messages: { title: 'Customer Inquiries', desc: 'Review and reply to customer contact form messages' },
     testimonials: { title: 'Review Testimonials', desc: 'Approve or reject customer ratings' },
     media: { title: 'Media Library', desc: 'Upload, optimize and search fish images or videos' },
     seo: { title: 'SEO Configurations', desc: 'Configure search engine indexing meta tags and sitemaps' },
-    settings: { title: 'Portal Settings', desc: 'Change general portal settings, contacts and maintenance modes' }
+    settings: { title: 'Portal Settings', desc: 'Change general portal settings, contacts and maintenance modes' },
+    banners: { title: 'Homepage Banners', desc: 'Configure homepage sliders and active promotions' },
+    payments: { title: 'Payment & QR Control', desc: 'Set UPI configurations, packing boxes, and QR codes' }
   };
 
   navLinks.forEach(link => {
@@ -591,120 +597,111 @@ let customers = [];
 let categories = [];
 let testimonials = [];
 let inquiries = [];
+let foods = [];
+let items = [];
+let coupons = [];
 
-function initPortalState() {
-    const defaultProducts = [
-      // Guppys
-      { id: 1, name: 'Moon Tail Guppys', category: 'Guppys', price: '₹99', image: 'fishes/mixed-guppys.jpg', tag: 'Best Seller' },
-      { id: 2, name: 'Premium Mixed', category: 'Guppys', price: '₹99', image: 'fishes/premium-mixed-guppys.jpeg', tag: 'Premium' },
-      { id: 3, name: 'Mixed Guppy', category: 'Guppys', price: '₹69', image: 'fishes/mixed-guppys.jpg', tag: 'Standard' },
-      { id: 4, name: 'Golden Guppys (24K)', category: 'Guppys', price: '₹249', image: 'fishes/golden-guppy.jpg', tag: 'Exotic' },
-      { id: 5, name: 'HB Blue', category: 'Guppys', price: '₹149', image: 'fishes/hb-blue-guppys.jpg', tag: 'Popular' },
-      { id: 6, name: 'Koi Guppys', category: 'Guppys', price: '₹249', image: 'fishes/albino-red-eye-guppy.jpg', tag: 'Exotic' },
-      { id: 7, name: 'Platinum Guppys', category: 'Guppys', price: '₹99', image: 'fishes/platinum-guppys.webp', tag: 'Regular' },
-      { id: 8, name: 'Platinum (Dumbo)', category: 'Guppys', price: '₹149', image: 'fishes/platinum-dumbo-ear-guppys.jpeg', tag: 'Premium' },
-      { id: 9, name: 'Dragon Tail', category: 'Guppys', price: '₹149', image: 'fishes/dragon-tail-guppys.jpg', tag: 'Premium' },
-      { id: 10, name: 'Koi Texido', category: 'Guppys', price: '₹250', image: 'fishes/koi-texido.jpg', tag: 'Premium' },
-      { id: 11, name: 'Dark Knight Dragon', category: 'Guppys', price: '₹250', image: 'fishes/dark-knight-dragon.jpg', tag: 'Premium' },
+async function initPortalState() {
+  const defaultProducts = [
+    { id: 1, name: 'Moon Tail Guppys', category: 'Guppys', price: '₹99', image: 'fishes/mixed-guppys.jpg', tag: 'Best Seller' },
+    { id: 2, name: 'Premium Mixed', category: 'Guppys', price: '₹99', image: 'fishes/premium-mixed-guppys.jpeg', tag: 'Premium' },
+    { id: 3, name: 'Mixed Guppy', category: 'Guppys', price: '₹69', image: 'fishes/mixed-guppys.jpg', tag: 'Standard' },
+    { id: 4, name: 'Golden Guppys (24K)', category: 'Guppys', price: '₹249', image: 'fishes/golden-guppy.jpg', tag: 'Exotic' },
+    { id: 5, name: 'HB Blue', category: 'Guppys', price: '₹149', image: 'fishes/hb-blue-guppys.jpg', tag: 'Popular' },
+    { id: 6, name: 'Koi Guppys', category: 'Guppys', price: '₹249', image: 'fishes/albino-red-eye-guppy.jpg', tag: 'Exotic' },
+    { id: 7, name: 'Platinum Guppys', category: 'Guppys', price: '₹99', image: 'fishes/platinum-guppys.webp', tag: 'Regular' },
+    { id: 8, name: 'Platinum (Dumbo)', category: 'Guppys', price: '₹149', image: 'fishes/platinum-dumbo-ear-guppys.jpeg', tag: 'Premium' },
+    { id: 9, name: 'Dragon Tail', category: 'Guppys', price: '₹149', image: 'fishes/dragon-tail-guppys.jpg', tag: 'Premium' },
+    { id: 10, name: 'Koi Texido', category: 'Guppys', price: '₹250', image: 'fishes/koi-texido.jpg', tag: 'Premium' },
+    { id: 11, name: 'Dark Knight Dragon', category: 'Guppys', price: '₹250', image: 'fishes/dark-knight-dragon.jpg', tag: 'Premium' },
+    { id: 12, name: 'White Angel', category: 'Angels', price: '₹150', image: 'fishes/white-angel.jpg', tag: 'Popular' },
+    { id: 13, name: 'Marbel Angel', category: 'Angels', price: '₹199', image: 'fishes/marbel-angel.jpg', tag: 'Popular' },
+    { id: 14, name: 'Angel', category: 'Angels', price: '₹100', image: 'fishes/Angel.jpg', tag: 'Standard' },
+    { id: 15, name: 'Mollys', category: 'Mollies', price: '₹49', image: 'fishes/mollies.webp', tag: 'Popular' },
+    { id: 16, name: 'Moontail Mollys', category: 'Mollies', price: '₹99', image: 'fishes/moon-tail-mollies.jpg', tag: 'Standard' },
+    { id: 17, name: 'Balloon Mollys', category: 'Mollies', price: '₹79', image: 'fishes/ballon-mollies.jpeg', tag: 'Healthy' },
+    { id: 18, name: "Molly Baby's", category: 'Mollies', price: '₹5', image: 'fishes/molly-babyes.jpeg', tag: 'Piece' },
+    { id: 19, name: 'Gourami', category: 'Oxy-less Fishes', price: '₹79', image: 'fishes/Gourami.jpg', tag: 'Healthy' },
+    { id: 20, name: 'Plattys', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/platy-fish.webp', tag: 'Standard' },
+    { id: 21, name: 'Sword Tail Plattys', category: 'Oxy-less Fishes', price: '₹99', image: 'fishes/sward-tail-platy.jpeg', tag: 'Popular' },
+    { id: 22, name: 'Zebra', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/zebra-fish.webp', tag: 'Active' },
+    { id: 23, name: 'Sharks (Small)', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/shark-small.webp', tag: 'Active' },
+    { id: 24, name: 'Sharks (Medium)', category: 'Oxy-less Fishes', price: '₹99', image: 'fishes/shark-medium.avif', tag: 'Active' },
+    { id: 25, name: 'OHM (Males)', category: "Betta's", price: '₹149', image: 'fishes/beta-ohm-male.webp', tag: 'Exotic' },
+    { id: 26, name: 'OHM (Female)', category: "Betta's", price: '₹99', image: 'fishes/beta-ohm-females.jpg', tag: 'Standard' },
+    { id: 27, name: 'Hmpk Starting', category: "Betta's", price: '₹250', image: 'fishes/beta-hmpk-male.webp', tag: 'Popular' },
+    { id: 28, name: 'Placarts', category: "Betta's", price: '₹499', image: 'fishes/beta-placarts-male.jpg', tag: 'Exotic' },
+    { id: 29, name: 'Albino Oscar', category: 'Wild Oscars', price: '₹499', image: 'fishes/albino-oscar-fish.webp', tag: 'Giant' },
+    { id: 30, name: 'Tiger Red Oscar', category: 'Wild Oscars', price: '₹499', image: 'fishes/red-tiger-oscar.jpg', tag: 'Giant' },
+    { id: 31, name: 'Red Oscar', category: 'Wild Oscars', price: '₹599', image: 'fishes/red-oscar.jpg', tag: 'Premium' },
+    { id: 32, name: 'Lemon Oscar', category: 'Wild Oscars', price: '₹599', image: 'fishes/lemon-oscar.jpeg', tag: 'Premium' },
+    { id: 33, name: 'Mango Oscar', category: 'Wild Oscars', price: '₹599', image: 'fishes/mango-oscar.jpg', tag: 'Premium' },
+    { id: 34, name: 'SRD', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/srd-flowerhorn.jpg', tag: 'Show Grade' },
+    { id: 35, name: 'KML', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/kml-flowerhorn.jpg', tag: 'Show Grade' },
+    { id: 36, name: 'F2 Kamfa', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/f2-kamfa.jpg', tag: 'Show Grade' },
+    { id: 37, name: 'Silver Arowana', category: 'Arowana', price: 'Contact Us', image: 'fishes/silver-arwana.webp', tag: 'Luxury' },
+    { id: 38, name: 'Golden Arowana', category: 'Arowana', price: 'Contact Us', image: 'fishes/gold-arwana.jpg', tag: 'Luxury' },
+    { id: 39, name: 'Red Arowana', category: 'Arowana', price: 'Contact Us', image: 'fishes/red-arwana.jpeg', tag: 'Luxury' }
+  ];
 
-      // Angels
-      { id: 12, name: 'White Angel', category: 'Angels', price: '₹150', image: 'fishes/white-angel.jpg', tag: 'Popular' },
-      { id: 13, name: 'Marbel Angel', category: 'Angels', price: '₹199', image: 'fishes/marbel-angel.jpg', tag: 'Popular' },
-      { id: 14, name: 'Angel', category: 'Angels', price: '₹100', image: 'fishes/Angel.jpg', tag: 'Standard' },
+  const defaultCategories = [
+    { name: 'Guppys', count: 11, image: 'fishes/premium-mixed-guppys.jpeg', status: 'Active' },
+    { name: 'Angels', count: 3, image: 'fishes/white-angel.jpg', status: 'Active' },
+    { name: 'Mollies', count: 4, image: 'fishes/mollies.webp', status: 'Active' },
+    { name: 'Oxy-less Fishes', count: 6, image: 'fishes/Gourami.jpg', status: 'Active' },
+    { name: "Betta's", count: 4, image: 'fishes/beta-hmpk-male.webp', status: 'Active' },
+    { name: 'Wild Oscars', count: 5, image: 'fishes/red-oscar.jpg', status: 'Active' },
+    { name: 'Flowerhorns', count: 3, image: 'fishes/srd-flowerhorn.jpg', status: 'Active' },
+    { name: 'Arowana', count: 3, image: 'fishes/silver-arwana.webp', status: 'Active' },
+    { name: 'Aquarium Items', count: 8, image: 'logo.jpeg', status: 'Active' },
+    { name: 'Aquarium Decorative Items', count: 2, image: 'logo.jpeg', status: 'Active' },
+    { name: 'Fish Food', count: 8, image: 'food/dry-worms-cubes.jpeg', status: 'Active' }
+  ];
 
-      // Mollies
-      { id: 15, name: 'Mollys', category: 'Mollies', price: '₹49', image: 'fishes/mollies.webp', tag: 'Popular' },
-      { id: 16, name: 'Moontail Mollys', category: 'Mollies', price: '₹99', image: 'fishes/moon-tail-mollies.jpg', tag: 'Standard' },
-      { id: 17, name: 'Balloon Mollys', category: 'Mollies', price: '₹79', image: 'fishes/ballon-mollies.jpeg', tag: 'Healthy' },
-      { id: 18, name: "Molly Baby's", category: 'Mollies', price: '₹5', image: 'fishes/molly-babyes.jpeg', tag: 'Piece' },
+  const defaultFoods = [
+    { id: 50, name: 'Dry Worms (10g)', type: 'Live Food', suitable: 'All Fishes', price: '₹25', stock: 'In Stock', image: 'food/dry-worms-cubes.jpeg', description: 'Dry worms cubes' },
+    { id: 51, name: 'Farm Food (100g)', type: 'Pellets', suitable: 'Guppys, Bettas', price: '₹200', stock: 'In Stock', image: 'food/farm-food.jpg', description: 'Farm food' },
+    { id: 52, name: 'Okiko Black Pearl Flowerhorn Food', type: 'Pellets', suitable: 'Flowerhorns', price: '₹300', stock: 'In Stock', image: 'food/okiko-black-pearl-flowehorn-food.webp', description: 'Flowerhorn food' },
+    { id: 53, name: 'Okiko Head Power Flowerhorns Food', type: 'Pellets', suitable: 'Flowerhorns', price: '₹300', stock: 'In Stock', image: 'food/okiko-head-power-flowerhorns-food.jpeg', description: 'Flowerhorn food' },
+    { id: 54, name: 'Okiko Red Diamond Flowerhorn Food', type: 'Pellets', suitable: 'Flowerhorns', price: '₹300', stock: 'In Stock', image: 'food/okoko-red-diamond-fish-food.jpg', description: 'Flowerhorn food' },
+    { id: 55, name: 'Optimun 3 in 1 Fish Food', type: 'Pellets', suitable: 'All Fishes', price: '₹160', stock: 'In Stock', image: 'food/optimun-3-in-1-fish-food.webp', description: 'Optimum fish food' },
+    { id: 56, name: 'Tiyo Fish Food (Small)', type: 'Pellets', suitable: 'Gold Fish', price: '₹20', stock: 'In Stock', image: 'food/tiyo-fish-food-(small).jpeg', description: 'Tiyo small pellets' },
+    { id: 57, name: 'Tiyo Fish Food', type: 'Pellets', suitable: 'Gold Fish', price: '₹30', stock: 'In Stock', image: 'food/tiyo-fish-food(large).jpg', description: 'Tiyo large pellets' }
+  ];
 
-      // Oxy-less Fishes
-      { id: 19, name: 'Gourami', category: 'Oxy-less Fishes', price: '₹79', image: 'fishes/Gourami.jpg', tag: 'Healthy' },
-      { id: 20, name: 'Plattys', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/platy-fish.webp', tag: 'Standard' },
-      { id: 21, name: 'Sword Tail Plattys', category: 'Oxy-less Fishes', price: '₹99', image: 'fishes/sward-tail-platy.jpeg', tag: 'Popular' },
-      { id: 22, name: 'Zebra', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/zebra-fish.webp', tag: 'Active' },
-      { id: 23, name: 'Sharks (Small)', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/shark-small.webp', tag: 'Active' },
-      { id: 24, name: 'Sharks (Medium)', category: 'Oxy-less Fishes', price: '₹99', image: 'fishes/shark-medium.avif', tag: 'Active' },
+  const defaultItems = [
+    { id: 40, name: 'Aquarium Heater (50W)', price: '₹300', stock: 'In Stock', image: 'items/50w-aquarium-heater.webp' },
+    { id: 41, name: 'Aquarium Heater (100W)', price: '₹350', stock: 'In Stock', image: 'items/100-w-aquarium-heater.webp' },
+    { id: 42, name: 'Aquarium Light Large', price: '₹400', stock: 'In Stock', image: 'items/aquarium-light-(large-).jpg' },
+    { id: 43, name: 'Aquarium Light Small', price: '₹300', stock: 'In Stock', image: 'items/aquarium-light-(small).jpg' },
+    { id: 44, name: 'Bubble Oxygen', price: '₹200', stock: 'In Stock', image: 'items/buble-oxygen.webp' },
+    { id: 45, name: 'Double Oxygen', price: '₹300', stock: 'In Stock', image: 'items/double-oxygen.webp' },
+    { id: 46, name: 'Internal Oxygen (Small)', price: '₹300', stock: 'In Stock', image: 'items/internal-oxgyen-(small).webp' },
+    { id: 47, name: 'Internal Oxygen (Large)', price: '₹400', stock: 'In Stock', image: 'items/internal-oxgyen-(big).jpg' },
+    { id: 48, name: 'Plastic Plants Piece', price: '₹25', stock: 'In Stock', image: 'items/plastic-plants-(small).jpg' },
+    { id: 49, name: 'Stones (1kg)', price: '₹50', stock: 'In Stock', image: 'items/stones.jpg' }
+  ];
 
-      // Betta's
-      { id: 25, name: 'OHM (Males)', category: "Betta's", price: '₹149', image: 'fishes/beta-ohm-male.webp', tag: 'Exotic' },
-      { id: 26, name: 'OHM (Female)', category: "Betta's", price: '₹99', image: 'fishes/beta-ohm-females.jpg', tag: 'Standard' },
-      { id: 27, name: 'Hmpk Starting', category: "Betta's", price: '₹250', image: 'fishes/beta-hmpk-male.webp', tag: 'Popular' },
-      { id: 28, name: 'Placarts', category: "Betta's", price: '₹499', image: 'fishes/beta-placarts-male.jpg', tag: 'Exotic' },
-
-      // Wild Oscars
-      { id: 29, name: 'Albino Oscar', category: 'Wild Oscars', price: '₹499', image: 'fishes/albino-oscar-fish.webp', tag: 'Giant' },
-      { id: 30, name: 'Tiger Red Oscar', category: 'Wild Oscars', price: '₹499', image: 'fishes/red-tiger-oscar.jpg', tag: 'Giant' },
-      { id: 31, name: 'Red Oscar', category: 'Wild Oscars', price: '₹599', image: 'fishes/red-oscar.jpg', tag: 'Premium' },
-      { id: 32, name: 'Lemon Oscar', category: 'Wild Oscars', price: '₹599', image: 'fishes/lemon-oscar.jpeg', tag: 'Premium' },
-      { id: 33, name: 'Mango Oscar', category: 'Wild Oscars', price: '₹599', image: 'fishes/mango-oscar.jpg', tag: 'Premium' },
-
-      // Flowerhorns
-      { id: 34, name: 'SRD', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/srd-flowerhorn.jpg', tag: 'Show Grade' },
-      { id: 35, name: 'KML', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/kml-flowerhorn.jpg', tag: 'Show Grade' },
-      { id: 36, name: 'F2 Kamfa', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/f2-kamfa.jpg', tag: 'Show Grade' },
-
-      // Arowana
-      { id: 37, name: 'Silver Arowana', category: 'Arowana', price: 'Contact Us', image: 'fishes/silver-arwana.webp', tag: 'Luxury' },
-      { id: 38, name: 'Golden Arowana', category: 'Arowana', price: 'Contact Us', image: 'fishes/gold-arwana.jpg', tag: 'Luxury' },
-      { id: 39, name: 'Red Arowana', category: 'Arowana', price: 'Contact Us', image: 'fishes/red-arwana.jpeg', tag: 'Luxury' },
-
-      // Aquarium Items
-      { id: 40, name: 'Aquarium Heater (50W)', category: 'Aquarium Items', price: '₹300', image: 'items/50w-aquarium-heater.webp', tag: 'Heater' },
-      { id: 41, name: 'Aquarium Heater (100W)', category: 'Aquarium Items', price: '₹350', image: 'items/100-w-aquarium-heater.webp', tag: 'Heater' },
-      { id: 42, name: 'Aquarium Light Large', category: 'Aquarium Items', price: '₹400', image: 'items/aquarium-light-(large-).jpg', tag: 'Light' },
-      { id: 43, name: 'Aquarium Light Small', category: 'Aquarium Items', price: '₹300', image: 'items/aquarium-light-(small).jpg', tag: 'Light' },
-      { id: 44, name: 'Bubble Oxygen', category: 'Aquarium Items', price: '₹200', image: 'items/buble-oxygen.webp', tag: 'Oxygen' },
-      { id: 45, name: 'Double Oxygen', category: 'Aquarium Items', price: '₹300', image: 'items/double-oxygen.webp', tag: 'Oxygen' },
-      { id: 46, name: 'Internal Oxygen (Small)', category: 'Aquarium Items', price: '₹300', image: 'items/internal-oxgyen-(small).webp', tag: 'Oxygen' },
-      { id: 47, name: 'Internal Oxygen (Large)', category: 'Aquarium Items', price: '₹400', image: 'items/internal-oxgyen-(big).jpg', tag: 'Oxygen' },
-
-      // Aquarium Decorative Items
-      { id: 48, name: 'Plastic Plants Piece', category: 'Aquarium Decorative Items', price: '₹25', image: 'items/plastic-plants-(small).jpg', tag: 'Decor' },
-      { id: 49, name: 'Stones (1kg)', category: 'Aquarium Decorative Items', price: '₹50', image: 'items/stones.jpg', tag: 'Decor' },
-
-      // Fish Food
-      { id: 50, name: 'Dry Worms (10g)', category: 'Fish Food', price: '₹25', image: 'food/dry-worms-cubes.jpeg', tag: 'Food' },
-      { id: 51, name: 'Farm Food (100g)', category: 'Fish Food', price: '₹200', image: 'food/farm-food.jpg', tag: 'Food' },
-      { id: 52, name: 'Okiko Black Pearl Flowerhorn Food', category: 'Fish Food', price: '₹300', image: 'food/okiko-black-pearl-flowehorn-food.webp', tag: 'Food' },
-      { id: 53, name: 'Okiko Head Power Flowerhorns Food', category: 'Fish Food', price: '₹300', image: 'food/okiko-head-power-flowerhorns-food.jpeg', tag: 'Food' },
-      { id: 54, name: 'Okiko Red Diamond Flowerhorn Food', category: 'Fish Food', price: '₹300', image: 'food/okoko-red-diamond-fish-food.jpg', tag: 'Food' },
-      { id: 55, name: 'Optimun 3 in 1 Fish Food', category: 'Fish Food', price: '₹160', image: 'food/optimun-3-in-1-fish-food.webp', tag: 'Food' },
-      { id: 56, name: 'Tiyo Fish Food (Small)', category: 'Fish Food', price: '₹20', image: 'food/tiyo-fish-food-(small).jpeg', tag: 'Food' },
-      { id: 57, name: 'Tiyo Fish Food', category: 'Fish Food', price: '₹30', image: 'food/tiyo-fish-food(large).jpg', tag: 'Food' }
-    ];
-
-    const defaultCategories = [
-      { name: 'Guppys', count: 11, image: 'fishes/premium-mixed-guppys.jpeg', status: 'Active' },
-      { name: 'Angels', count: 3, image: 'fishes/white-angel.jpg', status: 'Active' },
-      { name: 'Mollies', count: 4, image: 'fishes/mollies.webp', status: 'Active' },
-      { name: 'Oxy-less Fishes', count: 6, image: 'fishes/Gourami.jpg', status: 'Active' },
-      { name: "Betta's", count: 4, image: 'fishes/beta-hmpk-male.webp', status: 'Active' },
-      { name: 'Wild Oscars', count: 5, image: 'fishes/red-oscar.jpg', status: 'Active' },
-      { name: 'Flowerhorns', count: 3, image: 'fishes/srd-flowerhorn.jpg', status: 'Active' },
-      { name: 'Arowana', count: 3, image: 'fishes/silver-arwana.webp', status: 'Active' },
-      { name: 'Aquarium Items', count: 8, image: 'logo.jpeg', status: 'Active' },
-      { name: 'Aquarium Decorative Items', count: 2, image: 'logo.jpeg', status: 'Active' },
-      { name: 'Fish Food', count: 8, image: 'food/dry-worms-cubes.jpeg', status: 'Active' }
-    ];
+  const defaultCoupons = [
+    { id: 1, code: 'AQUA10', type: 'percentage', value: 10, min_order: 500, expiry: '2026-12-31', max_usage: 100, current_usage: 0, active: true },
+    { id: 2, code: 'WELCOME50', type: 'fixed', value: 50, min_order: 300, expiry: '2026-12-31', max_usage: 200, current_usage: 0, active: true }
+  ];
 
   const defaultOrders = [
-    { id: 'ORD-8932', customer: 'Rajesh Kumar', product: 'Silver Arowana (1 Pair)', amount: 'Contact Us', status: 'confirmed', date: 'May 06, 2026' },
-    { id: 'ORD-8933', customer: 'Priya Sharma', product: 'Golden Guppys 24K (5 pairs)', amount: '₹1,245', status: 'delivered', date: 'May 05, 2026' },
-    { id: 'ORD-8934', customer: 'Vikram Patel', product: 'Black Moor Gold Fish (2 pairs)', amount: '₹198', status: 'pending', date: 'May 04, 2026' },
-    { id: 'ORD-8935', customer: 'Anitha Reddy', product: 'Polar Parrot Breeding Pair (1 Pair)', amount: '₹500', status: 'shipped', date: 'May 03, 2026' }
+    { id: 'SA-8932', customer: 'Rajesh Kumar', phone: '+917995549922', product: 'Silver Arowana (1 Pair)', amount: '₹1200', status: 'confirmed', date: '06/05/2026', address: 'Vizag Complex', utr: '123456789012', screenshot_url: '' },
+    { id: 'SA-8933', customer: 'Priya Sharma', phone: '+919999999999', product: 'Golden Guppys 24K (5 pairs)', amount: '₹1245', status: 'delivered', date: '05/05/2026', address: 'Vuda Park Road, Vizag', utr: '987654321098', screenshot_url: '' },
+    { id: 'SA-8934', customer: 'Vikram Patel', phone: '+918888888888', product: 'Black Moor Gold Fish (2 pairs)', amount: '₹198', status: 'pending', date: '04/05/2026', address: 'Madhurawada, Vizag', utr: '888877776666', screenshot_url: '' }
   ];
 
   const defaultCustomers = [
     { id: 'CUST-001', name: 'Rajesh Kumar', email: 'rajesh@gmail.com', orders: 4, status: 'Active' },
     { id: 'CUST-002', name: 'Priya Sharma', email: 'priya@gmail.com', orders: 2, status: 'Active' },
-    { id: 'CUST-003', name: 'Vikram Patel', email: 'vikram@gmail.com', orders: 1, status: 'Active' },
-    { id: 'CUST-004', name: 'Anitha Reddy', email: 'anitha@gmail.com', orders: 7, status: 'Active' }
+    { id: 'CUST-003', name: 'Vikram Patel', email: 'vikram@gmail.com', orders: 1, status: 'Active' }
   ];
 
   const defaultTestimonials = [
-    { name: 'Rajesh Kumar', text: 'Absolutely amazing collection of exotic fishes! The Arowana I purchased is healthy and stunning.', rating: '⭐⭐⭐⭐⭐', status: 'Approved' },
-    { name: 'Priya Sharma', text: 'Got my entire aquarium setup done by Subramanya Aquatics. The planted tank looks like an underwater paradise.', rating: '⭐⭐⭐⭐⭐', status: 'Approved' }
+    { id: 1, name: 'Rajesh Kumar', text: 'Absolutely amazing collection of exotic fishes! The Arowana I purchased is healthy and stunning.', rating: '⭐⭐⭐⭐⭐', status: 'Approved' },
+    { id: 2, name: 'Priya Sharma', text: 'Got my entire aquarium setup done by Subramanya Aquatics. The planted tank looks like an underwater paradise.', rating: '⭐⭐⭐⭐⭐', status: 'Approved' }
   ];
 
   const defaultInquiries = [
@@ -712,45 +709,120 @@ function initPortalState() {
     { id: 2, name: 'Megha Sen', email: 'megha@yahoo.com', msg: 'Interested in getting a custom 3ft glass aquarium setup for my living room.', phone: '+91 87654 32109' }
   ];
 
-  // Load state from local storage or set defaults
-  let storedProducts = localStorage.getItem('sa_products');
-  // Clear stale localStorage if it contains bad paths (i.e. paths containing old deleted images/ folder or outdated default paths)
-  if (storedProducts) {
-    try {
-      const parsed = JSON.parse(storedProducts);
-      const hasBadPaths = parsed.length !== defaultProducts.length || parsed.some(p => {
-        if (!p.image) return true;
-        if (p.image.startsWith('images/')) return true;
-        // If it's a default product (id <= 57), check if the image matches our new mapping
-        if (p.id <= 57) {
-          const expectedImage = defaultProducts.find(dp => dp.id === p.id)?.image;
-          if (expectedImage && p.image !== expectedImage) {
-            return true;
-          }
-        }
-        return false;
-      });
-      if (hasBadPaths) {
-        localStorage.removeItem('sa_products');
-        localStorage.removeItem('sa_categories');
-        storedProducts = null;
-      }
-    } catch(e) {
-      localStorage.removeItem('sa_products');
-      storedProducts = null;
-    }
-  }
-
-  products = storedProducts ? JSON.parse(storedProducts) : defaultProducts;
+  // Retrieve cached / storage data
+  products = JSON.parse(localStorage.getItem('sa_products')) || defaultProducts;
   categories = JSON.parse(localStorage.getItem('sa_categories')) || defaultCategories;
   orders = JSON.parse(localStorage.getItem('sa_orders')) || defaultOrders;
   customers = JSON.parse(localStorage.getItem('sa_customers')) || defaultCustomers;
   testimonials = JSON.parse(localStorage.getItem('sa_testimonials')) || defaultTestimonials;
   inquiries = JSON.parse(localStorage.getItem('sa_inquiries')) || defaultInquiries;
+  foods = JSON.parse(localStorage.getItem('sa_foods')) || defaultFoods;
+  items = JSON.parse(localStorage.getItem('sa_items')) || defaultItems;
+  coupons = JSON.parse(localStorage.getItem('sa_coupons')) || defaultCoupons;
 
-  saveAllState();
+  // Local render for fast access
+  renderAllTables();
 
-  // Render everything
+  // Supabase dynamic sync
+  if (window.supabaseClient) {
+    console.log('%c☁️ Syncing admin data from Supabase DB...', 'color: #00d4ff; font-weight: bold;');
+    const seedBtn = document.getElementById('btnAutoSeed');
+    if (seedBtn) seedBtn.style.display = 'inline-block';
+
+    try {
+      const fetchPromises = [
+        window.supabaseClient.from('categories').select('*').then(({ data }) => {
+          if (data && data.length > 0) { categories = data; localStorage.setItem('sa_categories', JSON.stringify(categories)); }
+        }),
+        window.supabaseClient.from('products').select('*').order('id').then(({ data }) => {
+          if (data && data.length > 0) { products = data; localStorage.setItem('sa_products', JSON.stringify(products)); }
+        }),
+        window.supabaseClient.from('foods').select('*').order('id').then(({ data }) => {
+          if (data && data.length > 0) { foods = data; localStorage.setItem('sa_foods', JSON.stringify(foods)); }
+        }),
+        window.supabaseClient.from('items').select('*').order('id').then(({ data }) => {
+          if (data && data.length > 0) { items = data; localStorage.setItem('sa_items', JSON.stringify(items)); }
+        }),
+        window.supabaseClient.from('coupons').select('*').order('id').then(({ data }) => {
+          if (data && data.length > 0) { coupons = data; localStorage.setItem('sa_coupons', JSON.stringify(coupons)); }
+        }),
+        window.supabaseClient.from('orders').select('*').order('created_at', { ascending: false }).then(({ data }) => {
+          if (data) {
+            orders = data.map(d => ({
+              id: d.id,
+              customer: d.customer,
+              phone: d.phone,
+              product: Array.isArray(d.items) ? d.items.map(it => `${it.name} (${it.qty})`).join(', ') : d.items,
+              amount: '₹' + d.total,
+              status: d.status,
+              date: d.date,
+              address: d.address,
+              utr: d.utr,
+              screenshot_url: d.screenshot_url
+            }));
+            localStorage.setItem('sa_orders', JSON.stringify(orders));
+          }
+        }),
+        window.supabaseClient.from('customers').select('*').order('created_at', { ascending: false }).then(({ data }) => {
+          if (data) { customers = data; localStorage.setItem('sa_customers', JSON.stringify(customers)); }
+        }),
+        window.supabaseClient.from('inquiries').select('*').order('id', { ascending: false }).then(({ data }) => {
+          if (data) { inquiries = data; localStorage.setItem('sa_inquiries', JSON.stringify(inquiries)); }
+        }),
+        window.supabaseClient.from('testimonials').select('*').order('id', { ascending: false }).then(({ data }) => {
+          if (data) { testimonials = data; localStorage.setItem('sa_testimonials', JSON.stringify(testimonials)); }
+        }),
+        window.supabaseClient.from('settings').select('*').then(({ data }) => {
+          if (data) {
+            const configVal = data.find(s => s.key === 'config')?.value;
+            const bannersVal = data.find(s => s.key === 'banners')?.value;
+            const paymentsVal = data.find(s => s.key === 'payments')?.value;
+            const seoVal = data.find(s => s.key === 'seo')?.value;
+
+            if (configVal) {
+              document.getElementById('cfgWhatsApp').value = configVal.whatsApp || '';
+              document.getElementById('cfgEmail').value = configVal.email || '';
+              document.getElementById('cfgAddress').value = configVal.address || '';
+              document.getElementById('cfgMaintenance').value = configVal.maintenance || 'no';
+              document.getElementById('cfgSoundPitch').value = configVal.soundPitch || 400;
+            }
+            if (bannersVal) {
+              document.getElementById('cfgHeroTitle').value = bannersVal.heroTitle || '';
+              document.getElementById('cfgHeroSubtitle').value = bannersVal.heroSubtitle || '';
+              document.getElementById('cfgHeroBg').value = bannersVal.heroBg || '';
+              document.getElementById('cfgOfferTitle').value = bannersVal.offerTitle || '';
+              document.getElementById('cfgOfferCode').value = bannersVal.offerCode || '';
+              document.getElementById('cfgOfferTimer').value = bannersVal.offerTimer || '';
+            }
+            if (paymentsVal) {
+              document.getElementById('cfgUpiId').value = paymentsVal.upiId || '';
+              document.getElementById('cfgQrImage').value = paymentsVal.qrImage || '';
+              document.getElementById('cfgDeliveryCharge').value = paymentsVal.deliveryCharge || 49;
+              document.getElementById('cfgPackingCharge').value = paymentsVal.packingCharge || 10;
+            }
+            if (seoVal) {
+              const seoTitleInput = document.querySelector('#sec-seo input.form-input');
+              if (seoTitleInput) seoTitleInput.value = seoVal.title || '';
+              const seoDescInput = document.querySelector('#sec-seo textarea.form-input');
+              if (seoDescInput) seoDescInput.value = seoVal.description || '';
+              const seoKeywordsInput = document.querySelectorAll('#sec-seo input.form-input')[1];
+              if (seoKeywordsInput) seoKeywordsInput.value = seoVal.keywords || '';
+              const seoAnalyticsInput = document.querySelectorAll('#sec-seo input.form-input')[2];
+              if (seoAnalyticsInput) seoAnalyticsInput.value = seoVal.analyticsId || '';
+            }
+          }
+        })
+      ];
+
+      await Promise.all(fetchPromises);
+      renderAllTables();
+    } catch (err) {
+      console.error('Failed to sync tables from Supabase:', err);
+    }
+  }
+}
+
+function renderAllTables() {
   renderProducts();
   renderCategories();
   renderOrders();
@@ -758,12 +830,10 @@ function initPortalState() {
   renderInquiries();
   renderTestimonials();
   renderMediaLibrary();
-
-  // Update counters
-  document.getElementById('cardTotalProducts').textContent = products.length;
-  document.getElementById('cardActiveOrders').textContent = orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length;
-  document.getElementById('ordersCounter').textContent = orders.filter(o => o.status === 'pending').length;
-
+  renderFoods();
+  renderItems();
+  renderCoupons();
+  updateOverviewCards();
 }
 
 function saveAllState() {
@@ -774,11 +844,11 @@ function saveAllState() {
     localStorage.setItem('sa_customers', JSON.stringify(customers));
     localStorage.setItem('sa_testimonials', JSON.stringify(testimonials));
     localStorage.setItem('sa_inquiries', JSON.stringify(inquiries));
+    localStorage.setItem('sa_foods', JSON.stringify(foods));
+    localStorage.setItem('sa_items', JSON.stringify(items));
+    localStorage.setItem('sa_coupons', JSON.stringify(coupons));
   } catch (e) {
     console.error('localStorage save failed:', e.message);
-    if (e.name === 'QuotaExceededError' || e.code === 22) {
-      showToast('error', 'Storage full! Custom image data is too large for browser storage.');
-    }
   }
 }
 
@@ -824,11 +894,12 @@ function renderCategories() {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><strong>🐠 ${c.name}</strong></td>
-      <td>${c.count} items</td>
-      <td><span style="font-size: 0.8rem; color: var(--color-text-muted);">${c.image}</span></td>
-      <td><span class="badge badge-delivered">${c.status}</span></td>
+      <td>${c.count || 0} items</td>
+      <td><span style="font-size: 0.8rem; color: var(--color-text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; display: inline-block;" title="${c.image || 'None'}">${c.image || 'None'}</span></td>
+      <td><span class="badge badge-delivered">${c.status || 'Active'}</span></td>
       <td>
-        <button class="btn-secondary" style="padding: 4px 10px;" onclick="showToast('info', 'Edit category is available!')">✏️ Edit</button>
+        <button class="btn-secondary" style="padding: 4px 10px; margin-right: 6px;" onclick="openEditCategory('${c.name}')">✏️ Edit</button>
+        <button class="btn-secondary" style="padding: 4px 10px; border-color: var(--color-accent); color: var(--color-accent);" onclick="deleteCategory('${c.name}')">🗑️ Delete</button>
       </td>
     `;
     tbody.appendChild(tr);
@@ -842,17 +913,24 @@ function renderOrders() {
   tbody.innerHTML = '';
   orders.forEach(o => {
     const tr = document.createElement('tr');
+    const screenshotTd = o.screenshot_url ? 
+      `<td><button class="btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="viewScreenshot('${o.screenshot_url}')">👁️ View</button></td>` : 
+      `<td>-</td>`;
+
     tr.innerHTML = `
       <td><strong>${o.id}</strong></td>
       <td>${o.customer}</td>
+      <td>${o.phone || '-'}</td>
       <td>${o.product}</td>
       <td><strong style="color: var(--color-secondary);">${o.amount}</strong></td>
-      <td><span class="badge badge-${o.status}">${o.status.toUpperCase()}</span></td>
+      <td><code>${o.utr || '-'}</code></td>
+      ${screenshotTd}
+      <td><span class="badge badge-${o.status === 'Pending Verification' || o.status === 'pending' ? 'pending' : o.status === 'confirmed' ? 'confirmed' : o.status === 'shipped' ? 'shipped' : o.status === 'delivered' ? 'delivered' : 'cancelled'}">${(o.status || 'Pending Verification').toUpperCase()}</span></td>
       <td>${o.date}</td>
       <td>
         <button class="btn-secondary" style="padding: 4px 10px; margin-right: 6px;" onclick="openInvoice('${o.id}')">🖨️ Invoice</button>
         <select class="select-filter" style="padding: 4px 8px; font-size: 0.8rem; height: auto;" onchange="changeOrderStatus('${o.id}', this.value)">
-          <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+          <option value="Pending Verification" ${o.status === 'Pending Verification' || o.status === 'pending' ? 'selected' : ''}>Pending</option>
           <option value="confirmed" ${o.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
           <option value="shipped" ${o.status === 'shipped' ? 'selected' : ''}>Shipped</option>
           <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option>
@@ -865,13 +943,28 @@ function renderOrders() {
 }
 
 // Change Order Status
-window.changeOrderStatus = function(id, val) {
+window.changeOrderStatus = async function(id, val) {
   const o = orders.find(ord => ord.id === id);
   if (o) {
     o.status = val;
     saveAllState();
-    initPortalState();
-    showToast('success', `Order ${id} status updated to ${val.toUpperCase()}!`);
+    
+    if (window.supabaseClient) {
+      try {
+        const { error } = await window.supabaseClient
+          .from('orders')
+          .update({ status: val })
+          .eq('id', id);
+        if (error) throw error;
+        showToast('success', `Order ${id} updated to ${val.toUpperCase()} in Supabase!`);
+      } catch (err) {
+        console.error(err);
+        showToast('error', 'Supabase status sync failed: ' + err.message);
+      }
+    } else {
+      showToast('success', `Order ${id} status updated to ${val.toUpperCase()} locally!`);
+    }
+    renderAllTables();
   }
 };
 
@@ -899,11 +992,24 @@ function renderCustomers() {
   });
 }
 
-window.toggleCustomerStatus = function(id) {
+window.toggleCustomerStatus = async function(id) {
   const c = customers.find(cust => cust.id === id);
   if (c) {
     c.status = c.status === 'Active' ? 'Banned' : 'Active';
     saveAllState();
+
+    if (window.supabaseClient) {
+      try {
+        const { error } = await window.supabaseClient
+          .from('customers')
+          .update({ status: c.status })
+          .eq('id', id);
+        if (error) throw error;
+        showToast('success', `Customer status sync to Supabase!`);
+      } catch (err) {
+        console.error(err);
+      }
+    }
     renderCustomers();
     showToast('info', `Customer ${c.name} is now ${c.status.toUpperCase()}`);
   }
@@ -923,7 +1029,7 @@ function renderInquiries() {
     div.innerHTML = `
       <div style="display: flex; justify-content: space-between; width: 100%;">
         <strong>💬 Inquiry from ${i.name} (${i.email})</strong>
-        <span style="color: var(--color-text-muted); font-size: 0.8rem;">${i.phone}</span>
+        <span style="color: var(--color-text-muted); font-size: 0.8rem;">${i.phone || ''}</span>
       </div>
       <p style="color: var(--color-text-main); font-size: 0.9rem; line-height: 1.4; border-left: 2px solid var(--color-primary); padding-left: 10px;">"${i.msg}"</p>
       <div style="display: flex; gap: 10px; margin-top: 5px;">
@@ -939,9 +1045,18 @@ window.replyToInquiry = function(email) {
   showToast('success', `Simulating email reply composer to ${email}...`);
 };
 
-window.deleteInquiry = function(id) {
+window.deleteInquiry = async function(id) {
   inquiries = inquiries.filter(i => i.id !== id);
   saveAllState();
+
+  if (window.supabaseClient) {
+    try {
+      const { error } = await window.supabaseClient.from('inquiries').delete().eq('id', id);
+      if (error) throw error;
+    } catch (err) {
+      console.error(err);
+    }
+  }
   renderInquiries();
   showToast('info', 'Inquiry message deleted.');
 };
@@ -951,7 +1066,7 @@ function renderTestimonials() {
   const tbody = document.getElementById('testimonialsTableBody');
   if (!tbody) return;
   tbody.innerHTML = '';
-  testimonials.forEach((t, index) => {
+  testimonials.forEach(t => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><strong>${t.name}</strong></td>
@@ -959,19 +1074,119 @@ function renderTestimonials() {
       <td><span style="color: gold;">${t.rating}</span></td>
       <td><span class="badge badge-delivered">${t.status}</span></td>
       <td>
-        <button class="btn-secondary" style="padding: 4px 10px; border-color: var(--color-accent); color: var(--color-accent);" onclick="deleteTestimonial(${index})">🗑️ Remove</button>
+        <button class="btn-secondary" style="padding: 4px 10px; border-color: var(--color-accent); color: var(--color-accent);" onclick="deleteTestimonial(${t.id})">🗑️ Remove</button>
       </td>
     `;
     tbody.appendChild(tr);
   });
 }
 
-window.deleteTestimonial = function(index) {
-  testimonials.splice(index, 1);
+window.deleteTestimonial = async function(id) {
+  testimonials = testimonials.filter(t => t.id !== id);
   saveAllState();
+
+  if (window.supabaseClient) {
+    try {
+      const { error } = await window.supabaseClient.from('testimonials').delete().eq('id', id);
+      if (error) throw error;
+    } catch (err) {
+      console.error(err);
+    }
+  }
   renderTestimonials();
   showToast('info', 'Testimonial review removed.');
 };
+
+// Render Foods Table
+function renderFoods() {
+  const tbody = document.getElementById('foodsTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  const searchVal = document.getElementById('searchFoods')?.value.toLowerCase() || '';
+  const typeFilter = document.getElementById('filterFoodType')?.value || 'all';
+
+  const filtered = foods.filter(f => {
+    const matchesSearch = f.name.toLowerCase().includes(searchVal) || (f.description && f.description.toLowerCase().includes(searchVal));
+    const matchesType = typeFilter === 'all' || f.type === typeFilter;
+    return matchesSearch && matchesType;
+  });
+
+  filtered.forEach(f => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><img src="${resolveProductImage(f)}" alt="${f.name}" style="width: 44px; height: 44px; border-radius: 8px; border: 1.5px solid var(--color-primary); object-fit: cover;"></td>
+      <td><strong>${f.name}</strong></td>
+      <td><span class="badge badge-confirmed">${f.type || 'Pellets'}</span></td>
+      <td>${f.suitable || 'All Fishes'}</td>
+      <td><strong style="color: var(--color-secondary);">${f.price}</strong></td>
+      <td><span class="badge badge-${f.stock === 'In Stock' ? 'delivered' : f.stock === 'Low Stock' ? 'pending' : 'cancelled'}">${f.stock}</span></td>
+      <td>
+        <button class="btn-secondary" style="padding: 4px 10px; margin-right: 6px;" onclick="openEditFood(${f.id})">✏️ Edit</button>
+        <button class="btn-secondary" style="padding: 4px 10px; border-color: var(--color-accent); color: var(--color-accent);" onclick="deleteFood(${f.id})">🗑️ Delete</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// Render Aquatic Accessories Table
+function renderItems() {
+  const tbody = document.getElementById('itemsTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  const searchVal = document.getElementById('searchItems')?.value.toLowerCase() || '';
+
+  const filtered = items.filter(it => {
+    return it.name.toLowerCase().includes(searchVal);
+  });
+
+  filtered.forEach(it => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><img src="${resolveProductImage(it)}" alt="${it.name}" style="width: 44px; height: 44px; border-radius: 8px; border: 1.5px solid var(--color-primary); object-fit: cover;"></td>
+      <td><strong>${it.name}</strong></td>
+      <td><strong style="color: var(--color-secondary);">${it.price}</strong></td>
+      <td><span class="badge badge-${it.stock === 'In Stock' ? 'delivered' : it.stock === 'Low Stock' ? 'pending' : 'cancelled'}">${it.stock || 'In Stock'}</span></td>
+      <td>
+        <button class="btn-secondary" style="padding: 4px 10px; margin-right: 6px;" onclick="openEditItem(${it.id})">✏️ Edit</button>
+        <button class="btn-secondary" style="padding: 4px 10px; border-color: var(--color-accent); color: var(--color-accent);" onclick="deleteItem(${it.id})">🗑️ Delete</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// Render Coupons Table
+function renderCoupons() {
+  const tbody = document.getElementById('couponsTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  const searchVal = document.getElementById('searchCoupons')?.value.toLowerCase() || '';
+
+  const filtered = coupons.filter(c => {
+    return c.code.toLowerCase().includes(searchVal);
+  });
+
+  filtered.forEach(c => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>🎟️ ${c.code}</strong></td>
+      <td>${c.type === 'percentage' ? c.value + '%' : '₹' + c.value} OFF</td>
+      <td>₹${c.min_order}</td>
+      <td>${c.expiry}</td>
+      <td>${c.current_usage} / ${c.max_usage || '∞'}</td>
+      <td><span class="badge badge-${c.active ? 'delivered' : 'cancelled'}">${c.active ? 'Active' : 'Inactive'}</span></td>
+      <td>
+        <button class="btn-secondary" style="padding: 4px 10px; margin-right: 6px;" onclick="openEditCoupon(${c.id})">✏️ Edit</button>
+        <button class="btn-secondary" style="padding: 4px 10px; border-color: var(--color-accent); color: var(--color-accent);" onclick="deleteCoupon(${c.id})">🗑️ Delete</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
 
 // Render Media Library visual grid
 function renderMediaLibrary() {
@@ -1028,6 +1243,27 @@ function renderMediaLibrary() {
   });
 }
 
+function updateOverviewCards() {
+  if (document.getElementById('cardTotalProducts')) document.getElementById('cardTotalProducts').textContent = products.length;
+  if (document.getElementById('cardActiveOrders')) document.getElementById('cardActiveOrders').textContent = orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled').length;
+  if (document.getElementById('ordersCounter')) document.getElementById('ordersCounter').textContent = orders.filter(o => o.status === 'Pending Verification' || o.status === 'pending').length;
+  if (document.getElementById('cardTotalCoupons')) document.getElementById('cardTotalCoupons').textContent = coupons.length;
+  if (document.getElementById('cardActiveCoupons')) document.getElementById('cardActiveCoupons').textContent = coupons.filter(c => c.active).length;
+  if (document.getElementById('cardTotalCustomers')) document.getElementById('cardTotalCustomers').textContent = customers.length;
+  
+  // Calculate total revenue from orders
+  let revenue = 0;
+  orders.forEach(o => {
+    if (o.status === 'confirmed' || o.status === 'delivered' || o.status === 'shipped') {
+      const match = o.amount.match(/₹([\d,]+)/);
+      if (match) {
+        revenue += parseInt(match[1].replace(/,/g, ''));
+      }
+    }
+  });
+  if (document.getElementById('cardTotalRevenue')) document.getElementById('cardTotalRevenue').textContent = '₹' + revenue.toLocaleString('en-IN');
+}
+
 // Clipboard copying functionality
 window.copyToClipboard = function(text, successMsg) {
   navigator.clipboard.writeText(text).then(() => {
@@ -1048,129 +1284,14 @@ window.deleteMediaItem = function(id) {
   }
 };
 
-
-
-// 5. Form Submissions Handlers & Modal Controllers
-function initFormSubmitHandlers() {
-  const modal = document.getElementById('productModal');
-  const btnAdd = document.getElementById('btnAddNewProduct');
-  const btnClose = document.getElementById('btnCloseProductModal');
-  const form = document.getElementById('productForm');
-
-  const fileInput = document.getElementById('prodImageFile');
-  const base64Input = document.getElementById('prodImageBase64');
-  const imgPreview = document.getElementById('prodImagePreview');
-  const imgPlaceholder = document.getElementById('prodImagePlaceholder');
-
-  // File reader change event listener
-  fileInput?.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (evt) => {
-        const base64Str = evt.target.result;
-        base64Input.value = base64Str;
-        if (imgPreview) {
-          imgPreview.src = base64Str;
-          imgPreview.style.display = 'block';
-        }
-        if (imgPlaceholder) {
-          imgPlaceholder.style.display = 'none';
-        }
-      };
-      reader.readAsDataURL(file);
-    } else {
-      base64Input.value = '';
-      if (imgPreview) {
-        imgPreview.src = '';
-        imgPreview.style.display = 'none';
-      }
-      if (imgPlaceholder) {
-        imgPlaceholder.style.display = 'block';
-      }
-    }
-  });
-
-  // Search & filter live updates
-  document.getElementById('searchProducts')?.addEventListener('input', renderProducts);
-  document.getElementById('filterCategory')?.addEventListener('change', renderProducts);
-
-  if (btnAdd && modal) {
-    btnAdd.addEventListener('click', () => {
-      form.reset();
-      document.getElementById('editProductId').value = '';
-      document.getElementById('productModalTitle').textContent = 'Add New Fish Item';
-      
-      // Reset image preview state
-      if (base64Input) base64Input.value = '';
-      if (imgPreview) {
-        imgPreview.src = '';
-        imgPreview.style.display = 'none';
-      }
-      if (imgPlaceholder) {
-        imgPlaceholder.style.display = 'block';
-      }
-      
-      modal.classList.add('active');
-    });
+window.viewScreenshot = function(url) {
+  const modal = document.getElementById('screenshotModal');
+  const img = document.getElementById('screenshotViewerImg');
+  if (modal && img) {
+    img.src = url;
+    modal.classList.add('active');
   }
-
-  if (btnClose && modal) {
-    btnClose.addEventListener('click', () => modal.classList.remove('active'));
-  }
-
-  if (form) {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const id = document.getElementById('editProductId').value;
-      const name = document.getElementById('prodName').value;
-      const category = document.getElementById('prodCategory').value;
-      const price = document.getElementById('prodPrice').value;
-      const image = base64Input.value || ''; // Custom Base64 if uploaded, otherwise empty
-      const desc = document.getElementById('prodDesc').value;
-      let actionLabel = '';
-
-      if (id) {
-        // Edit existing
-        const p = products.find(prod => prod.id == id);
-        if (p) {
-          p.name = name;
-          p.category = category;
-          p.price = price.startsWith('₹') || price.toLowerCase().includes('contact') ? price : '₹' + price;
-          if (image) {
-            p.image = image;
-          }
-          p.tag = desc ? desc.substring(0, 15) : 'Special';
-          actionLabel = `${name} updated`;
-        }
-      } else {
-        // Add new
-        const newId = products.length ? Math.max(...products.map(p => p.id)) + 1 : 1;
-        products.push({
-          id: newId,
-          name: name,
-          category: category,
-          price: price.startsWith('₹') || price.toLowerCase().includes('contact') ? price : '₹' + price,
-          image: image || 'logo.jpeg',
-          tag: desc ? desc.substring(0, 15) : 'New'
-        });
-        actionLabel = `New fish '${name}' added`;
-      }
-
-      // Save state to localStorage
-      saveAllState();
-      showToast('success', `${actionLabel} successfully! Changes are updated on the website.`);
-
-      initPortalState();
-      modal.classList.remove('active');
-    });
-  }
-
-  // Configurations submission
-  document.getElementById('btnSaveConfig')?.addEventListener('click', () => {
-    showToast('success', 'Subramanya Aquatics core configuration saved successfully!');
-  });
-}
+};
 
 // Open Edit Product Modal
 window.openEditProduct = function(id) {
@@ -1180,46 +1301,96 @@ window.openEditProduct = function(id) {
     document.getElementById('prodName').value = p.name;
     document.getElementById('prodCategory').value = p.category;
     document.getElementById('prodPrice').value = p.price.replace('₹', '');
-    document.getElementById('prodDesc').value = p.tag;
+    document.getElementById('prodImage').value = p.image || '';
+    document.getElementById('prodDesc').value = p.description || p.tag || '';
 
     // Reset file input
     const fileInput = document.getElementById('prodImageFile');
     if (fileInput) fileInput.value = '';
 
-    const base64Input = document.getElementById('prodImageBase64');
     const imgPreview = document.getElementById('prodImagePreview');
     const imgPlaceholder = document.getElementById('prodImagePlaceholder');
 
     const resolvedImg = resolveProductImage(p);
-    if (p.image && p.image.startsWith('data:')) {
-      if (base64Input) base64Input.value = p.image;
-      if (imgPreview) {
-        imgPreview.src = p.image;
-        imgPreview.style.display = 'block';
-      }
-      if (imgPlaceholder) imgPlaceholder.style.display = 'none';
-    } else {
-      if (base64Input) base64Input.value = '';
-      if (imgPreview) {
-        imgPreview.src = resolvedImg;
-        imgPreview.style.display = 'block';
-      }
-      if (imgPlaceholder) imgPlaceholder.style.display = 'none';
+    if (imgPreview) {
+      imgPreview.src = resolvedImg;
+      imgPreview.style.display = 'block';
     }
+    if (imgPlaceholder) imgPlaceholder.style.display = 'none';
 
     document.getElementById('productModalTitle').textContent = 'Edit ' + p.name;
     document.getElementById('productModal').classList.add('active');
   }
 };
 
-// Delete Product
-window.deleteProduct = function(id) {
-  const p = products.find(prod => prod.id == id);
-  if (p && confirm(`Are you sure you want to delete ${p.name} from catalog?`)) {
-    products = products.filter(prod => prod.id != id);
-    saveAllState();
-    showToast('success', 'Product deleted successfully.');
-    initPortalState();
+window.openEditCategory = function(name) {
+  const c = categories.find(cat => cat.name === name);
+  if (c) {
+    document.getElementById('editCategoryName').value = c.name;
+    document.getElementById('catName').value = c.name;
+    document.getElementById('catImage').value = c.image || '';
+    document.getElementById('catStatus').value = c.status || 'Active';
+
+    // Reset file input
+    const fileInput = document.getElementById('catImageFile');
+    if (fileInput) fileInput.value = '';
+
+    document.getElementById('categoryModalTitle').textContent = 'Edit Category: ' + c.name;
+    document.getElementById('categoryModal').classList.add('active');
+  }
+};
+
+window.openEditFood = function(id) {
+  const f = foods.find(food => food.id == id);
+  if (f) {
+    document.getElementById('editFoodId').value = f.id;
+    document.getElementById('foodName').value = f.name;
+    document.getElementById('foodType').value = f.type || 'Pellets';
+    document.getElementById('foodSuitable').value = f.suitable || 'All Fishes';
+    document.getElementById('foodPrice').value = f.price.replace('₹', '');
+    document.getElementById('foodStock').value = f.stock || 'In Stock';
+    document.getElementById('foodImage').value = f.image || '';
+    document.getElementById('foodDesc').value = f.description || '';
+
+    const fileInput = document.getElementById('foodImageFile');
+    if (fileInput) fileInput.value = '';
+
+    document.getElementById('foodModalTitle').textContent = 'Edit Food: ' + f.name;
+    document.getElementById('foodModal').classList.add('active');
+  }
+};
+
+window.openEditItem = function(id) {
+  const it = items.find(item => item.id == id);
+  if (it) {
+    document.getElementById('editItemId').value = it.id;
+    document.getElementById('itemName').value = it.name;
+    document.getElementById('itemPrice').value = it.price.replace('₹', '');
+    document.getElementById('itemStock').value = it.stock || 'In Stock';
+    document.getElementById('itemImage').value = it.image || '';
+
+    const fileInput = document.getElementById('itemImageFile');
+    if (fileInput) fileInput.value = '';
+
+    document.getElementById('itemModalTitle').textContent = 'Edit Item: ' + it.name;
+    document.getElementById('itemModal').classList.add('active');
+  }
+};
+
+window.openEditCoupon = function(id) {
+  const c = coupons.find(coup => coup.id == id);
+  if (c) {
+    document.getElementById('editCouponId').value = c.id;
+    document.getElementById('couponCode').value = c.code;
+    document.getElementById('couponType').value = c.type;
+    document.getElementById('couponValue').value = c.value;
+    document.getElementById('couponMinOrder').value = c.min_order;
+    document.getElementById('couponExpiry').value = c.expiry;
+    document.getElementById('couponMaxUsage').value = c.max_usage || '';
+    document.getElementById('couponActiveToggle').checked = c.active;
+
+    document.getElementById('couponModalTitle').textContent = 'Edit Coupon: ' + c.code;
+    document.getElementById('couponModal').classList.add('active');
   }
 };
 
@@ -1238,14 +1409,15 @@ Status   : ${o.status.toUpperCase()}
 ---------------------------------------------
 CUSTOMER DETAILS:
 Name     : ${o.customer}
-Delivery : Visakhapatnam, Andhra Pradesh
+Delivery : ${o.address || 'Visakhapatnam, Andhra Pradesh'}
+Phone    : ${o.phone || '-'}
 ---------------------------------------------
 ITEMS PURCHASED:
-1. ${o.product}
+${o.product}
 ---------------------------------------------
 Total Amount Due: ${o.amount}
 =============================================
-     Thank you for your premium purchase!     
+      Thank you for your premium purchase!     
 =============================================
     `;
     document.getElementById('invoiceModal').classList.add('active');
@@ -1255,6 +1427,679 @@ Total Amount Due: ${o.amount}
 window.closeModal = function(id) {
   document.getElementById(id).classList.remove('active');
 };
+
+// 5. Form Submissions Handlers & Modal Controllers
+function initFormSubmitHandlers() {
+  const modals = [
+    { btnId: 'btnAddNewProduct', closeId: 'btnCloseProductModal', modalId: 'productModal', formId: 'productForm', hiddenId: 'editProductId' },
+    { btnId: 'btnAddFood', closeId: 'btnCloseFoodModal', modalId: 'foodModal', formId: 'foodForm', hiddenId: 'editFoodId' },
+    { btnId: 'btnAddItem', closeId: 'btnCloseItemModal', modalId: 'itemModal', formId: 'itemForm', hiddenId: 'editItemId' },
+    { btnId: 'btnAddCategory', closeId: 'btnCloseCategoryModal', modalId: 'categoryModal', formId: 'categoryForm', hiddenId: 'editCategoryName' },
+    { btnId: 'btnAddNewCoupon', closeId: 'btnCloseCouponModal', modalId: 'couponModal', formId: 'couponForm', hiddenId: 'editCouponId' }
+  ];
+
+  modals.forEach(({ btnId, closeId, modalId, formId, hiddenId }) => {
+    const btn = document.getElementById(btnId);
+    const closeBtn = document.getElementById(closeId);
+    const modal = document.getElementById(modalId);
+    const form = document.getElementById(formId);
+
+    if (btn && modal) {
+      btn.addEventListener('click', () => {
+        form.reset();
+        const hiddenInput = document.getElementById(hiddenId);
+        if (hiddenInput) hiddenInput.value = '';
+        
+        if (modalId === 'productModal') {
+          document.getElementById('productModalTitle').textContent = 'Add New Fish Item';
+          const imgPreview = document.getElementById('prodImagePreview');
+          const imgPlaceholder = document.getElementById('prodImagePlaceholder');
+          if (imgPreview) imgPreview.style.display = 'none';
+          if (imgPlaceholder) imgPlaceholder.style.display = 'block';
+        } else if (modalId === 'foodModal') {
+          document.getElementById('foodModalTitle').textContent = 'Add Food Item';
+        } else if (modalId === 'itemModal') {
+          document.getElementById('itemModalTitle').textContent = 'Add Aquatic Item';
+        } else if (modalId === 'categoryModal') {
+          document.getElementById('categoryModalTitle').textContent = 'Create New Category';
+        } else if (modalId === 'couponModal') {
+          document.getElementById('couponModalTitle').textContent = 'Create New Coupon';
+        }
+        modal.classList.add('active');
+      });
+    }
+
+    if (closeBtn && modal) {
+      closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+    }
+  });
+
+  const fileHooks = [
+    { fileId: 'prodImageFile', textId: 'prodImage', progressId: 'prodImageUploadProgress', folder: 'fishes', previewId: 'prodImagePreview' },
+    { fileId: 'foodImageFile', textId: 'foodImage', progressId: 'foodImageUploadProgress', folder: 'food', previewId: null },
+    { fileId: 'itemImageFile', textId: 'itemImage', progressId: 'itemImageUploadProgress', folder: 'items', previewId: null },
+    { fileId: 'catImageFile', textId: 'catImage', progressId: 'catImageUploadProgress', folder: 'categories', previewId: null },
+    { fileId: 'cfgHeroBgFile', textId: 'cfgHeroBg', progressId: 'cfgHeroBgProgress', folder: 'banners', previewId: null },
+    { fileId: 'cfgQrImageFile', textId: 'cfgQrImage', progressId: 'cfgQrImageProgress', folder: 'payments', previewId: null }
+  ];
+
+  fileHooks.forEach(({ fileId, textId, progressId, folder, previewId }) => {
+    const el = document.getElementById(fileId);
+    if (el) {
+      el.addEventListener('change', () => {
+        handleFileUpload(fileId, textId, progressId, folder, previewId);
+      });
+    }
+  });
+
+  const mediaInput = document.getElementById('mockUploadInput');
+  if (mediaInput) {
+    // Overwrite native inline onchange
+    mediaInput.removeAttribute('onchange');
+    mediaInput.addEventListener('change', async (e) => {
+      const files = e.target.files;
+      if (!files || files.length === 0) return;
+
+      showToast('info', `Uploading ${files.length} media files...`);
+      let mediaList = JSON.parse(localStorage.getItem('sa_media')) || [];
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        try {
+          let url = '';
+          if (window.supabaseClient) {
+            const extension = file.name.split('.').pop();
+            const cleanName = file.name.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+            const path = `media/${Date.now()}_${cleanName}.${extension}`;
+            
+            const { data, error } = await window.supabaseClient.storage
+              .from('aquatics-assets')
+              .upload(path, file, { cacheControl: '3600', upsert: true });
+            
+            if (error) throw error;
+            const { data: { publicUrl } } = window.supabaseClient.storage
+              .from('aquatics-assets')
+              .getPublicUrl(path);
+            url = publicUrl;
+          } else {
+            url = await new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onload = (evt) => resolve(evt.target.result);
+              reader.readAsDataURL(file);
+            });
+          }
+
+          mediaList.push({
+            id: 'med_' + Math.floor(Math.random() * 1000000),
+            name: file.name,
+            image: url
+          });
+        } catch (err) {
+          console.error(err);
+          showToast('error', `Failed to upload: ${file.name}`);
+        }
+      }
+
+      localStorage.setItem('sa_media', JSON.stringify(mediaList));
+      renderMediaLibrary();
+      showToast('success', `${files.length} image(s) processed and added to library.`);
+    });
+  }
+
+  // Live filter event handlers
+  document.getElementById('searchProducts')?.addEventListener('input', renderProducts);
+  document.getElementById('filterCategory')?.addEventListener('change', renderProducts);
+  document.getElementById('searchFoods')?.addEventListener('input', renderFoods);
+  document.getElementById('filterFoodType')?.addEventListener('change', renderFoods);
+  document.getElementById('searchItems')?.addEventListener('input', renderItems);
+  document.getElementById('searchCoupons')?.addEventListener('input', renderCoupons);
+
+  // Form submit listeners
+
+  // 1. Product submit
+  document.getElementById('productForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('editProductId').value;
+    const name = document.getElementById('prodName').value.trim();
+    const category = document.getElementById('prodCategory').value;
+    const priceRaw = document.getElementById('prodPrice').value.trim();
+    const image = document.getElementById('prodImage').value.trim();
+    const desc = document.getElementById('prodDesc').value.trim();
+
+    const price = priceRaw.startsWith('₹') || priceRaw.toLowerCase().includes('contact') ? priceRaw : '₹' + priceRaw;
+    const tag = desc ? desc.substring(0, 15) : 'Special';
+
+    const row = { name, category, price, image, tag, description: desc };
+
+    if (id) {
+      const p = products.find(prod => prod.id == id);
+      if (p) {
+        Object.assign(p, row);
+        saveAllState();
+
+        if (window.supabaseClient) {
+          try {
+            const { error } = await window.supabaseClient.from('products').update(row).eq('id', id);
+            if (error) throw error;
+            showToast('success', `'${name}' updated in Supabase!`);
+          } catch (err) {
+            console.error(err);
+            showToast('error', 'Supabase sync failed: ' + err.message);
+          }
+        } else {
+          showToast('success', `'${name}' updated locally!`);
+        }
+      }
+    } else {
+      const newId = products.length ? Math.max(...products.map(p => p.id)) + 1 : 1;
+      const newProd = { id: newId, ...row };
+      products.push(newProd);
+      saveAllState();
+
+      if (window.supabaseClient) {
+        try {
+          const { error } = await window.supabaseClient.from('products').insert([newProd]);
+          if (error) throw error;
+          showToast('success', `'${name}' added to Supabase!`);
+        } catch (err) {
+          console.error(err);
+          showToast('error', 'Supabase sync failed: ' + err.message);
+        }
+      } else {
+        showToast('success', `'${name}' added locally!`);
+      }
+    }
+
+    renderAllTables();
+    document.getElementById('productModal').classList.remove('active');
+  });
+
+  // 2. Food submit
+  document.getElementById('foodForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('editFoodId').value;
+    const name = document.getElementById('foodName').value.trim();
+    const type = document.getElementById('foodType').value;
+    const suitable = document.getElementById('foodSuitable').value.trim();
+    const priceRaw = document.getElementById('foodPrice').value.trim();
+    const stock = document.getElementById('foodStock').value;
+    const image = document.getElementById('foodImage').value.trim();
+    const desc = document.getElementById('foodDesc').value.trim();
+
+    const price = priceRaw.startsWith('₹') || priceRaw.toLowerCase().includes('contact') ? priceRaw : '₹' + priceRaw;
+    const row = { name, type, suitable, price, stock, image, description: desc };
+
+    if (id) {
+      const f = foods.find(food => food.id == id);
+      if (f) {
+        Object.assign(f, row);
+        saveAllState();
+
+        if (window.supabaseClient) {
+          try {
+            const { error } = await window.supabaseClient.from('foods').update(row).eq('id', id);
+            if (error) throw error;
+            showToast('success', `'${name}' updated in Supabase!`);
+          } catch (err) {
+            console.error(err);
+            showToast('error', 'Supabase sync failed: ' + err.message);
+          }
+        } else {
+          showToast('success', `'${name}' updated locally!`);
+        }
+      }
+    } else {
+      const newId = foods.length ? Math.max(...foods.map(f => f.id)) + 1 : 50;
+      const newFood = { id: newId, ...row };
+      foods.push(newFood);
+      saveAllState();
+
+      if (window.supabaseClient) {
+        try {
+          const { error } = await window.supabaseClient.from('foods').insert([newFood]);
+          if (error) throw error;
+          showToast('success', `'${name}' added to Supabase!`);
+        } catch (err) {
+          console.error(err);
+          showToast('error', 'Supabase sync failed: ' + err.message);
+        }
+      } else {
+        showToast('success', `'${name}' added locally!`);
+      }
+    }
+
+    renderAllTables();
+    document.getElementById('foodModal').classList.remove('active');
+  });
+
+  // 3. Item submit
+  document.getElementById('itemForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('editItemId').value;
+    const name = document.getElementById('itemName').value.trim();
+    const priceRaw = document.getElementById('itemPrice').value.trim();
+    const stock = document.getElementById('itemStock').value;
+    const image = document.getElementById('itemImage').value.trim();
+
+    const price = priceRaw.startsWith('₹') || priceRaw.toLowerCase().includes('contact') ? priceRaw : '₹' + priceRaw;
+    const row = { name, price, stock, image };
+
+    if (id) {
+      const it = items.find(item => item.id == id);
+      if (it) {
+        Object.assign(it, row);
+        saveAllState();
+
+        if (window.supabaseClient) {
+          try {
+            const { error } = await window.supabaseClient.from('items').update(row).eq('id', id);
+            if (error) throw error;
+            showToast('success', `'${name}' accessory updated in Supabase!`);
+          } catch (err) {
+            console.error(err);
+            showToast('error', 'Supabase sync failed: ' + err.message);
+          }
+        } else {
+          showToast('success', `'${name}' accessory updated locally!`);
+        }
+      }
+    } else {
+      const newId = items.length ? Math.max(...items.map(it => it.id)) + 1 : 40;
+      const newItem = { id: newId, ...row };
+      items.push(newItem);
+      saveAllState();
+
+      if (window.supabaseClient) {
+        try {
+          const { error } = await window.supabaseClient.from('items').insert([newItem]);
+          if (error) throw error;
+          showToast('success', `'${name}' added to Supabase!`);
+        } catch (err) {
+          console.error(err);
+          showToast('error', 'Supabase sync failed: ' + err.message);
+        }
+      } else {
+        showToast('success', `'${name}' added locally!`);
+      }
+    }
+
+    renderAllTables();
+    document.getElementById('itemModal').classList.remove('active');
+  });
+
+  // 4. Category submit
+  document.getElementById('categoryForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const oldName = document.getElementById('editCategoryName').value;
+    const name = document.getElementById('catName').value.trim();
+    const image = document.getElementById('catImage').value.trim();
+    const status = document.getElementById('catStatus').value;
+
+    const row = { name, image, status };
+
+    if (oldName) {
+      const c = categories.find(cat => cat.name === oldName);
+      if (c) {
+        Object.assign(c, row);
+        saveAllState();
+
+        if (window.supabaseClient) {
+          try {
+            if (oldName !== name) {
+              await window.supabaseClient.from('categories').delete().eq('name', oldName);
+            }
+            const { error } = await window.supabaseClient.from('categories').upsert([row]);
+            if (error) throw error;
+            showToast('success', `Category '${name}' updated in Supabase!`);
+          } catch (err) {
+            console.error(err);
+            showToast('error', 'Supabase sync failed: ' + err.message);
+          }
+        } else {
+          showToast('success', `Category '${name}' updated locally!`);
+        }
+      }
+    } else {
+      const newCat = { count: 0, ...row };
+      categories.push(newCat);
+      saveAllState();
+
+      if (window.supabaseClient) {
+        try {
+          const { error } = await window.supabaseClient.from('categories').insert([newCat]);
+          if (error) throw error;
+          showToast('success', `Category '${name}' added to Supabase!`);
+        } catch (err) {
+          console.error(err);
+          showToast('error', 'Supabase sync failed: ' + err.message);
+        }
+      } else {
+        showToast('success', `Category '${name}' added locally!`);
+      }
+    }
+
+    renderAllTables();
+    document.getElementById('categoryModal').classList.remove('active');
+  });
+
+  // 5. Coupon submit
+  document.getElementById('couponForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('editCouponId').value;
+    const code = document.getElementById('couponCode').value.trim().toUpperCase();
+    const type = document.getElementById('couponType').value;
+    const value = parseFloat(document.getElementById('couponValue').value);
+    const min_order = parseFloat(document.getElementById('couponMinOrder').value);
+    const expiry = document.getElementById('couponExpiry').value;
+    const max_usage = document.getElementById('couponMaxUsage').value ? parseInt(document.getElementById('couponMaxUsage').value) : null;
+    const active = document.getElementById('couponActiveToggle').checked;
+
+    const row = { code, type, value, min_order, expiry, max_usage, active };
+
+    if (id) {
+      const c = coupons.find(coup => coup.id == id);
+      if (c) {
+        Object.assign(c, row);
+        saveAllState();
+
+        if (window.supabaseClient) {
+          try {
+            const { error } = await window.supabaseClient.from('coupons').update(row).eq('id', id);
+            if (error) throw error;
+            showToast('success', `Coupon '${code}' updated in Supabase!`);
+          } catch (err) {
+            console.error(err);
+            showToast('error', 'Supabase sync failed: ' + err.message);
+          }
+        } else {
+          showToast('success', `Coupon '${code}' updated locally!`);
+        }
+      }
+    } else {
+      const newId = coupons.length ? Math.max(...coupons.map(c => c.id)) + 1 : 1;
+      const newCoup = { id: newId, current_usage: 0, ...row };
+      coupons.push(newCoup);
+      saveAllState();
+
+      if (window.supabaseClient) {
+        try {
+          const { error } = await window.supabaseClient.from('coupons').insert([newCoup]);
+          if (error) throw error;
+          showToast('success', `Coupon '${code}' added to Supabase!`);
+        } catch (err) {
+          console.error(err);
+          showToast('error', 'Supabase sync failed: ' + err.message);
+        }
+      } else {
+        showToast('success', `Coupon '${code}' added locally!`);
+      }
+    }
+
+    renderAllTables();
+    document.getElementById('couponModal').classList.remove('active');
+  });
+
+  // Settings click listeners
+
+  document.getElementById('btnSaveConfig')?.addEventListener('click', async () => {
+    const whatsApp = document.getElementById('cfgWhatsApp').value.trim();
+    const email = document.getElementById('cfgEmail').value.trim();
+    const address = document.getElementById('cfgAddress').value.trim();
+    const maintenance = document.getElementById('cfgMaintenance').value;
+    const soundPitch = parseInt(document.getElementById('cfgSoundPitch').value) || 400;
+
+    const val = { whatsApp, email, address, maintenance, soundPitch };
+
+    if (window.supabaseClient) {
+      try {
+        const { error } = await window.supabaseClient.from('settings').upsert([{ key: 'config', value: val }]);
+        if (error) throw error;
+        showToast('success', 'Configurations saved to Supabase settings!');
+      } catch (err) {
+        console.error(err);
+        showToast('error', 'Failed to save settings: ' + err.message);
+      }
+    } else {
+      localStorage.setItem('sa_cfg_config', JSON.stringify(val));
+      showToast('success', 'Configurations saved locally!');
+    }
+  });
+
+  document.getElementById('btnSaveBanners')?.addEventListener('click', async () => {
+    const heroTitle = document.getElementById('cfgHeroTitle').value.trim();
+    const heroSubtitle = document.getElementById('cfgHeroSubtitle').value.trim();
+    const heroBg = document.getElementById('cfgHeroBg').value.trim();
+    const offerTitle = document.getElementById('cfgOfferTitle').value.trim();
+    const offerCode = document.getElementById('cfgOfferCode').value.trim();
+    const offerTimer = document.getElementById('cfgOfferTimer').value;
+
+    const val = { heroTitle, heroSubtitle, heroBg, offerTitle, offerCode, offerTimer };
+
+    if (window.supabaseClient) {
+      try {
+        const { error } = await window.supabaseClient.from('settings').upsert([{ key: 'banners', value: val }]);
+        if (error) throw error;
+        showToast('success', 'Hero sliders and banners saved to Supabase settings!');
+      } catch (err) {
+        console.error(err);
+        showToast('error', 'Failed to save settings: ' + err.message);
+      }
+    } else {
+      localStorage.setItem('sa_cfg_banners', JSON.stringify(val));
+      showToast('success', 'Hero sliders and banners saved locally!');
+    }
+  });
+
+  document.getElementById('btnSavePayments')?.addEventListener('click', async () => {
+    const upiId = document.getElementById('cfgUpiId').value.trim();
+    const qrImage = document.getElementById('cfgQrImage').value.trim();
+    const deliveryCharge = parseFloat(document.getElementById('cfgDeliveryCharge').value) || 0;
+    const packingCharge = parseFloat(document.getElementById('cfgPackingCharge').value) || 0;
+
+    const val = { upiId, qrImage, deliveryCharge, packingCharge };
+
+    if (window.supabaseClient) {
+      try {
+        const { error } = await window.supabaseClient.from('settings').upsert([{ key: 'payments', value: val }]);
+        if (error) throw error;
+        showToast('success', 'UPI and delivery parameters saved to Supabase settings!');
+      } catch (err) {
+        console.error(err);
+        showToast('error', 'Failed to save settings: ' + err.message);
+      }
+    } else {
+      localStorage.setItem('sa_cfg_payments', JSON.stringify(val));
+      showToast('success', 'UPI and delivery parameters saved locally!');
+    }
+  });
+
+  document.getElementById('btnSaveSEO')?.addEventListener('click', async () => {
+    const title = document.querySelector('#sec-seo input.form-input').value.trim();
+    const description = document.querySelector('#sec-seo textarea.form-input').value.trim();
+    const keywordsInput = document.querySelectorAll('#sec-seo input.form-input')[1];
+    const keywords = keywordsInput ? keywordsInput.value.trim() : '';
+    const analyticsInput = document.querySelectorAll('#sec-seo input.form-input')[2];
+    const analyticsId = analyticsInput ? analyticsInput.value.trim() : '';
+
+    const val = { title, description, keywords, analyticsId };
+
+    if (window.supabaseClient) {
+      try {
+        const { error } = await window.supabaseClient.from('settings').upsert([{ key: 'seo', value: val }]);
+        if (error) throw error;
+        showToast('success', 'SEO meta parameters saved to Supabase settings!');
+      } catch (err) {
+        console.error(err);
+        showToast('error', 'Failed to save SEO meta: ' + err.message);
+      }
+    } else {
+      localStorage.setItem('sa_cfg_seo', JSON.stringify(val));
+      showToast('success', 'SEO meta parameters saved locally!');
+    }
+  });
+
+  // 5. Auto-Seed Supabase DB
+  document.getElementById('btnAutoSeed')?.addEventListener('click', async () => {
+    if (!window.supabaseClient) {
+      showToast('error', 'Supabase client not initialized!');
+      return;
+    }
+
+    if (!confirm('Are you sure you want to seed default catalog data to Supabase? This will overwrite duplicate keys.')) {
+      return;
+    }
+
+    showToast('info', 'Seeding database tables. Please wait...');
+    
+    try {
+      showToast('info', 'Seeding categories...');
+      const { error: catErr } = await window.supabaseClient.from('categories').upsert(categories);
+      if (catErr) throw catErr;
+
+      showToast('info', 'Loading products.json...');
+      const response = await fetch('products.json');
+      const productsData = await response.json();
+
+      const prodInsert = [];
+      const foodInsert = [];
+      const itemInsert = [];
+
+      productsData.forEach(p => {
+        if (p.category === 'Fish Food') {
+          foodInsert.push({
+            id: p.id,
+            name: p.name,
+            type: 'Pellets',
+            suitable: 'All Fishes',
+            price: p.price,
+            stock: 'In Stock',
+            image: p.image,
+            description: p.tag
+          });
+        } else if (p.category === 'Aquarium Items' || p.category === 'Aquarium Decorative Items') {
+          itemInsert.push({
+            id: p.id,
+            name: p.name,
+            price: p.price,
+            stock: 'In Stock',
+            image: p.image
+          });
+        } else {
+          prodInsert.push({
+            id: p.id,
+            name: p.name,
+            category: p.category,
+            price: p.price,
+            image: p.image,
+            tag: p.tag
+          });
+        }
+      });
+
+      if (prodInsert.length > 0) {
+        showToast('info', `Seeding ${prodInsert.length} products...`);
+        const { error } = await window.supabaseClient.from('products').upsert(prodInsert);
+        if (error) throw error;
+      }
+      if (foodInsert.length > 0) {
+        showToast('info', `Seeding ${foodInsert.length} food items...`);
+        const { error } = await window.supabaseClient.from('foods').upsert(foodInsert);
+        if (error) throw error;
+      }
+      if (itemInsert.length > 0) {
+        showToast('info', `Seeding ${itemInsert.length} accessories...`);
+        const { error } = await window.supabaseClient.from('items').upsert(itemInsert);
+        if (error) throw error;
+      }
+
+      showToast('info', 'Seeding configurations...');
+      await window.supabaseClient.from('settings').upsert([
+        { key: 'config', value: { whatsApp: "+917995549922", email: "contact@subramanyaaquatics.com", address: "Complex, Vizag, Andhra Pradesh, India", maintenance: "no", soundPitch: 400 } },
+        { key: 'banners', value: { heroTitle: "SUBRAMANYA AQUATICS", heroSubtitle: "Premium Exotic Fishes & Aquariums", heroBg: "logo.jpeg", offerTitle: "Special Summer Splash Discount!", offerCode: "AQUA10", offerTimer: "2026-12-31" } },
+        { key: 'payments', value: { upiId: "7995549922@ybl", qrImage: "qr-code.png", deliveryCharge: 49, packingCharge: 10 } },
+        { key: 'seo', value: { title: "SUBRAMANYA AQUATICS | Premium Exotic Fishes & Aquariums", description: "Subramanya Aquatics - Premium exotic fishes, luxury aquariums, and aquatic accessories.", keywords: "aquarium, exotic fish, ornamental fish", analyticsId: "G-SAQUATICS2025" } }
+      ]);
+
+      showToast('success', 'Database seeded successfully!');
+      initPortalState();
+    } catch (err) {
+      console.error(err);
+      showToast('error', 'Seeding failed: ' + err.message);
+    }
+  });
+}
+
+// Cloud Upload Image Controller
+async function handleFileUpload(fileInputId, textInputId, progressSpanId, folderName, previewImgId) {
+  const fileInput = document.getElementById(fileInputId);
+  const textInput = document.getElementById(textInputId);
+  const progressSpan = document.getElementById(progressSpanId);
+  const previewImg = previewImgId ? document.getElementById(previewImgId) : null;
+  
+  if (!fileInput || !fileInput.files || fileInput.files.length === 0) return;
+  const file = fileInput.files[0];
+  
+  if (!window.supabaseClient) {
+    console.warn("Supabase not set up. Storing image as Base64 in text field.");
+    if (progressSpan) {
+      progressSpan.style.display = 'inline';
+      progressSpan.textContent = 'Storing locally...';
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64 = e.target.result;
+      if (textInput) textInput.value = base64;
+      if (previewImg) {
+        previewImg.src = base64;
+        previewImg.style.display = 'block';
+      }
+      const placeholder = document.getElementById(fileInputId.replace('File', 'Placeholder'));
+      if (placeholder) placeholder.style.display = 'none';
+      if (progressSpan) progressSpan.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+    return;
+  }
+  
+  if (progressSpan) {
+    progressSpan.style.display = 'inline';
+    progressSpan.textContent = 'Uploading...';
+  }
+  
+  try {
+    const extension = file.name.split('.').pop();
+    const cleanFileName = file.name.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+    const filePath = `${folderName}/${Date.now()}_${cleanFileName}.${extension}`;
+    
+    const { data, error } = await window.supabaseClient.storage
+      .from('aquatics-assets')
+      .upload(filePath, file, { cacheControl: '3600', upsert: true });
+      
+    if (error) throw error;
+    
+    const { data: { publicUrl } } = window.supabaseClient.storage
+      .from('aquatics-assets')
+      .getPublicUrl(filePath);
+      
+    if (textInput) textInput.value = publicUrl;
+    if (previewImg) {
+      previewImg.src = publicUrl;
+      previewImg.style.display = 'block';
+    }
+    const placeholder = document.getElementById(fileInputId.replace('File', 'Placeholder'));
+    if (placeholder) placeholder.style.display = 'none';
+    
+    if (progressSpan) {
+      progressSpan.textContent = 'Uploaded!';
+      setTimeout(() => { progressSpan.style.display = 'none'; }, 1500);
+    }
+    showToast('success', `Uploaded to ${folderName} folder successfully!`);
+  } catch (err) {
+    console.error(err);
+    showToast('error', 'Image upload failed: ' + err.message);
+    if (progressSpan) progressSpan.style.display = 'none';
+  }
+}
 
 // 6. Interactive SVG Charts Drawing Engine
 function drawAnalyticsCharts() {
@@ -1270,23 +2115,19 @@ function drawAnalyticsCharts() {
             <stop offset="100%" stop-color="var(--color-primary)" stop-opacity="0.0"/>
           </linearGradient>
         </defs>
-        <!-- Grid lines -->
         <line x1="10" y1="20" x2="490" y2="20" stroke="rgba(255,255,255,0.05)" />
         <line x1="10" y1="80" x2="490" y2="80" stroke="rgba(255,255,255,0.05)" />
         <line x1="10" y1="140" x2="490" y2="140" stroke="rgba(255,255,255,0.05)" />
         <line x1="10" y1="180" x2="490" y2="180" stroke="rgba(255,255,255,0.1)" />
 
-        <!-- Line graph -->
         <path d="M 20 170 Q 100 130 150 140 T 300 60 T 400 90 T 480 30" fill="none" stroke="var(--color-primary)" stroke-width="3" />
         <path d="M 20 170 Q 100 130 150 140 T 300 60 T 400 90 T 480 30 L 480 180 L 20 180 Z" fill="url(#chartGlow)" />
 
-        <!-- Data dots -->
         <circle cx="20" cy="170" r="4" fill="var(--color-secondary)" />
         <circle cx="150" cy="140" r="4" fill="var(--color-secondary)" />
         <circle cx="300" cy="60" r="4" fill="var(--color-secondary)" />
         <circle cx="480" cy="30" r="4" fill="var(--color-secondary)" />
 
-        <!-- Axis Labels -->
         <text x="20" y="195" fill="var(--color-text-muted)" font-size="10">Jan</text>
         <text x="150" y="195" fill="var(--color-text-muted)" font-size="10">Mar</text>
         <text x="300" y="195" fill="var(--color-text-muted)" font-size="10">May</text>
@@ -1346,7 +2187,6 @@ window.showToast = function(type, msg) {
 
   container.appendChild(toast);
 
-  // Auto remove toast
   setTimeout(() => {
     toast.style.animation = 'slideInToast 0.35s reverse forwards';
     setTimeout(() => toast.remove(), 400);
