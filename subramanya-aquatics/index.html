@@ -21,24 +21,40 @@
     <div class="loader-text">SUBRAMANYA AQUATICS</div>
     <div class="loader-bar">
       <div class="loader-bar-inner"></div>
-      </div>
-      <div class="contact-form reveal" style="margin-top: 2rem; max-width: 550px; margin-left: auto; margin-right: auto;">
-        <h3>📩 Send us a Message</h3>
-        <form id="inquiryForm">
-          <div class="form-group">
-            <input type="text" id="inqName" placeholder="Your Name" required>
-          </div>
-          <div class="form-group">
-            <input type="email" id="inqEmail" placeholder="Your Email" required>
-          </div>
-          <div class="form-group">
-            <input type="tel" id="inqPhone" placeholder="Your Phone (optional)">
-          </div>
-          <div class="form-group">
-            <textarea id="inqMsg" placeholder="Your Message..." required></textarea>
-          </div>
-          <button type="submit" class="btn-submit">Send Message ✉️</button>
-        </form>
+    </div>
+  </div>
+
+  <!-- Navigation Header -->
+  <header class="navbar">
+    <a href="#home" class="nav-logo">
+      <img src="logo.jpeg" alt="Subramanya Aquatics Logo" class="logo-img">
+      SUBRAMANYA AQUATICS
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#collection">Collection</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#why-us">Why Us</a></li>
+      <li><a href="#reviews">Reviews</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <div class="light-rays"></div>
+    <div class="bubbles-container"></div>
+    <div class="hero-content">
+      <h1 id="heroTitle">SUBRAMANYA AQUATICS</h1>
+      <p id="heroSubtitle">Your premium destination for exotic fishes, luxury aquariums, and custom aquascapes.</p>
+      <div class="hero-buttons">
+        <a href="#collection" class="btn-primary">View Catalog 🐠</a>
+        <a href="#contact" class="btn-secondary">Get in Touch 📞</a>
       </div>
     </div>
   </section>
@@ -201,6 +217,25 @@
             <p>Complex, Vizag</p>
           </div>
         </div>
+      </div>
+
+      <div class="contact-form">
+        <h3>📩 Send us a Message</h3>
+        <form id="inquiryForm">
+          <div class="form-group">
+            <input type="text" id="inqName" placeholder="Your Name" required>
+          </div>
+          <div class="form-group">
+            <input type="email" id="inqEmail" placeholder="Your Email" required>
+          </div>
+          <div class="form-group">
+            <input type="tel" id="inqPhone" placeholder="Your Phone (optional)">
+          </div>
+          <div class="form-group">
+            <textarea id="inqMsg" placeholder="Your Message..." required></textarea>
+          </div>
+          <button type="submit" class="btn-submit">Send Message ✉️</button>
+        </form>
       </div>
     </div>
   </section>
