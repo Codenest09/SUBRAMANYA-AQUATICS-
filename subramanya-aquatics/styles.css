@@ -656,9 +656,17 @@ footer {
   50% { opacity: 0.5; }
 }
 
+/* Bottom Navigation Bar default hide */
+.bottom-nav {
+  display: none;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
-  body { cursor: auto; }
+  body {
+    cursor: auto;
+    padding-bottom: 75px;
+  }
   .cursor-glow, .cursor-ring { display: none; }
   .nav-links { 
     display: none; flex-direction: column;
@@ -672,30 +680,72 @@ footer {
   .contact-grid { grid-template-columns: 1fr; }
   .hero h1 { font-size: 2rem; }
   
-  /* Cart and Floating Actions Fix for Mobile */
+  /* Hide desktop floating actions on mobile in favor of bottom-nav */
   .floating-actions {
-    flex-direction: row;
-    bottom: 20px;
-    right: 50%;
-    transform: translateX(50%);
-    background: rgba(2, 12, 27, 0.95);
-    padding: 10px 20px;
-    border-radius: 50px;
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(10px);
-    width: max-content;
+    display: none !important;
   }
-  .fab-btn {
-    width: 45px;
-    height: 45px;
-    font-size: 1.2rem;
+  
+  /* Bottom Navigation Bar for Mobile */
+  .bottom-nav {
+    display: flex !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 65px;
+    background: rgba(5, 15, 30, 0.95);
+    backdrop-filter: blur(15px);
+    border-top: 1px solid var(--glass-border);
+    justify-content: space-around;
+    align-items: center;
+    z-index: 999;
+    padding: 5px 0;
+    box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.5);
   }
-  .fab-badge {
-    width: 20px;
-    height: 20px;
+  
+  .bottom-nav-item {
+    background: none;
+    border: none;
+    color: rgba(224, 247, 255, 0.6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
     font-size: 0.75rem;
-    top: -2px;
-    right: -2px;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: 0.3s;
+    position: relative;
+    flex: 1;
+    height: 100%;
+  }
+
+  .bottom-nav-item.active {
+    color: var(--aqua-cyan);
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
+  }
+
+  .bottom-nav-item .nav-icon {
+    font-size: 1.3rem;
+  }
+
+  .nav-cart-badge {
+    position: absolute;
+    top: 2px;
+    right: 25%;
+    background: var(--coral-pink);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    border-radius: 50%;
+    min-width: 18px;
+    height: 18px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 8px var(--coral-pink);
+    padding: 0 4px;
   }
   .cart-drawer {
     max-width: 100%;
