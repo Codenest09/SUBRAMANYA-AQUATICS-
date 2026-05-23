@@ -213,24 +213,81 @@ function revealOnScroll() {
 window.addEventListener('scroll', revealOnScroll);
 window.addEventListener('load', revealOnScroll);
 
-// Reviews Slider
+// Reviews Slider - Dynamic from Supabase Testimonials
 let currentReview = 0;
+let reviewInterval = null;
 const track = document.querySelector('.reviews-track');
-const dots = document.querySelectorAll('.review-dot');
-const totalReviews = document.querySelectorAll('.review-card').length;
+const dotsContainer = document.querySelector('.review-dots');
+
+function renderReviews(reviews) {
+  if (!track || !dotsContainer) return;
+  
+  if (!reviews || reviews.length === 0) {
+    track.innerHTML = `
+      <div class="review-card">
+        <div class="review-avatar">🐠</div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"Subramanya Aquatics provides premium quality exotic fishes. Visit our store to experience the best aquatic collection in Vizag!"</p>
+        <div class="review-name">Subramanya Aquatics</div>
+      </div>
+    `;
+    dotsContainer.innerHTML = '';
+    return;
+  }
+  
+  track.innerHTML = reviews.map(r => `
+    <div class="review-card">
+      <div class="review-avatar">${r.name ? r.name.charAt(0) : '🐠'}</div>
+      <div class="review-stars">${r.rating || '★★★★★'}</div>
+      <p class="review-text">"${r.text}"</p>
+      <div class="review-name">${r.name}</div>
+    </div>
+  `).join('');
+  
+  dotsContainer.innerHTML = reviews.map((_, i) => `
+    <button class="review-dot ${i === 0 ? 'active' : ''}" data-index="${i}" aria-label="Review ${i + 1}"></button>
+  `).join('');
+  
+  currentReview = 0;
+  if (reviewInterval) clearInterval(reviewInterval);
+  
+  document.querySelectorAll('.review-dot').forEach(dot => {
+    dot.addEventListener('click', () => goToReview(parseInt(dot.getAttribute('data-index'))));
+  });
+  
+  if (reviews.length > 1) {
+    reviewInterval = setInterval(() => {
+      goToReview((currentReview + 1) % reviews.length);
+    }, 5000);
+  }
+}
 
 function goToReview(index) {
-  currentReview = index;
+  const allDots = document.querySelectorAll('.review-dot');
   if (track) track.style.transform = `translateX(-${index * 100}%)`;
-  dots.forEach((d, i) => d.classList.toggle('active', i === index));
+  allDots.forEach((d, i) => d.classList.toggle('active', i === index));
+  currentReview = index;
 }
-dots.forEach((dot, i) => {
-  dot.addEventListener('click', () => goToReview(i));
-});
-if (totalReviews > 0) {
-  setInterval(() => {
-    goToReview((currentReview + 1) % totalReviews);
-  }, 5000);
+
+function fetchTestimonials() {
+  if (window.supabaseClient) {
+    window.supabaseClient
+      .from('testimonials')
+      .select('*')
+      .eq('status', 'Approved')
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          renderReviews(data);
+          localStorage.setItem('sa_testimonials', JSON.stringify(data));
+        } else {
+          const local = JSON.parse(localStorage.getItem('sa_testimonials') || '[]');
+          renderReviews(local.length > 0 ? local : null);
+        }
+      });
+  } else {
+    const local = JSON.parse(localStorage.getItem('sa_testimonials') || '[]');
+    renderReviews(local.length > 0 ? local : null);
+  }
 }
 
 // Parallax Fish Silhouettes
@@ -698,6 +755,7 @@ function setupRealtimeSupabaseCatalogSync() {
       console.log('%c🔄 Client: Catalog updated from Supabase Realtime!', 'color: #00ffc8;');
       fetchAllCatalogData();
       fetchSettings();
+      fetchTestimonials();
     })
     .subscribe();
 }
@@ -1062,6 +1120,16 @@ function submitOrderToDatabase(order, utr, screenshotUrl) {
             .then(() => {});
         }
       });
+
+    // Increment coupon usage if a coupon was applied
+    if (appliedCoupon && appliedCoupon.id) {
+      window.supabaseClient
+        .from('coupons')
+        .update({ current_usage: (appliedCoupon.current_usage || 0) + 1 })
+        .eq('id', appliedCoupon.id)
+        .then(() => {});
+      appliedCoupon = null;
+    }
   }
 }
 
@@ -1274,6 +1342,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Setup real-time Supabase sync
   setupRealtimeSupabaseCatalogSync();
   setupOrdersRealtimeSync();
+  fetchTestimonials();
   updateWishlistUI();
   updateCartBadge();
 
@@ -1408,6 +1477,43 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!e.target.closest('.coupon-row')) {
       const suggest = document.getElementById('couponSuggestions');
       if (suggest) suggest.style.display = 'none';
+    }
+  });
+
+  // Inquiry form submission
+  document.getElementById('inquiryForm')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const name = document.getElementById('inqName').value.trim();
+    const email = document.getElementById('inqEmail').value.trim();
+    const phone = document.getElementById('inqPhone').value.trim();
+    const msg = document.getElementById('inqMsg').value.trim();
+
+    if (!name || !email || !msg) {
+      showClientToast('Please fill in required fields.');
+      return;
+    }
+
+    const inquiry = { name, email, msg, phone: phone || null };
+
+    if (window.supabaseClient) {
+      window.supabaseClient
+        .from('inquiries')
+        .insert([inquiry])
+        .then(({ error }) => {
+          if (error) {
+            console.error('Inquiry submit error:', error);
+            showClientToast('Failed to send message. Please try WhatsApp.');
+          } else {
+            showClientToast('Message sent successfully! We will get back to you soon.');
+            this.reset();
+          }
+        });
+    } else {
+      const local = JSON.parse(localStorage.getItem('sa_inquiries') || '[]');
+      local.push({ id: Date.now(), ...inquiry });
+      localStorage.setItem('sa_inquiries', JSON.stringify(local));
+      showClientToast('Message saved offline! We will respond shortly.');
+      this.reset();
     }
   });
 });

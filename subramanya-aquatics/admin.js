@@ -428,21 +428,17 @@ function resolveProductImage(p) {
   const category = (p.category || '').trim().toLowerCase();
   const img = p.image || p.img || '';
 
-  // Helper to format path based on workspace location (spaces vs hyphens)
+  // Helper to format path: always normalize spaces/hyphens/case
   function formatPath(pathStr) {
     if (!pathStr || pathStr.startsWith('data:')) return pathStr;
-    const isSub = window.location.pathname.toLowerCase().includes('/subramanya-aquatics/subramanya-aquatics') || 
-                  window.location.pathname.toLowerCase().includes('/subramanya-aquatics');
-    if (isSub) {
-      const parts = pathStr.split('/');
-      if (parts.length > 1) {
-        const filename = parts.pop();
-        const folder = parts.join('/');
-        const cleanName = filename.toLowerCase().replace(/%20/g, '-').replace(/[\s_]+/g, '-');
-        return folder + '/' + cleanName;
-      }
+    const parts = pathStr.split('/');
+    if (parts.length > 1) {
+      const filename = parts.pop();
+      const folder = parts.join('/');
+      const cleanName = filename.toLowerCase().replace(/%20/g, '-').replace(/[\s_]+/g, '-');
+      return folder + '/' + cleanName;
     }
-    return pathStr.includes('%20') ? pathStr : encodeURI(pathStr);
+    return pathStr.toLowerCase().replace(/%20/g, '-').replace(/[\s_]+/g, '-');
   }
 
   // 1. Specific Name-Based Matching (highest priority for local exotics)
@@ -1080,6 +1076,76 @@ function renderTestimonials() {
     tbody.appendChild(tr);
   });
 }
+
+window.deleteProduct = async function(id) {
+  if (!confirm('Delete this product permanently?')) return;
+  products = products.filter(p => p.id != id);
+  saveAllState();
+  if (window.supabaseClient) {
+    try {
+      const { error } = await window.supabaseClient.from('products').delete().eq('id', id);
+      if (error) throw error;
+    } catch (err) { console.error(err); }
+  }
+  renderAllTables();
+  showToast('info', 'Product deleted.');
+};
+
+window.deleteFood = async function(id) {
+  if (!confirm('Delete this food item permanently?')) return;
+  foods = foods.filter(f => f.id != id);
+  saveAllState();
+  if (window.supabaseClient) {
+    try {
+      const { error } = await window.supabaseClient.from('foods').delete().eq('id', id);
+      if (error) throw error;
+    } catch (err) { console.error(err); }
+  }
+  renderAllTables();
+  showToast('info', 'Food item deleted.');
+};
+
+window.deleteItem = async function(id) {
+  if (!confirm('Delete this item permanently?')) return;
+  items = items.filter(it => it.id != id);
+  saveAllState();
+  if (window.supabaseClient) {
+    try {
+      const { error } = await window.supabaseClient.from('items').delete().eq('id', id);
+      if (error) throw error;
+    } catch (err) { console.error(err); }
+  }
+  renderAllTables();
+  showToast('info', 'Item deleted.');
+};
+
+window.deleteCategory = async function(name) {
+  if (!confirm(`Delete category "${name}" permanently? Products in this category will remain.`)) return;
+  categories = categories.filter(c => c.name !== name);
+  saveAllState();
+  if (window.supabaseClient) {
+    try {
+      const { error } = await window.supabaseClient.from('categories').delete().eq('name', name);
+      if (error) throw error;
+    } catch (err) { console.error(err); }
+  }
+  renderAllTables();
+  showToast('info', `Category "${name}" deleted.`);
+};
+
+window.deleteCoupon = async function(id) {
+  if (!confirm('Delete this coupon permanently?')) return;
+  coupons = coupons.filter(c => c.id != id);
+  saveAllState();
+  if (window.supabaseClient) {
+    try {
+      const { error } = await window.supabaseClient.from('coupons').delete().eq('id', id);
+      if (error) throw error;
+    } catch (err) { console.error(err); }
+  }
+  renderAllTables();
+  showToast('info', 'Coupon deleted.');
+};
 
 window.deleteTestimonial = async function(id) {
   testimonials = testimonials.filter(t => t.id !== id);
@@ -1940,8 +2006,8 @@ function initFormSubmitHandlers() {
 
   // 5. Auto-Seed Supabase DB
   document.getElementById('btnAutoSeed')?.addEventListener('click', async () => {
-    if (!window.supabaseClient) {
-      showToast('error', 'Supabase client not initialized!');
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
+      showToast('error', 'Supabase credentials not configured!');
       return;
     }
 
@@ -1950,75 +2016,51 @@ function initFormSubmitHandlers() {
     }
 
     showToast('info', 'Seeding database tables. Please wait...');
+
+    async function restUpsert(table, rows) {
+      if (!rows || rows.length === 0) return;
+      const url = `${SUPABASE_URL}/rest/v1/${table}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+          'Prefer': 'resolution=merge-duplicates'
+        },
+        body: JSON.stringify(rows)
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`${table} upsert failed (${res.status}): ${text}`);
+      }
+    }
     
     try {
       showToast('info', 'Seeding categories...');
-      const { error: catErr } = await window.supabaseClient.from('categories').upsert(categories);
-      if (catErr) throw catErr;
+      await restUpsert('categories', categories);
 
-      showToast('info', 'Loading products.json...');
-      const response = await fetch('products.json');
-      const productsData = await response.json();
+      showToast('info', `Seeding ${products.length} products...`);
+      await restUpsert('products', products);
 
-      const prodInsert = [];
-      const foodInsert = [];
-      const itemInsert = [];
+      showToast('info', `Seeding ${foods.length} food items...`);
+      await restUpsert('foods', foods);
 
-      productsData.forEach(p => {
-        if (p.category === 'Fish Food') {
-          foodInsert.push({
-            id: p.id,
-            name: p.name,
-            type: 'Pellets',
-            suitable: 'All Fishes',
-            price: p.price,
-            stock: 'In Stock',
-            image: p.image,
-            description: p.tag
-          });
-        } else if (p.category === 'Aquarium Items' || p.category === 'Aquarium Decorative Items') {
-          itemInsert.push({
-            id: p.id,
-            name: p.name,
-            price: p.price,
-            stock: 'In Stock',
-            image: p.image
-          });
-        } else {
-          prodInsert.push({
-            id: p.id,
-            name: p.name,
-            category: p.category,
-            price: p.price,
-            image: p.image,
-            tag: p.tag
-          });
-        }
-      });
-
-      if (prodInsert.length > 0) {
-        showToast('info', `Seeding ${prodInsert.length} products...`);
-        const { error } = await window.supabaseClient.from('products').upsert(prodInsert);
-        if (error) throw error;
-      }
-      if (foodInsert.length > 0) {
-        showToast('info', `Seeding ${foodInsert.length} food items...`);
-        const { error } = await window.supabaseClient.from('foods').upsert(foodInsert);
-        if (error) throw error;
-      }
-      if (itemInsert.length > 0) {
-        showToast('info', `Seeding ${itemInsert.length} accessories...`);
-        const { error } = await window.supabaseClient.from('items').upsert(itemInsert);
-        if (error) throw error;
-      }
+      showToast('info', `Seeding ${items.length} accessories...`);
+      await restUpsert('items', items);
 
       showToast('info', 'Seeding configurations...');
-      await window.supabaseClient.from('settings').upsert([
+      await restUpsert('settings', [
         { key: 'config', value: { whatsApp: "+917995549922", email: "contact@subramanyaaquatics.com", address: "Complex, Vizag, Andhra Pradesh, India", maintenance: "no", soundPitch: 400 } },
         { key: 'banners', value: { heroTitle: "SUBRAMANYA AQUATICS", heroSubtitle: "Premium Exotic Fishes & Aquariums", heroBg: "logo.jpeg", offerTitle: "Special Summer Splash Discount!", offerCode: "AQUA10", offerTimer: "2026-12-31" } },
         { key: 'payments', value: { upiId: "7995549922@ybl", qrImage: "qr-code.png", deliveryCharge: 49, packingCharge: 10 } },
         { key: 'seo', value: { title: "SUBRAMANYA AQUATICS | Premium Exotic Fishes & Aquariums", description: "Subramanya Aquatics - Premium exotic fishes, luxury aquariums, and aquatic accessories.", keywords: "aquarium, exotic fish, ornamental fish", analyticsId: "G-SAQUATICS2025" } }
       ]);
+
+      if (coupons.length > 0) {
+        showToast('info', `Seeding ${coupons.length} coupons...`);
+        await restUpsert('coupons', coupons);
+      }
 
       showToast('success', 'Database seeded successfully!');
       initPortalState();
@@ -2170,6 +2212,33 @@ function drawAnalyticsCharts() {
     `;
   }
 }
+
+// Load all from Firestore (stub for Firebase migration compatibility - delegates to Supabase)
+window.loadAllFromFirestore = function() {
+  showToast('info', 'Syncing all data from Supabase...');
+  initPortalState();
+};
+
+// Password toggle for admin login
+document.addEventListener('DOMContentLoaded', function() {
+  const toggleBtn = document.getElementById('passwordToggle');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', function() {
+      const pwInput = document.getElementById('loginPassword');
+      const eyeOff = this.querySelector('.eye-off');
+      const eyeOn = this.querySelector('.eye-on');
+      if (pwInput.type === 'password') {
+        pwInput.type = 'text';
+        eyeOff.style.display = 'none';
+        eyeOn.style.display = 'block';
+      } else {
+        pwInput.type = 'password';
+        eyeOff.style.display = 'block';
+        eyeOn.style.display = 'none';
+      }
+    });
+  }
+});
 
 // 7. Custom Premium Toast Notification System
 window.showToast = function(type, msg) {

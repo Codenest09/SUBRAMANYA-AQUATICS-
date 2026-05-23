@@ -21,42 +21,24 @@
     <div class="loader-text">SUBRAMANYA AQUATICS</div>
     <div class="loader-bar">
       <div class="loader-bar-inner"></div>
-    </div>
-  </div>
-
-  <!-- Custom Cursor -->
-  <div class="cursor-glow"></div>
-  <div class="cursor-ring"></div>
-
-  <!-- Bubbles & Rays -->
-  <div class="bubbles-container"></div>
-  <div class="light-rays"></div>
-
-  <!-- Navbar -->
-  <nav class="navbar" id="navbar">
-    <div class="nav-logo"><img src="logo.jpeg" alt="Subramanya Aquatics Logo" class="logo-img"> SUBRAMANYA AQUATICS
-    </div>
-    <ul class="nav-links" id="navLinks">
-      <li><a href="#home">Home</a></li>
-      <li><a href="#collection">Collection</a></li>
-      <li><a href="#gallery">Gallery</a></li>
-      <li><a href="#why-us">Why Us</a></li>
-      <li><a href="#reviews">Reviews</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </button>
-  </nav>
-
-  <!-- Hero Section -->
-  <section class="hero" id="home">
-    <div class="hero-content">
-      <h1 id="heroTitle">SUBRAMANYA AQUATICS</h1>
-      <p id="heroSubtitle">Premium Exotic Fishes &bull; Aquariums &bull; Aquatic Accessories</p>
-      <div class="hero-buttons">
-        <a href="#collection" class="btn-primary">🐠 Explore Collection</a>
-        <a href="#contact" class="btn-secondary">📞 Contact Us</a>
+      </div>
+      <div class="contact-form reveal" style="margin-top: 2rem; max-width: 550px; margin-left: auto; margin-right: auto;">
+        <h3>📩 Send us a Message</h3>
+        <form id="inquiryForm">
+          <div class="form-group">
+            <input type="text" id="inqName" placeholder="Your Name" required>
+          </div>
+          <div class="form-group">
+            <input type="email" id="inqEmail" placeholder="Your Email" required>
+          </div>
+          <div class="form-group">
+            <input type="tel" id="inqPhone" placeholder="Your Phone (optional)">
+          </div>
+          <div class="form-group">
+            <textarea id="inqMsg" placeholder="Your Message..." required></textarea>
+          </div>
+          <button type="submit" class="btn-submit">Send Message ✉️</button>
+        </form>
       </div>
     </div>
   </section>
