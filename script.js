@@ -389,21 +389,27 @@ function resolveProductImage(p) {
   const category = (p.category || '').trim().toLowerCase();
   const img = p.image || p.img || '';
 
-  // Helper to format path based on workspace location (spaces vs hyphens)
+  // Normalize local asset paths so GitHub Pages resolves images with hyphenated filenames.
   function formatPath(pathStr) {
     if (!pathStr || pathStr.startsWith('data:')) return pathStr;
-    const isSub = window.location.pathname.toLowerCase().includes('/subramanya-aquatics/subramanya-aquatics') || 
-                  window.location.pathname.toLowerCase().includes('/subramanya-aquatics');
-    if (isSub) {
-      const parts = pathStr.split('/');
-      if (parts.length > 1) {
-        const filename = parts.pop();
-        const folder = parts.join('/');
-        const cleanName = filename.toLowerCase().replace(/%20/g, '-').replace(/[\s_]+/g, '-');
-        return folder + '/' + cleanName;
-      }
+    const trimmed = pathStr.trim();
+    if (/^https?:\/\//i.test(trimmed) || trimmed.startsWith('//')) {
+      return encodeURI(trimmed);
     }
-    return pathStr.includes('%20') ? pathStr : encodeURI(pathStr);
+
+    const parts = trimmed.split('/');
+    const filename = parts.pop();
+    const folder = parts.join('/');
+    const normalizedName = filename
+      .replace(/%20/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9.-]+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+    return folder ? `${folder}/${normalizedName}` : normalizedName;
   }
 
   // 1. Specific Name-Based Matching (highest priority for local exotics)
@@ -438,8 +444,8 @@ const defaultProducts = [
   { id: 9, name: 'Dragon Tail', category: 'Guppys', price: '₹149', image: 'fishes/Dragon tail guppys.jpg', tag: 'Premium' },
   { id: 10, name: 'Koi Texido', category: 'Guppys', price: '₹250', image: 'fishes/Koi texido.jpg', tag: 'Premium' },
   { id: 11, name: 'Dark Knight Dragon', category: 'Guppys', price: '₹250', image: 'fishes/Dark knight dragon.jpg', tag: 'Premium' },
-  { id: 12, name: 'White Angel', category: 'Angels', price: '₹150', image: 'fishes/White angel.jpg', tag: 'Popular' },
-  { id: 13, name: 'Marbel Angel', category: 'Angels', price: '₹199', image: 'fishes/Marbel angel.jpg', tag: 'Popular' },
+  { id: 12, name: 'White Angel', category: 'Angels', price: '₹150', image: 'fishes/white-angel.jpg', tag: 'Popular' },
+  { id: 13, name: 'Marbel Angel', category: 'Angels', price: '₹199', image: 'fishes/marbel-angel.jpg', tag: 'Popular' },
   { id: 14, name: 'Angel', category: 'Angels', price: '₹100', image: 'fishes/Angel.jpg', tag: 'Standard' },
   { id: 15, name: 'Mollys', category: 'Mollies', price: '₹49', image: 'fishes/mollies.webp', tag: 'Popular' },
   { id: 16, name: 'Moontail Mollys', category: 'Mollies', price: '₹99', image: 'fishes/moon tail mollies.jpg', tag: 'Standard' },
@@ -470,7 +476,7 @@ const defaultProducts = [
 
 const defaultCategories = [
   { name: 'Guppys', count: 11, image: 'fishes/Golden guppy.jpg', status: 'Active' },
-  { name: 'Angels', count: 3, image: 'fishes/White angel.jpg', status: 'Active' },
+  { name: 'Angels', count: 3, image: 'fishes/white-angel.jpg', status: 'Active' },
   { name: 'Mollies', count: 4, image: 'fishes/moon tail mollies.jpg', status: 'Active' },
   { name: 'Oxy-less Fishes', count: 6, image: 'fishes/Gourami.jpg', status: 'Active' },
   { name: "Betta's", count: 4, image: 'fishes/Beta HMPK male.webp', status: 'Active' },
@@ -495,9 +501,9 @@ const defaultItems = [
   { id: 2, name: 'Aquarium Heater (100W)', price: '₹350', stock: 'In Stock', image: 'items/100 w aquarium heater.webp' },
   { id: 3, name: 'Aquarium Light Large', price: '₹400', stock: 'In Stock', image: 'items/Aquarium light (large ).jpg' },
   { id: 4, name: 'Aquarium Light Small', price: '₹300', stock: 'In Stock', image: 'items/Aquarium light (small).jpg' },
-  { id: 5, name: 'Bubble Oxygen', price: '₹200', stock: 'In Stock', image: 'items/buble oxygen.webp' },
-  { id: 6, name: 'Double Oxygen', price: '₹300', stock: 'In Stock', image: 'items/double oxygen.webp' },
-  { id: 7, name: 'Internal Oxygen (Small)', price: '₹300', stock: 'In Stock', image: 'items/internal oxgyen (small).webp' },
+  { id: 5, name: 'Bubble Oxygen', price: '₹200', stock: 'In Stock', image: 'items/buble-oxygen.webp' },
+  { id: 6, name: 'Double Oxygen', price: '₹300', stock: 'In Stock', image: 'items/double-oxygen.webp' },
+  { id: 7, name: 'Internal Oxygen (Small)', price: '₹300', stock: 'In Stock', image: 'items/internal-oxgyen-small.webp' },
   { id: 8, name: 'Internal Oxygen (Large)', price: '₹400', stock: 'In Stock', image: 'items/internal oxgyen (big).jpg' },
   { id: 9, name: 'Plastic Plants Piece', price: '₹25', stock: 'In Stock', image: 'items/plastic plants (small).jpg' },
   { id: 10, name: 'Stones (1kg)', price: '₹50', stock: 'In Stock', image: 'items/stones.jpg' }
@@ -1188,7 +1194,7 @@ function placeOrder() {
   if (upiPaymentModal) {
     const upiQrCode = document.getElementById('upiQrCode');
     if (upiQrCode) {
-      const qrPaths = ['QR%20scan.jpeg', 'QR scan.jpeg', './QR%20scan.jpeg', './QR scan.jpeg'];
+      const qrPaths = ['./payments/qr_code.png', 'payments/qr_code.png', 'QR%20scan.jpeg', 'QR scan.jpeg'];
       let pathIndex = 0;
       upiQrCode.onerror = function() {
         pathIndex++;
@@ -1196,6 +1202,7 @@ function placeOrder() {
           upiQrCode.src = qrPaths[pathIndex];
         } else {
           upiQrCode.onerror = null;
+          upiQrCode.src = './logo.jpeg';
         }
       };
       if (!upiQrCode.src) {
@@ -1525,7 +1532,11 @@ function renderOrdersPanelBody(ordersList) {
     return;
   }
 
-  const sortedOrders = [...ordersList].sort((a, b) => b.id.localeCompare(a.id));
+  const sortedOrders = [...ordersList].sort((a, b) => {
+    const idA = String(a?.id || '');
+    const idB = String(b?.id || '');
+    return idB.localeCompare(idA, undefined, { numeric: true, sensitivity: 'base' });
+  });
 
   body.innerHTML = sortedOrders.map(o => {
     let badgeColor = 'rgba(255, 255, 255, 0.1)';
@@ -1636,7 +1647,7 @@ function renderProductCard(p) {
     <div class="fish-card" data-name="${name}">
       <div class="fish-img-container" style="position: relative; height: 200px; overflow: hidden;">
         ${badgeHtml}
-        <img src="${img}" alt="${name}" style="width: 100%; height: 100%; object-fit: cover;">
+        <img src="${img}" alt="${name}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" onerror="this.onerror=null;this.src='logo.jpeg';">
         <button class="wishlist-btn ${isWishlisted ? 'active' : ''}" data-action="wishlist" data-name="${name}" style="position: absolute; top: 12px; right: 12px; background: rgba(2, 12, 27, 0.6); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50%; width: 32px; height: 32px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 3; transition: 0.3s; color: white;">
           ${isWishlisted ? '❤️' : '🤍'}
         </button>
