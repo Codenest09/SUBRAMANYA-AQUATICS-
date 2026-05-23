@@ -12,17 +12,7 @@ window.addEventListener('load', () => setTimeout(hideLoader, 200));
 setTimeout(hideLoader, 2000);
 
 // ========== CLIENT-SIDE IMAGE RESOLUTION ==========
-function resolveProductImage(p) {
-  if (!p) return 'logo.jpeg';
-  const name = (p.name || '').trim();
-  const lowerName = name.toLowerCase();
-  const category = (p.category || '').trim().toLowerCase();
-
-  const img = p.image || p.img;
-  if (img && (img.startsWith('fishes/') || img.startsWith('food/') || img.startsWith('items/') || img.startsWith('images/'))) {
-    return img.includes('%20') ? img : encodeURI(img);
-  }
-
+function getSpecificNameMatch(lowerName, category) {
   // --- 1. FOOD MAPPING ---
   if (category.includes('food') || lowerName.includes('food') || lowerName.includes('worms')) {
     if (lowerName.includes('head power') || lowerName.includes('okiko head')) {
@@ -56,7 +46,7 @@ function resolveProductImage(p) {
   }
 
   // --- 2. AQUARIUM ITEMS MAPPING ---
-  if (category.includes('item') || category.includes('equipment') || lowerName.includes('heater') || lowerName.includes('light') || lowerName.includes('oxygen') || lowerName.includes('plants') || lowerName.includes('stones') || lowerName.includes('filter')) {
+  if (category.includes('item') || category.includes('equipment') || category.includes('decor') || lowerName.includes('heater') || lowerName.includes('light') || lowerName.includes('oxygen') || lowerName.includes('plants') || lowerName.includes('stones') || lowerName.includes('filter')) {
     if (lowerName.includes('100w') || lowerName.includes('100 w') || lowerName.includes('100-w')) {
       return 'items/100%20w%20aquarium%20heater.webp';
     }
@@ -179,7 +169,7 @@ function resolveProductImage(p) {
   }
 
   if (lowerName.includes('flowerhorn') || lowerName.includes('flower horn') || lowerName.includes('kamfa')) {
-    if (lowerName.includes('f2 kamfa') || lowerName.includes('kamfa')) {
+    if (lowerName.includes('f2') || lowerName.includes('kamfa')) {
       return 'fishes/F2%20kamfa.jpg';
     }
     if (lowerName.includes('kml')) {
@@ -231,20 +221,20 @@ function resolveProductImage(p) {
     if (lowerName.includes('ballon') || lowerName.includes('balloon')) {
       return 'fishes/ballon%20mollies.jpeg';
     }
-    if (lowerName.includes('moon tail')) {
+    if (lowerName.includes('moon tail') || lowerName.includes('moontail')) {
       return 'fishes/moon%20tail%20mollies.jpg';
     }
     return 'fishes/mollies.webp';
   }
 
-  if (lowerName.includes('platy') || lowerName.includes('platies')) {
+  if (lowerName.includes('platy') || lowerName.includes('platies') || lowerName.includes('platty') || lowerName.includes('platties')) {
     if (lowerName.includes('sword tail') || lowerName.includes('sward tail')) {
       return 'fishes/Sward%20tail%20platy.jpeg';
     }
     return 'fishes/Platy%20fish.webp';
   }
 
-  if (lowerName.includes('shark')) {
+  if (lowerName.includes('shark') || lowerName.includes('sharks')) {
     if (lowerName.includes('large')) {
       return 'fishes/Shark%20large.jpeg';
     }
@@ -257,7 +247,7 @@ function resolveProductImage(p) {
     return 'fishes/Shark%20small.webp';
   }
 
-  if (lowerName.includes('parrot')) {
+  if (lowerName.includes('parrot') || lowerName.includes('parrots')) {
     if (lowerName.includes('polar') && lowerName.includes('white')) {
       return 'fishes/Polar%20parrots%20(%20white).jpg';
     }
@@ -302,17 +292,119 @@ function resolveProductImage(p) {
   if (lowerName.includes('snake head') || lowerName.includes('snakehead')) {
     return 'fishes/Snake%20head%20fish.jpg';
   }
+  
+  if (lowerName.includes('angel') || lowerName.includes('angels')) {
+    return 'images/discus.png';
+  }
 
-  if (category.includes('arowana') || category.includes('arwana')) return 'images/arowana.png';
-  if (category.includes('betta')) return 'images/betta.png';
-  if (category.includes('discus')) return 'images/discus.png';
-  if (category.includes('flowerhorn')) return 'images/flowerhorn.png';
-  if (category.includes('goldfish') || category.includes('gold fish')) return 'images/goldfish.png';
-  if (category.includes('guppy') || category.includes('guppies')) return 'images/guppies.png';
-  if (category.includes('koi')) return 'images/koi.png';
-  if (category.includes('oscar')) return 'images/oscar.png';
+  return null;
+}
 
+function isGenericOrBroken(img) {
+  if (!img) return true;
+  const path = img.trim();
+  const genericAndBroken = [
+    'images/arowana.png', 'images/betta.png', 'images/discus.png', 'images/flowerhorn.png',
+    'images/goldfish.png', 'images/guppies.png', 'images/koi.png', 'images/oscar.png',
+    'fishes/White angel.jpg', 'fishes/Marbel angel.jpg', 'fishes/Angel.jpg',
+    'fishes/Koi texido.jpg', 'fishes/Dark knight dragon.jpg',
+    'fishes/Red cap oranda gold fish.jpeg', 'fishes/standard gold fish.webp',
+    'fishes/Arowana silver .webp', 'fishes/Flowerhorn srd.jpg', 'fishes/Copper oscar.webp',
+    'fishes/milky carp.webp', 'logo.jpeg'
+  ];
+  if (genericAndBroken.includes(path)) return true;
+  
+  try {
+    const decoded = decodeURI(path);
+    if (genericAndBroken.includes(decoded)) return true;
+  } catch(e) {}
+  
+  return false;
+}
+
+function getCategoryDefault(category, lowerName) {
+  const cat = (category || '').toLowerCase();
+  const name = (lowerName || '').toLowerCase();
+  
+  if (cat.includes('food') || name.includes('food') || name.includes('worms')) {
+    return 'food/Optimun%203%20in%201%20fish%20food.webp';
+  }
+  if (cat.includes('item') || cat.includes('equipment') || cat.includes('decor') || name.includes('heater') || name.includes('light') || name.includes('oxygen') || name.includes('plants') || name.includes('stones') || name.includes('filter')) {
+    return 'items/100%20w%20aquarium%20heater.webp';
+  }
+  
+  if (cat.includes('arowana') || cat.includes('arwana') || name.includes('arowana') || name.includes('arwana')) {
+    return 'images/arowana.png';
+  }
+  if (cat.includes('betta') || name.includes('betta') || name.includes('bata') || name.includes('beta')) {
+    return 'images/betta.png';
+  }
+  if (cat.includes('discus') || name.includes('discus')) {
+    return 'images/discus.png';
+  }
+  if (cat.includes('flowerhorn') || name.includes('flowerhorn') || name.includes('flower horn') || name.includes('kamfa')) {
+    return 'images/flowerhorn.png';
+  }
+  if (cat.includes('goldfish') || cat.includes('gold fish') || name.includes('gold fish') || name.includes('goldfish')) {
+    return 'images/goldfish.png';
+  }
+  if (cat.includes('guppy') || cat.includes('guppies') || name.includes('guppy') || name.includes('guppies')) {
+    return 'images/guppies.png';
+  }
+  if (cat.includes('koi') || name.includes('koi')) {
+    return 'images/koi.png';
+  }
+  if (cat.includes('oscar') || name.includes('oscar')) {
+    return 'images/oscar.png';
+  }
+  if (cat.includes('angel') || name.includes('angel')) {
+    return 'images/discus.png';
+  }
+  
   return 'logo.jpeg';
+}
+
+function resolveProductImage(p) {
+  if (!p) return 'logo.jpeg';
+  const name = (p.name || '').trim();
+  const lowerName = name.toLowerCase();
+  const category = (p.category || '').trim().toLowerCase();
+  const img = p.image || p.img || '';
+
+  // Helper to format path based on workspace location (spaces vs hyphens)
+  function formatPath(pathStr) {
+    if (!pathStr || pathStr.startsWith('data:')) return pathStr;
+    const isSub = window.location.pathname.toLowerCase().includes('/subramanya-aquatics/subramanya-aquatics') || 
+                  window.location.pathname.toLowerCase().includes('/subramanya-aquatics');
+    if (isSub) {
+      const parts = pathStr.split('/');
+      if (parts.length > 1) {
+        const filename = parts.pop();
+        const folder = parts.join('/');
+        const cleanName = filename.toLowerCase().replace(/%20/g, '-').replace(/[\s_]+/g, '-');
+        return folder + '/' + cleanName;
+      }
+    }
+    return pathStr.includes('%20') ? pathStr : encodeURI(pathStr);
+  }
+
+  // 1. Specific Name-Based Matching (highest priority for local exotics)
+  const specificPath = getSpecificNameMatch(lowerName, category);
+  if (specificPath) {
+    return formatPath(specificPath);
+  }
+
+  // 2. Fallback to original image if valid (not a generic category image or known broken path)
+  if (img && !isGenericOrBroken(img)) {
+    return formatPath(img);
+  }
+
+  // 3. Category-based default fallback
+  const catDefault = getCategoryDefault(category, lowerName);
+  if (catDefault === 'logo.jpeg') {
+    return 'logo.jpeg';
+  }
+  return formatPath(catDefault);
 }
 
 // ========== FALLBACK DATA & FIREBASE SYNC SETTINGS ==========
@@ -572,6 +664,43 @@ function revealOnScroll() {
 window.addEventListener('scroll', revealOnScroll);
 window.addEventListener('load', revealOnScroll);
 
+// ========== GALLERY DATA (localStorage-powered) ==========
+const defaultGallery = [
+  { src: 'images/gallery1.png', alt: 'Gallery Setup 1', caption: 'Premium Aquarium Layout' },
+  { src: 'images/gallery2.png', alt: 'Gallery Setup 2', caption: 'Exotic Species Display' },
+  { src: 'images/gallery3.png', alt: 'Gallery Setup 3', caption: 'Custom Planted Aquascape' },
+  { src: 'images/gallery4.png', alt: 'Gallery Setup 4', caption: 'Marine Habitat Setup' },
+  { src: 'images/gallery5.png', alt: 'Gallery Setup 5', caption: 'Bespoke Living Room Aquariums' },
+  { src: 'images/gallery6.png', alt: 'Gallery Setup 6', caption: 'Imported Discus Breeding Care' }
+];
+
+function getGalleryData() {
+  const stored = localStorage.getItem('sa_gallery');
+  if (stored) {
+    try { return JSON.parse(stored); } catch (e) {}
+  }
+  localStorage.setItem('sa_gallery', JSON.stringify(defaultGallery));
+  return defaultGallery;
+}
+
+function initGallery() {
+  const grid = document.getElementById('galleryGrid');
+  if (!grid) return;
+
+  const items = getGalleryData();
+
+  grid.innerHTML = items.map(item => `
+    <div class="gallery-item">
+      <img src="${item.src}" alt="${item.alt}" loading="lazy" onerror="this.onerror=null;this.src='logo.jpeg'">
+      <div class="gallery-overlay"><span>${item.caption}</span></div>
+    </div>
+  `).join('');
+
+  grid.querySelectorAll('.gallery-item').forEach(el => {
+    el.addEventListener('click', () => openGalleryLightbox(el));
+  });
+}
+
 // ========== GALLERY LIGHTBOX ==========
 function openGalleryLightbox(item) {
   const img = item.querySelector('img');
@@ -581,13 +710,13 @@ function openGalleryLightbox(item) {
   if (!lb || !lbImg) return;
   lbImg.src = img.src;
   lbImg.alt = img.alt;
-  lb.style.display = 'flex';
+  lb.classList.add('active');
   document.body.style.overflow = 'hidden';
 }
 
 function closeGalleryLightbox() {
   const lb = document.getElementById('galleryLightbox');
-  if (lb) lb.style.display = 'none';
+  if (lb) lb.classList.remove('active');
   document.body.style.overflow = '';
 }
 
@@ -1932,12 +2061,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateCartBadge();
   renderCartSheet();
 
-  // Initialize Gallery Lightbox
-  document.querySelectorAll('.gallery-item').forEach(item => {
-    item.addEventListener('click', () => {
-      openGalleryLightbox(item);
-    });
-  });
+  initGallery();
 
   // ========== HAMBURGER MENU ==========
   const hamburger = document.getElementById('hamburger');
