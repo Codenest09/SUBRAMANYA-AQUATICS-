@@ -193,23 +193,23 @@
   },
   {
     "id": 25,
-    "name": "OHM (Males)",
+    "name": "Ohm male",
     "category": "Betta's",
-    "price": "₹149",
+    "price": "₹160",
     "image": "fishes/beta-ohm-male.webp",
     "tag": "Exotic"
   },
   {
     "id": 26,
-    "name": "OHM (Female)",
+    "name": "OHM females",
     "category": "Betta's",
-    "price": "₹99",
+    "price": "₹100",
     "image": "fishes/beta-ohm-females.jpg",
     "tag": "Standard"
   },
   {
     "id": 27,
-    "name": "Hmpk Starting",
+    "name": "HMPK male",
     "category": "Betta's",
     "price": "₹250",
     "image": "fishes/beta-hmpk-male.webp",
@@ -225,41 +225,41 @@
   },
   {
     "id": 29,
-    "name": "Albino Oscar",
-    "category": "Wild Oscars",
-    "price": "₹499",
+    "name": "Albino oscar",
+    "category": "Wild fishes",
+    "price": "₹500",
     "image": "fishes/albino-oscar-fish.webp",
     "tag": "Giant"
   },
   {
     "id": 30,
-    "name": "Tiger Red Oscar",
-    "category": "Wild Oscars",
-    "price": "₹499",
+    "name": "Red tiger oscar",
+    "category": "Wild fishes",
+    "price": "₹500",
     "image": "fishes/red-tiger-oscar.jpg",
     "tag": "Giant"
   },
   {
     "id": 31,
-    "name": "Red Oscar",
-    "category": "Wild Oscars",
-    "price": "₹599",
+    "name": "Red oscar",
+    "category": "Wild fishes",
+    "price": "₹600",
     "image": "fishes/red-oscar.jpg",
     "tag": "Premium"
   },
   {
     "id": 32,
-    "name": "Lemon Oscar",
-    "category": "Wild Oscars",
-    "price": "₹599",
+    "name": "Lemon oscar",
+    "category": "Wild fishes",
+    "price": "₹600",
     "image": "fishes/lemon-oscar.jpeg",
     "tag": "Premium"
   },
   {
     "id": 33,
-    "name": "Mango Oscar",
-    "category": "Wild Oscars",
-    "price": "₹599",
+    "name": "Mango oscar",
+    "category": "Wild fishes",
+    "price": "₹600",
     "image": "fishes/mango-oscar.jpg",
     "tag": "Premium"
   },
@@ -281,7 +281,7 @@
   },
   {
     "id": 36,
-    "name": "F2 Kamfa",
+    "name": "F2 kamfa",
     "category": "Flowerhorns",
     "price": "Contact Us",
     "image": "fishes/f2-kamfa.jpg",
@@ -289,7 +289,7 @@
   },
   {
     "id": 37,
-    "name": "Silver Arowana",
+    "name": "Silver arwana",
     "category": "Arowana",
     "price": "Contact Us",
     "image": "fishes/silver-arwana.webp",
@@ -297,7 +297,7 @@
   },
   {
     "id": 38,
-    "name": "Golden Arowana",
+    "name": "Gold arwana",
     "category": "Arowana",
     "price": "Contact Us",
     "image": "fishes/gold-arwana.jpg",
@@ -305,7 +305,7 @@
   },
   {
     "id": 39,
-    "name": "Red Arowana",
+    "name": "Red Arwana",
     "category": "Arowana",
     "price": "Contact Us",
     "image": "fishes/red-arwana.jpeg",
@@ -454,5 +454,189 @@
     "price": "₹30",
     "image": "food/tiyo-fish-food(large).jpg",
     "tag": "Food"
+  },
+  {
+    "id": 58,
+    "name": "OHM Breeding pair",
+    "category": "Betta's",
+    "price": "₹300",
+    "image": "fishes/beta-ohm-male.webp",
+    "tag": "Exotic"
+  },
+  {
+    "id": 59,
+    "name": "HMPK Female",
+    "category": "Betta's",
+    "price": "₹150",
+    "image": "fishes/beta-hmpk-female.jpeg",
+    "tag": "Standard"
+  },
+  {
+    "id": 60,
+    "name": "Hmpk breeding pair",
+    "category": "Betta's",
+    "price": "₹450",
+    "image": "fishes/beta-hmpk-male.webp",
+    "tag": "Popular"
+  },
+  {
+    "id": 61,
+    "name": "candy male",
+    "category": "Betta's",
+    "price": "₹350",
+    "image": "fishes/bata-candy-male.jpeg",
+    "tag": "Exotic"
+  },
+  {
+    "id": 62,
+    "name": "Candy female",
+    "category": "Betta's",
+    "price": "₹200",
+    "image": "fishes/bata-candy-male.jpeg",
+    "tag": "Standard"
+  },
+  {
+    "id": 63,
+    "name": "Candy breeding pair",
+    "category": "Betta's",
+    "price": "₹500",
+    "image": "fishes/bata-candy-male.jpeg",
+    "tag": "Exotic"
+  },
+  {
+    "id": 64,
+    "name": "Black sumarai pair",
+    "category": "Betta's",
+    "price": "₹700",
+    "image": "logo.jpeg",
+    "tag": "Exotic"
+  },
+  {
+    "id": 65,
+    "name": "HMPK dumbo ear male",
+    "category": "Betta's",
+    "price": "₹350",
+    "image": "fishes/platinum-dumbo-ear-guppys.jpeg",
+    "tag": "Exotic"
+  },
+  {
+    "id": 66,
+    "name": "HMPK DUMBO EAR female",
+    "category": "Betta's",
+    "price": "₹200",
+    "image": "logo.jpeg",
+    "tag": "Standard"
+  },
+  {
+    "id": 67,
+    "name": "HMPK Dumbo Ear breeding pair",
+    "category": "Betta's",
+    "price": "₹600",
+    "image": "logo.jpeg",
+    "tag": "Exotic"
+  },
+  {
+    "id": 68,
+    "name": "Solid colour HMPK Beta male",
+    "category": "Betta's",
+    "price": "₹350",
+    "image": "logo.jpeg",
+    "tag": "Exotic"
+  },
+  {
+    "id": 69,
+    "name": "Solid colour HMPK female",
+    "category": "Betta's",
+    "price": "₹150",
+    "image": "logo.jpeg",
+    "tag": "Standard"
+  },
+  {
+    "id": 70,
+    "name": "Solid colour HMPK breeding pair",
+    "category": "Betta's",
+    "price": "₹500",
+    "image": "logo.jpeg",
+    "tag": "Exotic"
+  },
+  {
+    "id": 71,
+    "name": "Thai silk",
+    "category": "Flowerhorns",
+    "price": "Contact Us",
+    "image": "fishes/thai-silk-flowerhorn.jpeg",
+    "tag": "Show Grade"
+  },
+  {
+    "id": 72,
+    "name": "Polar parrots breeding pair(zebra)",
+    "category": "Flowerhorns",
+    "price": "₹550",
+    "image": "fishes/polar-parrots(-zebra).jpg",
+    "tag": "Breeding Pair"
+  },
+  {
+    "id": 73,
+    "name": "Polar parrots pair(zebra)",
+    "category": "Flowerhorns",
+    "price": "₹350",
+    "image": "fishes/polar-parrots(-zebra).jpg",
+    "tag": "Pair"
+  },
+  {
+    "id": 74,
+    "name": "Polar parrot breeding pair ( white)",
+    "category": "Flowerhorns",
+    "price": "₹550",
+    "image": "fishes/polar-parrots-(-white).jpg",
+    "tag": "Breeding Pair"
+  },
+  {
+    "id": 75,
+    "name": "Polar parrots pair(white)",
+    "category": "Flowerhorns",
+    "price": "₹350",
+    "image": "fishes/polar-parrots-(-white).jpg",
+    "tag": "Pair"
+  },
+  {
+    "id": 76,
+    "name": "Red parrot",
+    "category": "Flowerhorns",
+    "price": "₹700",
+    "image": "fishes/parrot-(-red).jpg",
+    "tag": "Popular"
+  },
+  {
+    "id": 77,
+    "name": "Yellow parrot",
+    "category": "Flowerhorns",
+    "price": "₹700",
+    "image": "fishes/parrot-(-yellow).webp",
+    "tag": "Popular"
+  },
+  {
+    "id": 78,
+    "name": "Vail tail zebras",
+    "category": "Oxy-less Fishes",
+    "price": "₹150",
+    "image": "fishes/vail-tail-zebra-green.jpg",
+    "tag": "Active"
+  },
+  {
+    "id": 79,
+    "name": "Neon tetra",
+    "category": "Oxy-less Fishes",
+    "price": "₹100",
+    "image": "logo.jpeg",
+    "tag": "Active"
+  },
+  {
+    "id": 80,
+    "name": "Tetra",
+    "category": "Oxy-less Fishes",
+    "price": "₹100",
+    "image": "logo.jpeg",
+    "tag": "Active"
   }
 ]

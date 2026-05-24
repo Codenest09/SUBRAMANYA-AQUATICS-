@@ -13,10 +13,10 @@ const defaultCategories = [
   { name: 'Guppys', count: 11, image: 'fishes/premium-mixed-guppys.jpeg', status: 'Active' },
   { name: 'Angels', count: 3, image: 'fishes/white-angel.jpg', status: 'Active' },
   { name: 'Mollies', count: 4, image: 'fishes/mollies.webp', status: 'Active' },
-  { name: 'Oxy-less Fishes', count: 6, image: 'fishes/Gourami.jpg', status: 'Active' },
-  { name: "Betta's", count: 4, image: 'fishes/beta-hmpk-male.webp', status: 'Active' },
-  { name: 'Wild Oscars', count: 5, image: 'fishes/red-oscar.jpg', status: 'Active' },
-  { name: 'Flowerhorns', count: 3, image: 'fishes/srd-flowerhorn.jpg', status: 'Active' },
+  { name: 'Oxy-less Fishes', count: 9, image: 'fishes/Gourami.jpg', status: 'Active' },
+  { name: "Betta's", count: 17, image: 'fishes/beta-hmpk-male.webp', status: 'Active' },
+  { name: 'Wild fishes', count: 5, image: 'fishes/red-oscar.jpg', status: 'Active' },
+  { name: 'Flowerhorns', count: 10, image: 'fishes/srd-flowerhorn.jpg', status: 'Active' },
   { name: 'Arowana', count: 3, image: 'fishes/silver-arwana.webp', status: 'Active' },
   { name: 'Aquarium Items', count: 8, image: 'logo.jpeg', status: 'Active' },
   { name: 'Aquarium Decorative Items', count: 2, image: 'logo.jpeg', status: 'Active' },
@@ -47,7 +47,45 @@ const defaultProducts = [
   { id: 21, name: 'Sword Tail Plattys', category: 'Oxy-less Fishes', price: '₹99', image: 'fishes/sward-tail-platy.jpeg', tag: 'Popular' },
   { id: 22, name: 'Zebra', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/zebra-fish.webp', tag: 'Active' },
   { id: 23, name: 'Sharks (Small)', category: 'Oxy-less Fishes', price: '₹59', image: 'fishes/shark-small.webp', tag: 'Active' },
-  { id: 24, name: 'Sharks (Medium)', category: 'Oxy-less Fishes', price: '₹99', image: 'fishes/shark-medium.avif', tag: 'Active' }
+  { id: 24, name: 'Sharks (Medium)', category: 'Oxy-less Fishes', price: '₹99', image: 'fishes/shark-medium.avif', tag: 'Active' },
+  { id: 25, name: 'Ohm male', category: "Betta's", price: '₹160', image: 'fishes/beta-ohm-male.webp', tag: 'Exotic' },
+  { id: 26, name: 'OHM females', category: "Betta's", price: '₹100', image: 'fishes/beta-ohm-females.jpg', tag: 'Standard' },
+  { id: 27, name: 'HMPK male', category: "Betta's", price: '₹250', image: 'fishes/beta-hmpk-male.webp', tag: 'Popular' },
+  { id: 28, name: 'Placarts', category: "Betta's", price: '₹499', image: 'fishes/beta-placarts-male.jpg', tag: 'Exotic' },
+  { id: 29, name: 'Albino oscar', category: 'Wild fishes', price: '₹500', image: 'fishes/albino-oscar-fish.webp', tag: 'Giant' },
+  { id: 30, name: 'Red tiger oscar', category: 'Wild fishes', price: '₹500', image: 'fishes/red-tiger-oscar.jpg', tag: 'Giant' },
+  { id: 31, name: 'Red oscar', category: 'Wild fishes', price: '₹600', image: 'fishes/red-oscar.jpg', tag: 'Premium' },
+  { id: 32, name: 'Lemon oscar', category: 'Wild fishes', price: '₹600', image: 'fishes/lemon-oscar.jpeg', tag: 'Premium' },
+  { id: 33, name: 'Mango oscar', category: 'Wild fishes', price: '₹600', image: 'fishes/mango-oscar.jpg', tag: 'Premium' },
+  { id: 34, name: 'SRD', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/srd-flowerhorn.jpg', tag: 'Show Grade' },
+  { id: 35, name: 'KML', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/kml-flowerhorn.jpg', tag: 'Show Grade' },
+  { id: 36, name: 'F2 kamfa', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/f2-kamfa.jpg', tag: 'Show Grade' },
+  { id: 37, name: 'Silver arwana', category: 'Arowana', price: 'Contact Us', image: 'fishes/silver-arwana.webp', tag: 'Luxury' },
+  { id: 38, name: 'Gold arwana', category: 'Arowana', price: 'Contact Us', image: 'fishes/gold-arwana.jpg', tag: 'Luxury' },
+  { id: 39, name: 'Red Arwana', category: 'Arowana', price: 'Contact Us', image: 'fishes/red-arwana.jpeg', tag: 'Luxury' },
+  { id: 58, name: 'OHM Breeding pair', category: "Betta's", price: '₹300', image: 'fishes/beta-ohm-male.webp', tag: 'Exotic' },
+  { id: 59, name: 'HMPK Female', category: "Betta's", price: '₹150', image: 'fishes/beta-hmpk-female.jpeg', tag: 'Standard' },
+  { id: 60, name: 'Hmpk breeding pair', category: "Betta's", price: '₹450', image: 'fishes/beta-hmpk-male.webp', tag: 'Popular' },
+  { id: 61, name: 'candy male', category: "Betta's", price: '₹350', image: 'fishes/bata-candy-male.jpeg', tag: 'Exotic' },
+  { id: 62, name: 'Candy female', category: "Betta's", price: '₹200', image: 'fishes/bata-candy-male.jpeg', tag: 'Standard' },
+  { id: 63, name: 'Candy breeding pair', category: "Betta's", price: '₹500', image: 'fishes/bata-candy-male.jpeg', tag: 'Exotic' },
+  { id: 64, name: 'Black sumarai pair', category: "Betta's", price: '₹700', image: 'logo.jpeg', tag: 'Exotic' },
+  { id: 65, name: 'HMPK dumbo ear male', category: "Betta's", price: '₹350', image: 'fishes/platinum-dumbo-ear-guppys.jpeg', tag: 'Exotic' },
+  { id: 66, name: 'HMPK DUMBO EAR female', category: "Betta's", price: '₹200', image: 'logo.jpeg', tag: 'Standard' },
+  { id: 67, name: 'HMPK Dumbo Ear breeding pair', category: "Betta's", price: '₹600', image: 'logo.jpeg', tag: 'Exotic' },
+  { id: 68, name: 'Solid colour HMPK Beta male', category: "Betta's", price: '₹350', image: 'logo.jpeg', tag: 'Exotic' },
+  { id: 69, name: 'Solid colour HMPK female', category: "Betta's", price: '₹150', image: 'logo.jpeg', tag: 'Standard' },
+  { id: 70, name: 'Solid colour HMPK breeding pair', category: "Betta's", price: '₹500', image: 'logo.jpeg', tag: 'Exotic' },
+  { id: 71, name: 'Thai silk', category: 'Flowerhorns', price: 'Contact Us', image: 'fishes/thai-silk-flowerhorn.jpeg', tag: 'Show Grade' },
+  { id: 72, name: 'Polar parrots breeding pair(zebra)', category: 'Flowerhorns', price: '₹550', image: 'fishes/polar-parrots(-zebra).jpg', tag: 'Breeding Pair' },
+  { id: 73, name: 'Polar parrots pair(zebra)', category: 'Flowerhorns', price: '₹350', image: 'fishes/polar-parrots(-zebra).jpg', tag: 'Pair' },
+  { id: 74, name: 'Polar parrot breeding pair ( white)', category: 'Flowerhorns', price: '₹550', image: 'fishes/polar-parrots-(-white).jpg', tag: 'Breeding Pair' },
+  { id: 75, name: 'Polar parrots pair(white)', category: 'Flowerhorns', price: '₹350', image: 'fishes/polar-parrots-(-white).jpg', tag: 'Pair' },
+  { id: 76, name: 'Red parrot', category: 'Flowerhorns', price: '₹700', image: 'fishes/parrot-(-red).jpg', tag: 'Popular' },
+  { id: 77, name: 'Yellow parrot', category: 'Flowerhorns', price: '₹700', image: 'fishes/parrot-(-yellow).webp', tag: 'Popular' },
+  { id: 78, name: 'Vail tail zebras', category: 'Oxy-less Fishes', price: '₹150', image: 'fishes/vail-tail-zebra-green.jpg', tag: 'Active' },
+  { id: 79, name: 'Neon tetra', category: 'Oxy-less Fishes', price: '₹100', image: 'logo.jpeg', tag: 'Active' },
+  { id: 80, name: 'Tetra', category: 'Oxy-less Fishes', price: '₹100', image: 'logo.jpeg', tag: 'Active' }
 ];
 
 const defaultFoods = [
@@ -79,7 +117,105 @@ function getSpecificNameMatch(lowerName, category) {
   if (lowerName.includes('white angel')) return 'fishes/white-angel.jpg';
   if (lowerName.includes('marbel angel')) return 'fishes/marbel-angel.jpg';
   if (lowerName.includes('angel') && (category.includes('angel') || lowerName === 'angel')) return 'fishes/Angel.jpg';
+  if (lowerName.includes('koi') && (category.includes('guppy') || lowerName.includes('guppy'))) {
+    return 'fishes/albino-red-eye-guppy.jpg';
+  }
   
+  if (category.includes('betta') || category.includes('beta') || category.includes('bata') || lowerName.includes('betta') || lowerName.includes('beta')) {
+    if (lowerName.includes('candy')) return 'fishes/bata-candy-male.jpeg';
+    if (lowerName.includes('hmpk') && (lowerName.includes('female') || lowerName.includes('girl'))) return 'fishes/beta-hmpk-female.jpeg';
+    if (lowerName.includes('hmpk')) return 'fishes/beta-hmpk-male.webp';
+    if (lowerName.includes('ohm') && (lowerName.includes('female') || lowerName.includes('girl') || lowerName.includes('females'))) return 'fishes/beta-ohm-females.jpg';
+    if (lowerName.includes('ohm')) return 'fishes/beta-ohm-male.webp';
+    if (lowerName.includes('placart') || lowerName.includes('plakat')) return 'fishes/beta-placarts-male.jpg';
+    return 'images/betta.png';
+  }
+
+  if (category.includes('oscar') || lowerName.includes('oscar')) {
+    if (lowerName.includes('albino')) return 'fishes/albino-oscar-fish.webp';
+    if (lowerName.includes('lemon')) return 'fishes/lemon-oscar.jpeg';
+    if (lowerName.includes('mango')) return 'fishes/mango-oscar.jpg';
+    if (lowerName.includes('red tiger') || lowerName.includes('tiger')) return 'fishes/red-tiger-oscar.jpg';
+    if (lowerName.includes('red')) return 'fishes/red-oscar.jpg';
+    return 'images/oscar.png';
+  }
+
+  if (category.includes('flowerhorn') || category.includes('parrot') || lowerName.includes('flowerhorn') || lowerName.includes('kamfa') || lowerName.includes('parrot')) {
+    if (lowerName.includes('f2') || lowerName.includes('kamfa')) return 'fishes/f2-kamfa.jpg';
+    if (lowerName.includes('kml')) return 'fishes/kml-flowerhorn.jpg';
+    if (lowerName.includes('srd')) return 'fishes/srd-flowerhorn.jpg';
+    if (lowerName.includes('thai silk')) return 'fishes/thai-silk-flowerhorn.jpeg';
+    if (lowerName.includes('polar') && lowerName.includes('white')) return 'fishes/polar-parrots-(-white).jpg';
+    if (lowerName.includes('polar') && (lowerName.includes('zebra') || lowerName.includes('parrots'))) return 'fishes/polar-parrots(-zebra).jpg';
+    if (lowerName.includes('red parrot')) return 'fishes/parrot-(-red).jpg';
+    if (lowerName.includes('yellow parrot')) return 'fishes/parrot-(-yellow).webp';
+    return 'images/flowerhorn.png';
+  }
+
+  if (category.includes('arowana') || category.includes('arwana') || lowerName.includes('arowana') || lowerName.includes('arwana')) {
+    if (lowerName.includes('gold')) return 'fishes/gold-arwana.jpg';
+    if (lowerName.includes('red')) return 'fishes/red-arwana.jpeg';
+    if (lowerName.includes('silver')) return 'fishes/silver-arwana.webp';
+    return 'images/arowana.png';
+  }
+
+  if (lowerName.includes('gold fish') || lowerName.includes('goldfish')) {
+    if (lowerName.includes('black more') || lowerName.includes('black moor')) {
+      return 'fishes/black-more-gold-fish.jpg';
+    }
+    return 'fishes/gold-fish.jpeg';
+  }
+
+  if (lowerName.includes('koi')) {
+    if (lowerName.includes('indian')) return 'fishes/indian-koi-fish.jpeg';
+    if (lowerName.includes('japanese')) return 'fishes/japanese-koi-fish.jpg';
+    return 'images/koi.png';
+  }
+
+  if (lowerName.includes('molly') || lowerName.includes('mollies') || lowerName.includes('mollie')) {
+    if (lowerName.includes('baby') || lowerName.includes('babies')) return 'fishes/molly-babyes.jpeg';
+    if (lowerName.includes('ballon') || lowerName.includes('balloon')) return 'fishes/ballon-mollies.jpeg';
+    if (lowerName.includes('moon') || lowerName.includes('moontail')) return 'fishes/moon-tail-mollies.jpg';
+    return 'fishes/mollies.webp';
+  }
+
+  if (lowerName.includes('platy') || lowerName.includes('platies') || lowerName.includes('platty') || lowerName.includes('platties')) {
+    if (lowerName.includes('sword') || lowerName.includes('sward')) return 'fishes/sward-tail-platy.jpeg';
+    return 'fishes/platy-fish.webp';
+  }
+
+  if (lowerName.includes('shark') || lowerName.includes('sharks')) {
+    if (lowerName.includes('large')) return 'fishes/shark-large.jpeg';
+    if (lowerName.includes('medium')) return 'fishes/shark-medium.avif';
+    if (lowerName.includes('small')) return 'fishes/shark-small.webp';
+    return 'fishes/shark-small.webp';
+  }
+
+  if (lowerName.includes('vail tail zebra') || lowerName.includes('veil tail zebra')) {
+    return 'fishes/vail-tail-zebra-green.jpg';
+  }
+  if (lowerName.includes('zebra') && lowerName.includes('green')) {
+    return 'fishes/vail-tail-zebra-green.jpg';
+  }
+  if (lowerName.includes('zebra') && (lowerName.includes('yellow') || lowerName.includes('gold'))) {
+    return 'fishes/vail-tail-zebra-yellow.webp';
+  }
+  if (lowerName.includes('zebra')) {
+    return 'fishes/zebra-fish.webp';
+  }
+
+  if (lowerName.includes('gourami') || lowerName.includes('gurami')) {
+    if (lowerName.includes('giant') || lowerName.includes('baby')) {
+      return 'fishes/giant-gourami-baby.jpg';
+    }
+    return 'fishes/Gourami.jpg';
+  }
+
+  if (lowerName.includes('gar') || lowerName.includes('aligator')) return 'fishes/aligator-gar.jpg';
+  if (lowerName.includes('chichilid') || lowerName.includes('cichlid')) return 'fishes/Chichilids.jpg';
+  if (lowerName.includes('mickey')) return 'fishes/mickey-fish.jpg';
+  if (lowerName.includes('snake head') || lowerName.includes('snakehead')) return 'fishes/snake-head-fish.jpg';
+
   if (category.includes('food') || lowerName.includes('food') || lowerName.includes('worms')) {
     if (lowerName.includes('head power')) return 'food/okiko-head-power-flowerhorns-food.jpeg';
     if (lowerName.includes('red diamond')) return 'food/okoko-red-diamond-fish-food.jpg';
@@ -89,6 +225,7 @@ function getSpecificNameMatch(lowerName, category) {
     if (lowerName.includes('tiyo')) return 'food/tiyo-fish-food(large).jpg';
     if (lowerName.includes('worms')) return 'food/dry-worms-cubes.jpeg';
     if (lowerName.includes('farm')) return 'food/farm-food.jpg';
+    return 'food/optimun-3-in-1-fish-food.webp';
   }
 
   if (category.includes('item') || lowerName.includes('heater') || lowerName.includes('light') || lowerName.includes('oxygen')) {
