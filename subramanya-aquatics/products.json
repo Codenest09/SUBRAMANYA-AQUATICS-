@@ -638,5 +638,37 @@
     "price": "₹100",
     "image": "logo.jpeg",
     "tag": "Active"
+  },
+  {
+    "id": 81,
+    "name": "Moina culture",
+    "category": "Cultures",
+    "price": "₹150",
+    "image": "cultures/Moina culture.jpg",
+    "tag": "Live Food"
+  },
+  {
+    "id": 82,
+    "name": "Daphnia culture",
+    "category": "Cultures",
+    "price": "₹150",
+    "image": "cultures/Daphnia culture.jpg",
+    "tag": "Live Food"
+  },
+  {
+    "id": 83,
+    "name": "Grindel worm",
+    "category": "Cultures",
+    "price": "₹150",
+    "image": "cultures/Grindel worm culture.jpg",
+    "tag": "Live Food"
+  },
+  {
+    "id": 84,
+    "name": "Micro worm",
+    "category": "Cultures",
+    "price": "₹150",
+    "image": "cultures/Micro warm culture.webp",
+    "tag": "Live Food"
   }
 ]

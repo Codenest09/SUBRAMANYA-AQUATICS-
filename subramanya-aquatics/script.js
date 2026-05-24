@@ -20,7 +20,8 @@ const defaultCategories = [
   { name: 'Arowana', count: 3, image: 'fishes/silver-arwana.webp', status: 'Active' },
   { name: 'Aquarium Items', count: 8, image: 'logo.jpeg', status: 'Active' },
   { name: 'Aquarium Decorative Items', count: 2, image: 'logo.jpeg', status: 'Active' },
-  { name: 'Fish Food', count: 8, image: 'food/dry-worms-cubes.jpeg', status: 'Active' }
+  { name: 'Fish Food', count: 8, image: 'food/dry-worms-cubes.jpeg', status: 'Active' },
+  { name: 'Cultures', count: 4, image: 'cultures/Moina culture.jpg', status: 'Active' }
 ];
 
 const defaultProducts = [
@@ -85,7 +86,11 @@ const defaultProducts = [
   { id: 77, name: 'Yellow parrot', category: 'Flowerhorns', price: '₹700', image: 'fishes/parrot-(-yellow).webp', tag: 'Popular' },
   { id: 78, name: 'Vail tail zebras', category: 'Oxy-less Fishes', price: '₹150', image: 'fishes/vail-tail-zebra-green.jpg', tag: 'Active' },
   { id: 79, name: 'Neon tetra', category: 'Oxy-less Fishes', price: '₹100', image: 'logo.jpeg', tag: 'Active' },
-  { id: 80, name: 'Tetra', category: 'Oxy-less Fishes', price: '₹100', image: 'logo.jpeg', tag: 'Active' }
+  { id: 80, name: 'Tetra', category: 'Oxy-less Fishes', price: '₹100', image: 'logo.jpeg', tag: 'Active' },
+  { id: 81, name: 'Moina culture', category: 'Cultures', price: '₹150', image: 'cultures/Moina culture.jpg', tag: 'Live Food' },
+  { id: 82, name: 'Daphnia culture', category: 'Cultures', price: '₹150', image: 'cultures/Daphnia culture.jpg', tag: 'Live Food' },
+  { id: 83, name: 'Grindel worm', category: 'Cultures', price: '₹150', image: 'cultures/Grindel worm culture.jpg', tag: 'Live Food' },
+  { id: 84, name: 'Micro worm', category: 'Cultures', price: '₹150', image: 'cultures/Micro warm culture.webp', tag: 'Live Food' }
 ];
 
 const defaultFoods = [
@@ -239,6 +244,13 @@ function getSpecificNameMatch(lowerName, category) {
     if (lowerName.includes('internal') && (lowerName.includes('large') || lowerName.includes('big'))) return 'items/internal-oxgyen-(big).jpg';
     if (lowerName.includes('plants')) return 'items/plastic-plants-(small).jpg';
     if (lowerName.includes('stones')) return 'items/stones.jpg';
+  }
+
+  if (category.includes('culture') || lowerName.includes('culture') || lowerName.includes('worm')) {
+    if (lowerName.includes('moina')) return 'cultures/Moina culture.jpg';
+    if (lowerName.includes('daphnia')) return 'cultures/Daphnia culture.jpg';
+    if (lowerName.includes('grindel')) return 'cultures/Grindel worm culture.jpg';
+    if (lowerName.includes('micro')) return 'cultures/Micro warm culture.webp';
   }
 
   return null;
