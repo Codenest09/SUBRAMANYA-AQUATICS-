@@ -260,25 +260,56 @@
   <div class="checkout-modal-overlay" id="authModal">
     <div class="checkout-card auth-card">
       <div class="checkout-header">
-        <h2 class="glowing-text">Welcome Back</h2>
+        <h2 class="glowing-text" id="authTitle">Welcome Back</h2>
         <button class="close-checkout" id="closeAuthBtn">&times;</button>
       </div>
-      <div class="checkout-step-content active" id="authPhoneStep">
-        <p style="margin-bottom: 20px; color: rgba(255,255,255,0.6);">Sign in or create an account to save your
-          wishlist.</p>
+
+      <!-- Login Form -->
+      <div class="checkout-step-content active" id="authLoginStep">
+        <p style="margin-bottom: 20px; color: rgba(255,255,255,0.6);">Sign in to track orders and save your wishlist.</p>
         <div class="form-group">
-          <input type="tel" id="authPhone" placeholder="Enter Mobile Number" value="9876543210" required
-            style="font-size: 1.1rem; text-align: center; letter-spacing: 2px;">
+          <input type="email" id="authEmail" placeholder="Email Address" required style="font-size: 1.05rem;">
         </div>
-        <button type="button" class="btn-checkout neon-pulse" onclick="sendOTP()">Send OTP ➔</button>
+        <div class="form-group">
+          <input type="password" id="authPassword" placeholder="Password" required style="font-size: 1.05rem;">
+        </div>
+        <div id="authError" style="color: #ff6b6b; font-size: 0.85rem; margin-bottom: 12px; display: none;"></div>
+        <button type="button" class="btn-checkout neon-pulse" id="btnLogin" onclick="loginWithEmail()">Login ➔</button>
+        <p style="margin-top: 18px; color: rgba(255,255,255,0.5); font-size: 0.9rem; text-align: center;">
+          Don't have an account? <a href="#" onclick="toggleAuthForm('signup'); return false;" style="color: var(--aqua-cyan); text-decoration: underline;">Sign Up</a>
+        </p>
       </div>
-      <div class="checkout-step-content" id="authOtpStep">
-        <p style="margin-bottom: 20px; color: rgba(255,255,255,0.6);">Enter the 4-digit code sent to your number.</p>
+
+      <!-- Signup Form -->
+      <div class="checkout-step-content" id="authSignupStep">
+        <p style="margin-bottom: 20px; color: rgba(255,255,255,0.6);">Create an account to get started.</p>
         <div class="form-group">
-          <input type="number" id="authOTP" placeholder="0 0 0 0" required
-            style="font-size: 1.5rem; text-align: center; letter-spacing: 15px;">
+          <input type="text" id="signupName" placeholder="Full Name" required style="font-size: 1.05rem;">
         </div>
-        <button type="button" class="btn-checkout neon-pulse" onclick="verifyOTP()">Verify & Login ✓</button>
+        <div class="form-group">
+          <input type="email" id="signupEmail" placeholder="Email Address" required style="font-size: 1.05rem;">
+        </div>
+        <div class="form-group">
+          <input type="password" id="signupPassword" placeholder="Password (min 6 chars)" required style="font-size: 1.05rem;">
+        </div>
+        <div class="form-group">
+          <input type="password" id="signupConfirm" placeholder="Confirm Password" required style="font-size: 1.05rem;">
+        </div>
+        <div id="signupError" style="color: #ff6b6b; font-size: 0.85rem; margin-bottom: 12px; display: none;"></div>
+        <button type="button" class="btn-checkout neon-pulse" id="btnSignup" onclick="signupWithEmail()">Create Account ✓</button>
+        <p style="margin-top: 18px; color: rgba(255,255,255,0.5); font-size: 0.9rem; text-align: center;">
+          Already have an account? <a href="#" onclick="toggleAuthForm('login'); return false;" style="color: var(--aqua-cyan); text-decoration: underline;">Login</a>
+        </p>
+      </div>
+
+      <!-- Email Verification Notice -->
+      <div class="checkout-step-content" id="authVerifyStep">
+        <div style="text-align: center; padding: 20px 0;">
+          <div style="font-size: 3rem; margin-bottom: 15px;">📧</div>
+          <h3 style="color: var(--aqua-cyan); margin-bottom: 10px;">Check Your Email</h3>
+          <p style="color: rgba(255,255,255,0.6); line-height: 1.6;">We've sent a confirmation link to <strong id="verifyEmailDisplay" style="color: var(--neon-teal);"></strong>. Please click the link to verify your account.</p>
+          <button type="button" class="btn-secondary" style="margin-top: 20px;" onclick="toggleAuthForm('login')">Back to Login</button>
+        </div>
       </div>
     </div>
   </div>

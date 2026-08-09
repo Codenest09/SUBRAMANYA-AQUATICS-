@@ -1298,12 +1298,14 @@ function switchAccTab(tab) {
   if (tab === 'wishlist') {
     renderWishlistTabContent();
   } else if (tab === 'profile') {
-    const phone = localStorage.getItem('sa_user_phone') || 'Unknown';
+    const email = localStorage.getItem('sa_user_email') || 'Unknown';
+    const name = localStorage.getItem('sa_user_name') || '';
     const ordersList = JSON.parse(localStorage.getItem('sa_orders') || '[]');
     content.innerHTML = `
       <div class="acc-item-card">
         <h4 style="margin-bottom:10px;">User Profile</h4>
-        <p>Phone: ${phone}</p>
+        ${name ? `<p style="margin-bottom:6px;">Name: ${name}</p>` : ''}
+        <p>Email: ${email}</p>
         <p style="margin-top:5px;">Orders Placed: ${ordersList.length}</p>
         <button class="btn-secondary" style="margin-top:15px; border-color:var(--coral-pink); color:var(--coral-pink);" onclick="logoutClient()">Logout</button>
       </div>
@@ -1362,9 +1364,13 @@ function updateWishlistUI() {
   });
 }
 
-function logoutClient() {
+async function logoutClient() {
+  if (window.supabaseClient) {
+    await window.supabaseClient.auth.signOut();
+  }
   localStorage.removeItem('sa_user_logged_in');
-  localStorage.removeItem('sa_user_phone');
+  localStorage.removeItem('sa_user_email');
+  localStorage.removeItem('sa_user_name');
   if (ordersRealtimeChannel) {
     ordersRealtimeChannel.unsubscribe();
     ordersRealtimeChannel = null;
@@ -1374,31 +1380,134 @@ function logoutClient() {
   updateWishlistUI();
 }
 
-// ========== LOGIN SYSTEM ==========
-function sendOTP() {
-  const phone = document.getElementById('authPhone').value;
-  if (phone.length < 10) { 
-    showClientToast('Enter valid 10-digit phone number!'); 
-    return; 
+// ========== LOGIN SYSTEM — SUPABASE EMAIL AUTH ==========
+
+// Toggle between Login / Signup / Verify forms
+function toggleAuthForm(view) {
+  document.getElementById('authLoginStep').classList.remove('active');
+  document.getElementById('authSignupStep').classList.remove('active');
+  document.getElementById('authVerifyStep').classList.remove('active');
+  const authError = document.getElementById('authError');
+  const signupError = document.getElementById('signupError');
+  if (authError) authError.style.display = 'none';
+  if (signupError) signupError.style.display = 'none';
+
+  if (view === 'login') {
+    document.getElementById('authTitle').textContent = 'Welcome Back';
+    document.getElementById('authLoginStep').classList.add('active');
+  } else if (view === 'signup') {
+    document.getElementById('authTitle').textContent = 'Create Account';
+    document.getElementById('authSignupStep').classList.add('active');
+  } else if (view === 'verify') {
+    document.getElementById('authTitle').textContent = 'Verify Email';
+    document.getElementById('authVerifyStep').classList.add('active');
   }
-  document.getElementById('authPhoneStep').classList.remove('active');
-  document.getElementById('authOtpStep').classList.add('active');
-  showClientToast('OTP sent to ' + phone);
 }
 
-function verifyOTP() {
-  const otp = document.getElementById('authOTP').value;
-  if (otp.length < 4) { 
-    showClientToast('Enter 4 digit OTP!'); 
-    return; 
+// Login with Email & Password
+async function loginWithEmail() {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const errorEl = document.getElementById('authError');
+  const btn = document.getElementById('btnLogin');
+
+  if (!email || !password) {
+    errorEl.textContent = 'Please enter both email and password.';
+    errorEl.style.display = 'block';
+    return;
   }
+
+  btn.disabled = true;
+  btn.textContent = 'Signing in...';
+  errorEl.style.display = 'none';
+
+  if (!window.supabaseClient) {
+    errorEl.textContent = 'Authentication service not available. Try again later.';
+    errorEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Login ➔';
+    return;
+  }
+
+  const { data, error } = await window.supabaseClient.auth.signInWithPassword({ email, password });
+
+  btn.disabled = false;
+  btn.textContent = 'Login ➔';
+
+  if (error) {
+    errorEl.textContent = error.message;
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  // Success
   localStorage.setItem('sa_user_logged_in', 'true');
-  localStorage.setItem('sa_user_phone', document.getElementById('authPhone').value);
+  localStorage.setItem('sa_user_email', data.user.email);
+  localStorage.setItem('sa_user_name', data.user.user_metadata?.full_name || '');
+
   document.getElementById('authModal').classList.remove('active');
   showClientToast('Logged in successfully!');
   setupOrdersRealtimeSync();
   document.getElementById('accountDrawer')?.classList.add('active');
   switchAccTab('wishlist');
+}
+
+// Signup with Email & Password
+async function signupWithEmail() {
+  const name = document.getElementById('signupName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const password = document.getElementById('signupPassword').value;
+  const confirm = document.getElementById('signupConfirm').value;
+  const errorEl = document.getElementById('signupError');
+  const btn = document.getElementById('btnSignup');
+
+  if (!name || !email || !password || !confirm) {
+    errorEl.textContent = 'Please fill in all fields.';
+    errorEl.style.display = 'block';
+    return;
+  }
+  if (password.length < 6) {
+    errorEl.textContent = 'Password must be at least 6 characters.';
+    errorEl.style.display = 'block';
+    return;
+  }
+  if (password !== confirm) {
+    errorEl.textContent = 'Passwords do not match.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Creating account...';
+  errorEl.style.display = 'none';
+
+  if (!window.supabaseClient) {
+    errorEl.textContent = 'Authentication service not available. Try again later.';
+    errorEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Create Account ✓';
+    return;
+  }
+
+  const { data, error } = await window.supabaseClient.auth.signUp({
+    email,
+    password,
+    options: { data: { full_name: name } }
+  });
+
+  btn.disabled = false;
+  btn.textContent = 'Create Account ✓';
+
+  if (error) {
+    errorEl.textContent = error.message;
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  // Show verification notice
+  document.getElementById('verifyEmailDisplay').textContent = email;
+  toggleAuthForm('verify');
+  showClientToast('Account created! Check your email to verify.');
 }
 
 // ========== COUPONS SYSTEM ==========
@@ -1677,14 +1786,17 @@ document.addEventListener('DOMContentLoaded', () => {
 function openProfilePanel() {
   const body = document.getElementById('profilePanelBody');
   if (!body) return;
-  const phone = localStorage.getItem('sa_user_phone') || 'Not set';
+  const email = localStorage.getItem('sa_user_email') || 'Not set';
+  const name = localStorage.getItem('sa_user_name') || '';
   const ordersList = JSON.parse(localStorage.getItem('sa_orders') || '[]');
   body.innerHTML = `
     <div class="order-history-card" style="text-align:center;">
       <div style="font-size:3rem;margin-bottom:12px;">👤</div>
       <h4 style="margin-bottom:8px;color:#00d4ff;">My Account</h4>
-      <p style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:4px;">Phone: ${phone}</p>
+      ${name ? `<p style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:4px;">Name: ${name}</p>` : ''}
+      <p style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:4px;">Email: ${email}</p>
       <p style="font-size:0.85rem;color:rgba(255,255,255,0.5);">Orders: ${ordersList.length}</p>
+      <button class="btn-secondary" style="margin-top:15px; border-color:var(--coral-pink); color:var(--coral-pink);" onclick="logoutClient()">Logout</button>
     </div>
     <div class="order-history-card">
       <h4 style="margin-bottom:10px;font-size:0.85rem;">Contact Subramanya Aquatics</h4>
